@@ -1,0 +1,17 @@
+title: "[Feedback] "
+labels:
+  - feedback
+body:
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback
+      description: Share your feedback about docs, API design, UX, performance, or anything else.
+      placeholder: What worked well? What could be improved?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Optional examples, environment details, links, or screenshots.

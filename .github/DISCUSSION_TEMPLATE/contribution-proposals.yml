@@ -1,0 +1,25 @@
+title: "[Contribution Proposal] "
+labels:
+  - proposal
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What change do you want to implement in a pull request?
+      placeholder: A short summary of the planned contribution.
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Proposed approach
+      description: How are you planning to implement it?
+      placeholder: Outline scope, design, and tradeoffs.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope and impact
+      description: What files/areas are likely affected, and are there any breaking changes?

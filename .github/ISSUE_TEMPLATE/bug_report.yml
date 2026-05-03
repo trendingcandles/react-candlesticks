@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible bug in react-candlesticks
+title: "bug: "
+labels:
+  - bug
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect?
+      placeholder: A short description of the bug and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Steps to reproduce, or a minimal repo/sandbox link.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+        Link: ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: e.g. 0.1.2
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, React version
+      placeholder: e.g. Chrome 135, macOS 15, React 19

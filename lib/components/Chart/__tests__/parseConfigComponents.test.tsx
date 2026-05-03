@@ -1,0 +1,56 @@
+import { describe, expect, it } from 'vitest';
+import { mapLayerElementToConfig, mapPanelElementsToConfig } from '../parseConfigComponents';
+import parseConfigComponents from '../parseConfigComponents';
+import { ATR, Candlesticks, EMA, SMA } from '../../../layers';
+import { FC } from 'react';
+import LAYER_COMPONENT_TYPE_KEY from '../../../config/layer/layerComponentTypeKey';
+
+describe('parseConfigComponents', () => {
+  it('maps layer element to config and strips children', () => {
+    const cfg = mapLayerElementToConfig(<Candlesticks id="l1" />);
+    expect(cfg).toMatchObject({ id: 'l1', type: 'price:candlesticks' });
+  });
+
+  it('maps acronym-cased indicator layer component names', () => {
+    const ema = mapLayerElementToConfig(<EMA id="ema-1" period={20} />);
+    const atr = mapLayerElementToConfig(<ATR id="atr-1" period={14} />);
+
+    expect(ema).toMatchObject({ id: 'ema-1', type: 'ema', period: 20 });
+    expect(atr).toMatchObject({ id: 'atr-1', type: 'atr', period: 14 });
+  });
+
+  it('uses static layer metadata when component names are minified', () => {
+    const X5: FC<{ id?: string; period?: number }> & { [LAYER_COMPONENT_TYPE_KEY]?: string } = () => null;
+    X5[LAYER_COMPONENT_TYPE_KEY] = 'ema';
+
+    const cfg = mapLayerElementToConfig(<X5 id="ema-2" period={9} />);
+
+    expect(cfg).toMatchObject({ id: 'ema-2', type: 'ema', period: 9 });
+  });
+
+  it('throws for unknown layer component name', () => {
+    const Unknown = () => null;
+    expect(() => mapLayerElementToConfig(<Unknown />)).toThrow('Invalid layer: Unknown');
+  });
+
+  it('maps panel elements with child layers', () => {
+    const panel = <div id="p1"><Candlesticks id="l1" /><SMA id="l2" period={10} /></div>;
+    const cfg = mapPanelElementsToConfig(panel);
+
+    expect(cfg?.id).toBe('p1');
+    expect(cfg?.layers).toHaveLength(2);
+    expect(cfg?.layers[1]).toMatchObject({ id: 'l2', type: 'sma', period: 10 });
+  });
+
+  it('parses top-level chart children into panel configs', () => {
+    const result = parseConfigComponents([
+      <div key="p1" id="p1"><Candlesticks id="l1" /></div>,
+      <div key="p2" id="p2"><SMA id="l2" /></div>,
+      'ignore-me',
+    ]);
+
+    expect(result).toHaveLength(2);
+    expect(result[0].layers[0].type).toBe('price:candlesticks');
+    expect(result[1].layers[0].type).toBe('sma');
+  });
+});

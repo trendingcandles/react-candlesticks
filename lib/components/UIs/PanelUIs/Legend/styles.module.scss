@@ -1,0 +1,25 @@
+/**
+ * react-candlestick-chart, trendingcaåndles.com
+ *
+ * Copyright (c) 2026 Jason Wilson
+ * Licensed under the MIT License (see LICENSE file in the project root).
+ */
+
+.legend {
+  width: fit-content;
+  margin: 0 0 4px;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.legendLabel {
+  margin-right: 12px;
+}
+
+.fieldLabel {
+  margin-right: 2px;
+}
+
+.fieldValue {
+  margin-right: 6px;
+}
