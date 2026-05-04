@@ -24,7 +24,6 @@ jobs:
           - 19
     permissions:
       contents: write  # elevated from read — required to push badge commits
-      id-token: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -56,17 +55,12 @@ jobs:
         run: npm run smoke:consumer
 
       - name: Generate coverage badges
-        uses: jpb06/coverage-badges-action@latest
-        if: github.event_name == 'push' && matrix.node-version == '24' && matrix.react-version == '18'
-        with:
-          branches: main
-          badges-icon: vitest
-          badges-labels-prefix: "Test coverage –"
+        run: node ./scripts/generate-coverage-badges.mjs
+        if: github.event_name == 'push' && matrix.node-version == '24' && matrix.react-version == '18' && !endsWith(github.actor, '[bot]')
 
-# The action will commit five SVG badges to `./badges/` in your repo:
-# 
-# ![Branches](./badges/coverage-branches.svg)
-# ![Functions](./badges/coverage-functions.svg)
-# ![Lines](./badges/coverage-lines.svg)
-# ![Statements](./badges/coverage-statements.svg)
-# ![Coverage total](./badges/coverage-total.svg)
+      - name: Upload coverage badges artifact
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'push' && matrix.node-version == '24' && matrix.react-version == '18' && !endsWith(github.actor, '[bot]')
+        with:
+          name: coverage-badges
+          path: badges/coverage-*.svg
