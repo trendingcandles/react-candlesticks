@@ -7,7 +7,7 @@
 [![react 18%2B](https://img.shields.io/badge/react-18%2B-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![docs](https://img.shields.io/badge/docs-trendingcandles.com-0A66C2)](https://docs.trendingcandles.com/)
 [![CI](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml)
-![Coverage total](./badges/coverage-total.svg)
+![Coverage total](https://raw.githubusercontent.com/trendingcandles/react-candlesticks/main/badges/coverage-total.svg)
 
 Canvas-powered, composable candlestick charts for React — built for serious trading UIs.
 
