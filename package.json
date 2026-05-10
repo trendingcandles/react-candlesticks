@@ -63,6 +63,7 @@
 		"test": "vitest",
 		"check": "npm run typecheck && npm run lint && npm run test:run",
 		"pack:check": "npm run build && npm pack --dry-run --cache ./.npm-pack-cache",
+		"prepare": "npm run build",
 		"prepublishOnly": "npm run check && npm run pack:check",
 		"coverage": "vitest run --coverage",
 		"test:ui": "vitest --ui",
