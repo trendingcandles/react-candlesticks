@@ -5,7 +5,7 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/react-candlesticks)](https://bundlephobia.com/package/react-candlesticks)
 [![types included](https://img.shields.io/badge/types-included-3178C6?logo=typescript&logoColor=white)](https://www.npmjs.com/package/react-candlesticks)
 [![react 18%2B](https://img.shields.io/badge/react-18%2B-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![docs](https://img.shields.io/badge/docs-trendingcandles.com-0A66C2)](https://docs.reactcandlesticks.com/)
+[![docs](https://img.shields.io/badge/docs-reactcandlesticks.com-0A66C2)](https://docs.reactcandlesticks.com/)
 <!-- [![CI](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml) -->
 ![Coverage total](https://raw.githubusercontent.com/trendingcandles/react-candlesticks/main/badges/coverage-total.svg)
 
