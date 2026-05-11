@@ -20,7 +20,7 @@ Build responsive trading charts in React with candlesticks, indicators, crosshai
 
 [![StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
 
-[Website](https://trendingcandles.com/) • [Documentation](https://docs.trendingcandles.com/)
+[Website](https://reactcandlesticks.com/) • [Documentation](https://docs.reactcandlesticks.com/)
 
 For bugs and feature requests, [open an issue](https://github.com/trendingcandles/react-candlesticks/issues). For usage questions, [start a discussion](https://github.com/trendingcandles/react-candlesticks/discussions/new?category=q-a).
 

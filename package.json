@@ -4,7 +4,7 @@
 	"description": "High-performance, composable candlestick charts for React.",
 	"license": "MIT",
 	"author": "Jason Wilson <info@trendingcandles.com>",
-	"homepage": "https://trendingcandles.com",
+	"homepage": "https://reactcandlesticks.com",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/trendingcandles/react-candlesticks.git"
