@@ -5,7 +5,7 @@
 [![bundle size](https://img.shields.io/bundlephobia/minzip/react-candlesticks)](https://bundlephobia.com/package/react-candlesticks)
 [![types included](https://img.shields.io/badge/types-included-3178C6?logo=typescript&logoColor=white)](https://www.npmjs.com/package/react-candlesticks)
 [![react 18%2B](https://img.shields.io/badge/react-18%2B-61DAFB?logo=react&logoColor=white)](https://react.dev/)
-[![docs](https://img.shields.io/badge/docs-trendingcandles.com-0A66C2)](https://docs.trendingcandles.com/)
+[![docs](https://img.shields.io/badge/docs-trendingcandles.com-0A66C2)](https://docs.reactcandlesticks.com/)
 <!-- [![CI](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/trendingcandles/react-candlesticks/actions/workflows/ci.yml) -->
 ![Coverage total](https://raw.githubusercontent.com/trendingcandles/react-candlesticks/main/badges/coverage-total.svg)
 
@@ -143,7 +143,7 @@ import type { Theme } from 'react-candlesticks';
 <Chart theme={myCustomTheme} ... />
 ```
 
-See the [Theme documentation](https://docs.trendingcandles.com/docs/api/theme/theme) for the full theme shape.
+See the [Theme documentation](https://docs.reactcandlesticks.com/docs/api/theme/theme) for the full theme shape.
 
 ---
 
@@ -180,13 +180,13 @@ See the [Theme documentation](https://docs.trendingcandles.com/docs/api/theme/th
 
 ## API Reference
 
-- [`API Reference Home`](https://docs.trendingcandles.com/docs/api/)
-- [`ChartProps`](https://docs.trendingcandles.com/docs/api/chart/chart#properties)
-- [`PanelConfig`](https://docs.trendingcandles.com/docs/api/panel/panel-config)
-- [`LayerConfig`](https://docs.trendingcandles.com/docs/api/layer/layer-config)
-- [`Theme`](https://docs.trendingcandles.com/docs/api/theme/theme)
-- [`DataPoint`](https://docs.trendingcandles.com/docs/api/chart/data-point)
-- [`Granularity`](https://docs.trendingcandles.com/docs/api/chart/granularity)
+- [`API Reference Home`](https://docs.reactcandlesticks.com/docs/api/)
+- [`ChartProps`](https://docs.reactcandlesticks.com/docs/api/chart/chart#properties)
+- [`PanelConfig`](https://docs.reactcandlesticks.com/docs/api/panel/panel-config)
+- [`LayerConfig`](https://docs.reactcandlesticks.com/docs/api/layer/layer-config)
+- [`Theme`](https://docs.reactcandlesticks.com/docs/api/theme/theme)
+- [`DataPoint`](https://docs.reactcandlesticks.com/docs/api/chart/data-point)
+- [`Granularity`](https://docs.reactcandlesticks.com/docs/api/chart/granularity)
 
 ---
 
