@@ -20,11 +20,9 @@ Build responsive trading charts in React with candlesticks, indicators, crosshai
 
 [![StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
 
-[Website](https://reactcandlesticks.com/) • [Documentation](https://docs.reactcandlesticks.com/)
+[Website](https://reactcandlesticks.com/) • [Documentation](https://docs.reactcandlesticks.com/docs/) • [npm](https://www.npmjs.com/package/react-candlesticks) • [Live Demo](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
 
 For bugs and feature requests, [open an issue](https://github.com/trendingcandles/react-candlesticks/issues). For usage questions, [start a discussion](https://github.com/trendingcandles/react-candlesticks/discussions/new?category=q-a).
-
----
 
 ## Installation
 
@@ -61,6 +59,8 @@ export default function App() {
 ```
 
 `granularity` is optional if your dataset uses a consistent interval and you want the library to infer it automatically. For empty/loading states, pass `granularity` explicitly.
+
+For a fuller walkthrough, see the [Getting Started docs](https://docs.reactcandlesticks.com/docs/getting-started).
 
 ## Why React Candlesticks?
 
