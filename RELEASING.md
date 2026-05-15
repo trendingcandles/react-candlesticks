@@ -11,7 +11,7 @@ This package is released manually from GitHub Actions.
 ## Release Checklist
 
 1. Confirm the package version in `package.json` is the version you want to ship.
-2. Review the README, docs, and changelog notes for anything user-visible in the release.
+2. Review the README, [docs](https://docs.reactcandlesticks.com/docs/), and changelog notes for anything user-visible in the release.
 3. Run `npm run check`.
 4. Run `npm run build`.
 5. Run `npm run pack:check` and confirm the tarball contents look correct.

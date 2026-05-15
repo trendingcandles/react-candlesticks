@@ -10,6 +10,8 @@ When reporting an issue, include a minimal reproduction or a link to a live exam
 
 For any usage questions, please [start a discussion](https://github.com/trendingcandles/react-candlesticks/discussions/new?category=q-a).
 
+If your question is about installation, component usage, or API options, please check the [documentation](https://docs.reactcandlesticks.com/docs/) first.
+
 ### Discussion Templates
 
 When opening a discussion, please choose the matching template:
