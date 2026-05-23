@@ -32,12 +32,14 @@ export interface ChartCanvasesProps {
   layout: Layout;
   config: ChartConfigComplete;
   panels: PanelConfigComplete[];
+  showCrosshairsCanvas?: boolean;
 }
 
 const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(function ChartCanvases({
   config,
   panels,
   layout,
+  showCrosshairsCanvas = true,
 }, ref) {
   
   const {
@@ -100,6 +102,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
   }, [draw]);
 
   const drawCrosshairs = useCallback((layout: Layout, viewportData: ViewportData, clientX: number, clientY: number, onCrosshairsMove?: (ts: number | null, dataPoint: DataPointInfo | null) => void) => {
+    if (!showCrosshairsCanvas) return;
     const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current, true);
     if (crosshairsContext && metricsByPanelRef.current) {
       drawChartCrosshairs(
@@ -119,16 +122,17 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
       height: layout.chartHeight,
       dpr: layout.dpr,
     };
-  }, [config, panels]);
+  }, [config, panels, showCrosshairsCanvas]);
 
   const requestDrawCrosshairs = useCallback((layout: Layout, viewportData: ViewportData, clientX: number, clientY: number, onCrosshairsMove?: (ts: number | null, dataPoint: DataPointInfo | null) => void) => {
+    if (!showCrosshairsCanvas) return;
     if (crosshairsAnimationFrameRef.current !== null) {
       cancelAnimationFrame(crosshairsAnimationFrameRef.current);
     }
     crosshairsAnimationFrameRef.current = requestAnimationFrame(() => {
       drawCrosshairs(layout, viewportData, clientX, clientY, onCrosshairsMove);
     });
-  }, [drawCrosshairs]);
+  }, [drawCrosshairs, showCrosshairsCanvas]);
 
   const updateCrosshairsCanvas = useCallback((/*layout: Layout*/) => {
     // const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current);
@@ -170,11 +174,13 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
         ref={axesChartCanvasRef}
         className={styles.axesCanvas}
       />
-      <canvas
-        id='ch-canvas'
-        ref={crosshairsCanvasRef}
-        className={styles.crosshairsCanvas}
-      />
+      {showCrosshairsCanvas &&
+        <canvas
+          id='ch-canvas'
+          ref={crosshairsCanvasRef}
+          className={styles.crosshairsCanvas}
+        />
+      }
     </div>
   );
 

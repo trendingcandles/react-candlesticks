@@ -8,6 +8,8 @@ function NonInteractiveChart() {
       height={300}
       data={exampleData}
       theme="dark"
+      renderMode="minimal"
+      pixelRatio={1}
       initialScrollToLatest
       xAxis={false}
       crosshairs={false}
