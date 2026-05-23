@@ -2,7 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/react-candlesticks)](https://www.npmjs.com/package/react-candlesticks)
 [![license](https://img.shields.io/npm/l/react-candlesticks)](./LICENSE)
-![bundle size](https://badgen.net/bundlejs/minzip/react-candlesticks)
+![bundle size](https://img.shields.io/bundlephobia/minzip/react-candlesticks)
 [![types included](https://img.shields.io/badge/types-included-3178C6?logo=typescript&logoColor=white)](https://www.npmjs.com/package/react-candlesticks)
 [![react 18%2B](https://img.shields.io/badge/react-18%2B-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![docs](https://img.shields.io/badge/docs-reactcandlesticks.com-0A66C2)](https://docs.reactcandlesticks.com/)
