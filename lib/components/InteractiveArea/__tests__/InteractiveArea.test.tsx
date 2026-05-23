@@ -81,7 +81,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -104,7 +104,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -126,7 +126,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
 
     fireEvent.wheel(area, { deltaX: 20, deltaY: 1 });
@@ -145,7 +145,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -165,7 +165,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -187,7 +187,7 @@ describe('InteractiveArea', () => {
 
     const raf = mockRaf();
 
-    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -209,7 +209,7 @@ describe('InteractiveArea', () => {
     const raf = mockQueuedRaf();
     const cancelSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
-    const { container, unmount } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} />);
+    const { container, unmount } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom />);
     const area = container.firstElementChild as HTMLElement;
     mockPointerCapture(area);
 
@@ -222,5 +222,68 @@ describe('InteractiveArea', () => {
     expect(cancelSpy).toHaveBeenCalled();
 
     raf.mockRestore();
+  });
+
+  it('disables scroll interactions when enableScroll is false', () => {
+    const onScroll = vi.fn();
+    const onMouseMove = vi.fn();
+    const onZoom = vi.fn();
+
+    const raf = mockRaf();
+
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll={false} enableZoom />);
+    const area = container.firstElementChild as HTMLElement;
+    mockPointerCapture(area);
+
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'mouse', button: 0 });
+    dispatchPointerEvent(area, 'pointermove', { pointerId: 1, clientX: 15, clientY: 12, pointerType: 'mouse' });
+    fireEvent.wheel(area, { deltaX: 20, deltaY: 1 });
+
+    expect(onScroll).not.toHaveBeenCalled();
+
+    raf.mockRestore();
+  });
+
+  it('disables zoom interactions when enableZoom is false', () => {
+    const onScroll = vi.fn();
+    const onMouseMove = vi.fn();
+    const onZoom = vi.fn();
+
+    const raf = mockRaf();
+
+    const { container } = render(<InteractiveArea onScroll={onScroll} onMouseMove={onMouseMove} onZoom={onZoom} enableScroll enableZoom={false} />);
+    const area = container.firstElementChild as HTMLElement;
+    mockPointerCapture(area);
+
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'touch' });
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 2, clientX: 38, clientY: 13, pointerType: 'touch' });
+    dispatchPointerEvent(area, 'pointermove', { pointerId: 2, clientX: 48, clientY: 13, pointerType: 'touch' });
+    fireEvent.wheel(area, { deltaX: 1, deltaY: -30 });
+
+    expect(onZoom).not.toHaveBeenCalled();
+
+    raf.mockRestore();
+  });
+
+  it('keeps crosshair cursor on click when both scroll and zoom are disabled', () => {
+    const onScroll = vi.fn();
+    const onMouseMove = vi.fn();
+    const onZoom = vi.fn();
+
+    const { container } = render(
+      <InteractiveArea
+        onScroll={onScroll}
+        onMouseMove={onMouseMove}
+        onZoom={onZoom}
+        enableScroll={false}
+        enableZoom={false}
+      />,
+    );
+    const area = container.firstElementChild as HTMLElement;
+    mockPointerCapture(area);
+
+    expect(area.style.cursor).toBe('');
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'mouse', button: 0 });
+    expect(area.style.cursor).not.toBe('grabbing');
   });
 });

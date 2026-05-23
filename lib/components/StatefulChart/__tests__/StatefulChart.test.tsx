@@ -9,7 +9,7 @@ const hideCrosshairsMock = vi.hoisted(() => vi.fn());
 const updateCrosshairsCanvasMock = vi.hoisted(() => vi.fn());
 const updateGoToLatestButtonMock = vi.hoisted(() => vi.fn());
 
-let interactiveProps: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void } | null = null;
+let interactiveProps: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean } | null = null;
 let uiProps: { onGoToLatest: () => void; onButtonMouseEnterLeave: (enter: boolean) => void } | null = null;
 
 const getViewportDataMock = vi.hoisted(() => vi.fn(() => ({ data: [], timeScale: { startBarIndex: 0, endBarIndex: 1 }, xToDataPoint: () => null })));
@@ -29,7 +29,7 @@ vi.mock('../../ChartCanvases', () => ({
 }));
 
 vi.mock('../../InteractiveArea', () => ({
-  default: (props: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void }) => {
+  default: (props: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean }) => {
     interactiveProps = props;
     return <div data-testid="interactive" />;
   },
@@ -91,6 +91,8 @@ describe('StatefulChart', () => {
     initialScrollToLatest: false,
     onScroll: vi.fn(),
     onZoom: vi.fn(),
+    enableScroll: true,
+    enableZoom: true,
   });
 
   it('initializes and requests draw on mount', () => {
@@ -99,6 +101,8 @@ describe('StatefulChart', () => {
     expect(getViewportDataMock).toHaveBeenCalled();
     expect(requestDrawMock).toHaveBeenCalled();
     expect(updateCrosshairsCanvasMock).toHaveBeenCalled();
+    expect(interactiveProps?.enableScroll).toBe(true);
+    expect(interactiveProps?.enableZoom).toBe(true);
   });
 
   it('handles scroll, zoom and go-to-latest callbacks', () => {

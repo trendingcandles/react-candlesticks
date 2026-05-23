@@ -129,6 +129,20 @@ describe('Chart', () => {
     expect(capturedProps?.initialScrollToLatest).toBe(true);
   });
 
+  it('forwards interaction toggle props to StatefulChart', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        enableScroll={false}
+        enableZoom={false}
+      />,
+    );
+
+    expect(capturedProps?.enableScroll).toBe(false);
+    expect(capturedProps?.enableZoom).toBe(false);
+  });
+
   it('can build panels from children when panels prop is absent', () => {
     render(
       <Chart data={[{ timestamp: 1 } as never]}>

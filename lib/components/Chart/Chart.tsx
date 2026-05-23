@@ -46,6 +46,8 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   initialScrollToLatest?: boolean;
   onScroll?: (newScrollOffset: number) => void; // todo: add source arg: 'mouse' | 'touch' | 'trackpad';
   onZoom?: (newIntervalWidthPx: number) => void;
+  enableScroll?: boolean;
+  enableZoom?: boolean;
 }
 
 interface PanelsAsPropChartProps extends ChartPropsBase {
@@ -79,6 +81,8 @@ const Chart = ({
   initialScrollToLatest = false,
   onScroll,
   onZoom,
+  enableScroll = true,
+  enableZoom = true,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -240,6 +244,8 @@ const Chart = ({
           initialScrollToLatest={initialScrollToLatest}
           onScroll={onScroll}
           onZoom={handleZoom}
+          enableScroll={enableScroll}
+          enableZoom={enableZoom}
         />
       }
     </div>

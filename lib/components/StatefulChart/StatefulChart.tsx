@@ -48,6 +48,8 @@ export interface StatefulChartProps {
   initialScrollToLatest: boolean;
   onScroll?: (newScrollOffset: number) => void;
   onZoom?: (newIntervalSize: number) => void;
+  enableScroll: boolean;
+  enableZoom: boolean;
 }
 
 const StatefulChart = ({
@@ -67,6 +69,8 @@ const StatefulChart = ({
   initialScrollToLatest,
   onScroll,
   onZoom,
+  enableScroll,
+  enableZoom,
 }: StatefulChartProps) => {
 
   const chartCanvasesRef = useRef<ChartCanvasesHandle | null>(null);
@@ -355,6 +359,8 @@ const StatefulChart = ({
         onScroll={handleScroll}
         onMouseMove={handleMouseMove}
         onZoom={handleZoom}
+        enableScroll={enableScroll}
+        enableZoom={enableZoom}
       />
       <UIs
         ref={uisRef}

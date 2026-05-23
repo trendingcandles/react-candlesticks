@@ -12,12 +12,16 @@ export interface InteractiveAreaProps {
   onScroll: (deltaX: number, deltaY: number, wheel?: boolean) => void;
   onMouseMove: (clientX: number, clientY: number, isOverButton?: boolean) => void;
   onZoom: (delta: number) => void;
+  enableScroll: boolean;
+  enableZoom: boolean;
 }
 
 const InteractiveArea = ({
   onScroll,
   onMouseMove,
   onZoom,
+  enableScroll,
+  enableZoom,
 }: InteractiveAreaProps) => {
 
   const dragRef = useRef<HTMLDivElement>(null);
@@ -68,7 +72,7 @@ const InteractiveArea = ({
       dragRef.current.setPointerCapture(e.pointerId);
     }
 
-    if (dragRef.current) {
+    if (dragRef.current && (enableScroll || enableZoom)) {
       dragRef.current.style.cursor = 'grabbing';
     }
 
@@ -96,6 +100,10 @@ const InteractiveArea = ({
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     if (activePointers.current.size === 1 && lastPosition.current) {
+      if (!enableScroll) {
+        lastPosition.current = { x: e.clientX, y: e.clientY };
+        return;
+      }
       const deltaX = e.clientX - lastPosition.current.x;
       const deltaY = e.clientY - lastPosition.current.y;
 
@@ -108,6 +116,10 @@ const InteractiveArea = ({
     }
 
     if (activePointers.current.size >= 2) {
+      if (!enableZoom) {
+        pinchDistance.current = getPointerDistance();
+        return;
+      }
       const nextDistance = getPointerDistance();
       if (pinchDistance.current && nextDistance && pinchDistance.current > 0) {
         pendingZoom.current *= nextDistance / pinchDistance.current;
@@ -150,6 +162,7 @@ const InteractiveArea = ({
     const absY = Math.abs(e.deltaY);
 
     if (absX > absY) {
+      if (!enableScroll) return;
       pendingDelta.current.x -= e.deltaX;
       if (scrollAnimationFrame.current === null) {
         scrollAnimationFrame.current = requestAnimationFrame(() => {
@@ -159,11 +172,12 @@ const InteractiveArea = ({
         });
       }
     } else {
+      if (!enableZoom) return;
       const zoomFactor = e.deltaY > 0 ? 0.975 : 1.025;
       pendingZoom.current *= zoomFactor;
       scheduleZoom();
     }
-  }, [onScroll, scheduleZoom]);
+  }, [enableScroll, enableZoom, onScroll, scheduleZoom]);
 
   useEffect(() => {
     const element = dragRef.current;

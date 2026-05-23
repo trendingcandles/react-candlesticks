@@ -86,6 +86,8 @@ const chartPropTypes = {
   initialScrollToLatest: PropTypes.bool,
   onScroll: PropTypes.func,
   onZoom: PropTypes.func,
+  enableScroll: PropTypes.bool,
+  enableZoom: PropTypes.bool,
   panels: combinePropValidators(
     (props, propName, componentName, location, propFullName, secret) =>
       panelsArrayValidator(props, propName, componentName, location, propFullName, secret),
