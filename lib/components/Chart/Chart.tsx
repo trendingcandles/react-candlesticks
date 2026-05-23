@@ -31,6 +31,8 @@ import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
+  renderMode?: 'full' | 'minimal';
+  pixelRatio?: number | 'device';
   width?: number | 'auto';
   height?: number | 'auto';
   intervalWidthPx?: number;
@@ -67,6 +69,8 @@ export type ChartProps = ChartPropsBase & PanelsProps;
 const Chart = ({
   width = 'auto',
   height = 'auto',
+  renderMode = 'full',
+  pixelRatio = 'device',
   intervalWidthPx = 12,
   granularity,
   backgroundColor,
@@ -81,8 +85,8 @@ const Chart = ({
   initialScrollToLatest = false,
   onScroll,
   onZoom,
-  enableScroll = true,
-  enableZoom = true,
+  enableScroll,
+  enableZoom,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -105,7 +109,11 @@ const Chart = ({
 
   // The `size` variable changes if the Chart element's dimensions change
   const [size, ref] = useResizeObserver<HTMLDivElement>(width === 'auto' || height === 'auto');
-  const dpr = useDevicePixelRatio();
+  const devicePixelRatio = useDevicePixelRatio();
+  const dpr = pixelRatio === 'device' ? devicePixelRatio : pixelRatio;
+  const isMinimal = renderMode === 'minimal';
+  const effectiveEnableScroll = isMinimal ? (enableScroll ?? false) : (enableScroll ?? true);
+  const effectiveEnableZoom = isMinimal ? (enableZoom ?? false) : (enableZoom ?? true);
 
   const zoomTimeoutRef = useRef<number | null>(null);
   const lastNotifiedZoom = useRef<number>(intervalWidthPx);
@@ -138,13 +146,13 @@ const Chart = ({
   const chartConfigComplete = useMemo(() => {
     const chartConfig = {
       backgroundColor,
-      xAxis,
-      grid,
-      crosshairs,
-      borders,
+      xAxis: isMinimal ? (xAxis ?? false) : xAxis,
+      grid: isMinimal ? (grid ?? false) : grid,
+      crosshairs: isMinimal ? (crosshairs ?? false) : crosshairs,
+      borders: isMinimal ? (borders ?? false) : borders,
     };
     return parseChartConfig(chartConfig, effectiveTheme, defaultTimeZoneId);
-  }, [backgroundColor, xAxis, grid, crosshairs, borders, effectiveTheme, defaultTimeZoneId]);
+  }, [backgroundColor, xAxis, grid, crosshairs, borders, effectiveTheme, defaultTimeZoneId, isMinimal]);
 
   // Parse panel configs and create layer topology
   const { panelConfigs: panelConfigsComplete, layersTopology } = useMemo(() => {
@@ -244,8 +252,9 @@ const Chart = ({
           initialScrollToLatest={initialScrollToLatest}
           onScroll={onScroll}
           onZoom={handleZoom}
-          enableScroll={enableScroll}
-          enableZoom={enableZoom}
+          enableScroll={effectiveEnableScroll}
+          enableZoom={effectiveEnableZoom}
+          minimal={isMinimal}
         />
       }
     </div>

@@ -11,13 +11,15 @@ const updateGoToLatestButtonMock = vi.hoisted(() => vi.fn());
 
 let interactiveProps: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean } | null = null;
 let uiProps: { onGoToLatest: () => void; onButtonMouseEnterLeave: (enter: boolean) => void } | null = null;
+let canvasesProps: { showCrosshairsCanvas?: boolean } | null = null;
 
 const getViewportDataMock = vi.hoisted(() => vi.fn(() => ({ data: [], timeScale: { startBarIndex: 0, endBarIndex: 1 }, xToDataPoint: () => null })));
 const updateLayersDataMock = vi.hoisted(() => vi.fn());
 const calcOffsetMock = vi.hoisted(() => vi.fn(() => 15));
 
 vi.mock('../../ChartCanvases', () => ({
-  default: forwardRef((_props, ref) => {
+  default: forwardRef((props: { showCrosshairsCanvas?: boolean }, ref) => {
+    canvasesProps = props;
     useImperativeHandle(ref, () => ({
       requestDraw: requestDrawMock,
       requestDrawCrosshairs: requestDrawCrosshairsMock,
@@ -66,6 +68,7 @@ describe('StatefulChart', () => {
     calcOffsetMock.mockClear();
     interactiveProps = null;
     uiProps = null;
+    canvasesProps = null;
   });
 
   const makeProps = (): StatefulChartProps => ({
@@ -103,6 +106,15 @@ describe('StatefulChart', () => {
     expect(updateCrosshairsCanvasMock).toHaveBeenCalled();
     expect(interactiveProps?.enableScroll).toBe(true);
     expect(interactiveProps?.enableZoom).toBe(true);
+    expect(canvasesProps?.showCrosshairsCanvas).toBe(true);
+  });
+
+  it('does not mount interactive overlays in minimal mode', () => {
+    render(<StatefulChart {...makeProps()} minimal />);
+
+    expect(interactiveProps).toBeNull();
+    expect(uiProps).toBeNull();
+    expect(canvasesProps?.showCrosshairsCanvas).toBe(false);
   });
 
   it('handles scroll, zoom and go-to-latest callbacks', () => {

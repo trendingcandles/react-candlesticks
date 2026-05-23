@@ -50,6 +50,7 @@ export interface StatefulChartProps {
   onZoom?: (newIntervalSize: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
+  minimal?: boolean;
 }
 
 const StatefulChart = ({
@@ -71,6 +72,7 @@ const StatefulChart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  minimal = false,
 }: StatefulChartProps) => {
 
   const chartCanvasesRef = useRef<ChartCanvasesHandle | null>(null);
@@ -354,21 +356,26 @@ const StatefulChart = ({
         layout={layout}
         config={config}
         panels={panels}
+        showCrosshairsCanvas={minimal === false}
       />
-      <InteractiveArea
-        onScroll={handleScroll}
-        onMouseMove={handleMouseMove}
-        onZoom={handleZoom}
-        enableScroll={enableScroll}
-        enableZoom={enableZoom}
-      />
-      <UIs
-        ref={uisRef}
-        layout={layout}
-        panels={panels}
-        onGoToLatest={handleGoToLatestButtonClick}
-        onButtonMouseEnterLeave={handleButtonMouseEnterLeave}
-      />
+      {!minimal &&
+        <InteractiveArea
+          onScroll={handleScroll}
+          onMouseMove={handleMouseMove}
+          onZoom={handleZoom}
+          enableScroll={enableScroll}
+          enableZoom={enableZoom}
+        />
+      }
+      {!minimal &&
+        <UIs
+          ref={uisRef}
+          layout={layout}
+          panels={panels}
+          onGoToLatest={handleGoToLatestButtonClick}
+          onButtonMouseEnterLeave={handleButtonMouseEnterLeave}
+        />
+      }
     </div>
   );
 

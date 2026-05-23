@@ -143,6 +143,82 @@ describe('Chart', () => {
     expect(capturedProps?.enableZoom).toBe(false);
   });
 
+  it('uses non-interactive defaults in minimal render mode', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        renderMode="minimal"
+      />,
+    );
+
+    expect(capturedProps?.minimal).toBe(true);
+    expect(capturedProps?.enableScroll).toBe(false);
+    expect(capturedProps?.enableZoom).toBe(false);
+    expect(parseChartConfigMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xAxis: false,
+        grid: false,
+        crosshairs: false,
+        borders: false,
+      }),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
+  it('allows minimal mode defaults to be overridden explicitly', () => {
+    const xAxis = { timeZoneId: 'Europe/London' };
+    const grid = {};
+    const crosshairs = {};
+    const borders = { left: { color: '#fff', width: 1, style: 'solid' } };
+
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        renderMode="minimal"
+        enableScroll
+        enableZoom
+        xAxis={xAxis as never}
+        grid={grid as never}
+        crosshairs={crosshairs as never}
+        borders={borders as never}
+      />,
+    );
+
+    expect(capturedProps?.enableScroll).toBe(true);
+    expect(capturedProps?.enableZoom).toBe(true);
+    expect(parseChartConfigMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xAxis,
+        grid,
+        crosshairs,
+        borders,
+      }),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
+  it('uses explicit pixelRatio instead of device pixel ratio', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        pixelRatio={1}
+      />,
+    );
+
+    expect(getLayoutMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      1,
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
   it('can build panels from children when panels prop is absent', () => {
     render(
       <Chart data={[{ timestamp: 1 } as never]}>
