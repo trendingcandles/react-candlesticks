@@ -21,4 +21,18 @@ describe('drawBorders', () => {
     expect(ctx.stroke).toHaveBeenCalledTimes(1);
     expect(ctx.setLineDash).toHaveBeenCalledWith([]);
   });
+
+  it('draws right border on inner pixel boundary', () => {
+    const ctx = createMockContext();
+    const right = { color: '#000', style: 'solid', width: 1 };
+
+    drawBorders(
+      ctx,
+      { drawingAreaX: 0, drawingAreaX1: 10, drawingAreaY: 0, drawingAreaY1: 10 } as never,
+      { borders: { left: null, right, top: null, bottom: null } } as never,
+    );
+
+    expect(ctx.moveTo).toHaveBeenCalledWith(9.5, 9.5);
+    expect(ctx.lineTo).toHaveBeenCalledWith(9.5, 0.5);
+  });
 });

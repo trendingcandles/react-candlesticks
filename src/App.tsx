@@ -4,6 +4,7 @@ import VolumeChart from './examples/VolumeChart';
 import IndicatorsChart from './examples/IndicatorsChart';
 import CustomizationChart from './examples/CustomizationChart';
 import FullConfigurationChart from './examples/FullConfigurationChart';
+import MinimalChart from './examples/MinimalChart';
 
 const examples = [
   'simple',
@@ -11,6 +12,7 @@ const examples = [
   'indicators',
   'customization',
   'full-configuration',
+  'minimal',
 ] as const;
 
 function App() {
@@ -32,6 +34,7 @@ function App() {
         {exampleChart === "indicators" && <IndicatorsChart />}
         {exampleChart === "customization" && <CustomizationChart />}
         {exampleChart === "full-configuration" && <FullConfigurationChart />}
+        {exampleChart === "minimal" && <MinimalChart />}
       </div>
       <div
         style={{

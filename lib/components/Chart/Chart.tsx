@@ -28,6 +28,7 @@ import createContinuousIndexProvider from '../../indexProviders/continuous/creat
 import deduceGranularity from '../../data/utils/deduceGranulairty';
 import createLayerTopology from '../../config/layer/createLayerTopology';
 import styles from './styles.module.scss';
+import { BordersConfig } from '../../config/chart/borders/BordersConfig';
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   width?: number | 'auto';
@@ -38,6 +39,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   xAxis?: false | XAxisConfig; // undefined → default config, false → disabled, {} → default config
   grid?: false | GridConfig; // undefined → default config, false → disabled, {} → default config
   crosshairs?: false | CrosshairsConfig; // undefined → default config, false → disabled, {} → default config
+  borders?: false | BordersConfig; // undefined → default config, false → disabled, {} → default config
   theme?: Theme | ThemeName;
   data: DataPoint[];
   scrollToLatestMargin?: number;
@@ -69,6 +71,7 @@ const Chart = ({
   xAxis,
   grid,
   crosshairs,
+  borders,
   theme = themes.light,
   panels,
   data,
@@ -134,9 +137,10 @@ const Chart = ({
       xAxis,
       grid,
       crosshairs,
+      borders,
     };
     return parseChartConfig(chartConfig, effectiveTheme, defaultTimeZoneId);
-  }, [backgroundColor, xAxis, grid, crosshairs, effectiveTheme, defaultTimeZoneId]);
+  }, [backgroundColor, xAxis, grid, crosshairs, borders, effectiveTheme, defaultTimeZoneId]);
 
   // Parse panel configs and create layer topology
   const { panelConfigs: panelConfigsComplete, layersTopology } = useMemo(() => {

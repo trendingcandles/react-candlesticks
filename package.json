@@ -1,6 +1,6 @@
 {
 	"name": "react-candlesticks",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "High-performance, composable candlestick charts for React.",
 	"license": "MIT",
 	"author": "Jason Wilson <info@trendingcandles.com>",

@@ -99,6 +99,24 @@ describe('Chart', () => {
     expect(capturedProps?.granularity).toBe('m5');
   });
 
+  it('forwards borders config into chart config parsing', () => {
+    const borders = { right: { color: '#f00', width: 2, style: 'solid' } };
+
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        borders={borders as never}
+      />,
+    );
+
+    expect(parseChartConfigMock).toHaveBeenCalledWith(
+      expect.objectContaining({ borders }),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
   it('forwards initialScrollToLatest to StatefulChart', () => {
     render(
       <Chart

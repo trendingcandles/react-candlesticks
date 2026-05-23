@@ -28,8 +28,8 @@ const drawBorders = (
 
   // Define corner points
   const topLeft = [drawingAreaX + 0.5, drawingAreaY + 0.5];
-  const topRight = [drawingAreaX1 + 0.5, drawingAreaY + 0.5];
-  const bottomRight = [drawingAreaX1 + 0.5, drawingAreaY1 - 0.5];
+  const topRight = [drawingAreaX1 - 0.5, drawingAreaY + 0.5];
+  const bottomRight = [drawingAreaX1 - 0.5, drawingAreaY1 - 0.5];
   const bottomLeft = [drawingAreaX + 0.5, drawingAreaY1 - 0.5];
 
   // Group borders by style to draw continuous paths
