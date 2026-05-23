@@ -45,6 +45,7 @@ export interface StatefulChartProps {
   maxLookback: number;
   maxLookForward: number;
   scrollToLatestMargin: number;
+  initialScrollToLatest: boolean;
   onScroll?: (newScrollOffset: number) => void;
   onZoom?: (newIntervalSize: number) => void;
 }
@@ -63,6 +64,7 @@ const StatefulChart = ({
   maxLookback,
   maxLookForward,
   scrollToLatestMargin,
+  initialScrollToLatest,
   onScroll,
   onZoom,
 }: StatefulChartProps) => {
@@ -78,6 +80,8 @@ const StatefulChart = ({
   const layersDataRef = useRef<LayersData | null>(null);
   const crosshairsClearedRef = useRef(false);
   const isOverButtonRef = useRef(false);
+  const hasUserInteractedRef = useRef(false);
+  const hasAutoScrolledToLatestRef = useRef(false);
 
   useEffect(() => {
     layersDataRef.current = initialLayersData;
@@ -119,13 +123,21 @@ const StatefulChart = ({
         getTimescale,
       } = chartIndexProvider;
 
+      const shouldAutoScrollToLatest = (
+        initialScrollToLatest &&
+        hasUserInteractedRef.current === false &&
+        hasAutoScrolledToLatestRef.current === false &&
+        offsetDelta === 0 &&
+        lastDataPointIndex !== undefined
+      );
+
       if (
+        shouldAutoScrollToLatest ||
         offsetDelta !== 0 ||
         offsetPxRef.current === undefined ||
         chartIntervalSize !== previousIntervalSizeRef.current ||
         chartGranularity !== previousGranularityRef.current
       ) {
-
         const minScrollOffset = firstDataPointIndex !== undefined
           ? firstDataPointIndex * chartIntervalSize - chartLayout.drawingAreaWidth + 1
           : 0;
@@ -133,19 +145,25 @@ const StatefulChart = ({
           ? (lastDataPointIndex + 1) * chartIntervalSize - chartIntervalSize
           : 0;
 
-        const newScrollOffset = calculateNewScrollOffset(
-          previousOffsetPxRef.current ?? 0,
-          -offsetDelta,
-          indexToTimestamp,
-          findClosestIndex,
-          chartIntervalSize,
-          chartLayout.drawingAreaWidth,
-          previousIntervalSizeRef.current,
-          chartGranularity !== previousGranularityRef.current,
-          minScrollOffset,
-          maxScrollOffset,
-        );
-        offsetPxRef.current = newScrollOffset;
+        if (shouldAutoScrollToLatest) {
+          offsetPxRef.current = lastDataPointIndex * chartIntervalSize -
+            (chartLayout.drawingAreaWidth - chartIntervalSize * scrollToLatestMargin);
+          hasAutoScrolledToLatestRef.current = true;
+        } else {
+          const newScrollOffset = calculateNewScrollOffset(
+            previousOffsetPxRef.current ?? 0,
+            -offsetDelta,
+            indexToTimestamp,
+            findClosestIndex,
+            chartIntervalSize,
+            chartLayout.drawingAreaWidth,
+            previousIntervalSizeRef.current,
+            chartGranularity !== previousGranularityRef.current,
+            minScrollOffset,
+            maxScrollOffset,
+          );
+          offsetPxRef.current = newScrollOffset;
+        }
       }
 
       const timeScale = getTimescale(chartIntervalSize, offsetPxRef.current, chartLayout.drawingAreaWidth);
@@ -180,7 +198,7 @@ const StatefulChart = ({
 
       return offsetPxRef.current;
     },
-    [throttledDraw]
+    [initialScrollToLatest, scrollToLatestMargin, throttledDraw]
   );
 
   // If config, panels, data (and derived), intervalSize, granularity or layout change...
@@ -210,6 +228,7 @@ const StatefulChart = ({
   const handleScroll = useCallback(
     (deltaX: number /*, deltaY: number, wheel?: boolean*/) => {
       if (deltaX !== 0) {
+        hasUserInteractedRef.current = true;
         if (crosshairsClearedRef.current === false) {
           chartCanvasesRef.current?.hideCrosshairs(layout);
           crosshairsClearedRef.current = true;
@@ -257,6 +276,7 @@ const StatefulChart = ({
 
   const handleZoom = useCallback((zoomFactor: number) => {
     if (zoomFactor !== 1) {
+      hasUserInteractedRef.current = true;
       if (crosshairsClearedRef.current === false) {
         chartCanvasesRef.current?.hideCrosshairs(layout);
         crosshairsClearedRef.current = true;
@@ -273,6 +293,7 @@ const StatefulChart = ({
   }, [onZoom, layout]);
 
   const handleGoToLatestButtonClick = useCallback(() => {
+    hasUserInteractedRef.current = true;
     if (crosshairsClearedRef.current === false) {
       chartCanvasesRef.current?.hideCrosshairs(layout);
       crosshairsClearedRef.current = true;

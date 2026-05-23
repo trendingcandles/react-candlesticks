@@ -6,6 +6,7 @@ function SimpleChart() {
     <Chart
       data={exampleData}
       theme='dark'
+      initialScrollToLatest
     >
       <Panel>
         <Candlesticks/>

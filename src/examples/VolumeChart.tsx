@@ -6,6 +6,7 @@ function VolumeChart() {
     <Chart
       data={exampleData}
       theme='dark'
+      initialScrollToLatest
     >
       <Panel heightRatio={3}>
         <Candlesticks/>
