@@ -41,6 +41,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   theme?: Theme | ThemeName;
   data: DataPoint[];
   scrollToLatestMargin?: number;
+  initialScrollToLatest?: boolean;
   onScroll?: (newScrollOffset: number) => void; // todo: add source arg: 'mouse' | 'touch' | 'trackpad';
   onZoom?: (newIntervalWidthPx: number) => void;
 }
@@ -72,6 +73,7 @@ const Chart = ({
   panels,
   data,
   scrollToLatestMargin = 5,
+  initialScrollToLatest = false,
   onScroll,
   onZoom,
   children,
@@ -231,6 +233,7 @@ const Chart = ({
           maxLookback={maxLookback}
           maxLookForward={maxLookForward}
           scrollToLatestMargin={scrollToLatestMargin}
+          initialScrollToLatest={initialScrollToLatest}
           onScroll={onScroll}
           onZoom={handleZoom}
         />

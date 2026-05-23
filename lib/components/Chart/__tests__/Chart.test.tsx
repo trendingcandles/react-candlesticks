@@ -99,6 +99,18 @@ describe('Chart', () => {
     expect(capturedProps?.granularity).toBe('m5');
   });
 
+  it('forwards initialScrollToLatest to StatefulChart', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        initialScrollToLatest
+      />,
+    );
+
+    expect(capturedProps?.initialScrollToLatest).toBe(true);
+  });
+
   it('can build panels from children when panels prop is absent', () => {
     render(
       <Chart data={[{ timestamp: 1 } as never]}>

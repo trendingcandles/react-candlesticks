@@ -88,6 +88,7 @@ describe('StatefulChart', () => {
     maxLookback: 5,
     maxLookForward: 2,
     scrollToLatestMargin: 5,
+    initialScrollToLatest: false,
     onScroll: vi.fn(),
     onZoom: vi.fn(),
   });
@@ -237,5 +238,97 @@ describe('StatefulChart', () => {
       0,
       0,
     );
+  });
+
+  it('can initialize scrolled to latest when requested', () => {
+    const getTimescale = vi.fn(() => ({ startBarIndex: 0, endBarIndex: 10 }));
+    render(
+      <StatefulChart
+        {...makeProps()}
+        initialScrollToLatest
+        indexProvider={{
+          firstDataPointIndex: 0,
+          lastDataPointIndex: 50,
+          indexToTimestamp: () => 1,
+          findClosestIndex: () => 1,
+          getTimescale,
+        } as never}
+      />,
+    );
+
+    expect(getTimescale).toHaveBeenCalledWith(10, 50, 500);
+  });
+
+  it('auto-scrolls to latest when data becomes available after mount', () => {
+    const props = makeProps();
+    const initialGetTimescale = vi.fn(() => ({ startBarIndex: 0, endBarIndex: 1 }));
+    const latestGetTimescale = vi.fn(() => ({ startBarIndex: 0, endBarIndex: 10 }));
+
+    const { rerender } = render(
+      <StatefulChart
+        {...props}
+        initialScrollToLatest
+        indexProvider={{
+          firstDataPointIndex: undefined,
+          lastDataPointIndex: undefined,
+          indexToTimestamp: () => 1,
+          findClosestIndex: () => 1,
+          getTimescale: initialGetTimescale,
+        } as never}
+      />,
+    );
+
+    rerender(
+      <StatefulChart
+        {...props}
+        initialScrollToLatest
+        indexProvider={{
+          firstDataPointIndex: 0,
+          lastDataPointIndex: 50,
+          indexToTimestamp: () => 1,
+          findClosestIndex: () => 1,
+          getTimescale: latestGetTimescale,
+        } as never}
+      />,
+    );
+
+    expect(latestGetTimescale).toHaveBeenCalledWith(10, 50, 500);
+  });
+
+  it('does not auto-scroll to latest after user interaction', () => {
+    const props = makeProps();
+    const latestGetTimescale = vi.fn(() => ({ startBarIndex: 0, endBarIndex: 10 }));
+
+    const { rerender } = render(
+      <StatefulChart
+        {...props}
+        initialScrollToLatest
+        indexProvider={{
+          firstDataPointIndex: undefined,
+          lastDataPointIndex: undefined,
+          indexToTimestamp: () => 1,
+          findClosestIndex: () => 1,
+          getTimescale: () => ({ startBarIndex: 0, endBarIndex: 1 }),
+        } as never}
+      />,
+    );
+
+    interactiveProps?.onScroll(20, 0);
+
+    rerender(
+      <StatefulChart
+        {...props}
+        initialScrollToLatest
+        indexProvider={{
+          firstDataPointIndex: 0,
+          lastDataPointIndex: 50,
+          indexToTimestamp: () => 1,
+          findClosestIndex: () => 1,
+          getTimescale: latestGetTimescale,
+        } as never}
+      />,
+    );
+
+    expect(latestGetTimescale).toHaveBeenCalledWith(10, 15, 500);
   });
 });

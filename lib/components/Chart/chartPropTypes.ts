@@ -83,6 +83,7 @@ const chartPropTypes = {
   ]),
   data: PropTypes.arrayOf(PropTypes.object.isRequired).isRequired,
   scrollToLatestMargin: PropTypes.number,
+  initialScrollToLatest: PropTypes.bool,
   onScroll: PropTypes.func,
   onZoom: PropTypes.func,
   panels: combinePropValidators(
