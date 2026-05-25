@@ -62,30 +62,6 @@ export default function App() {
 
 For a fuller walkthrough, see the [Getting Started docs](https://docs.reactcandlesticks.com/docs/getting-started).
 
-### Minimal Mode for List/Thumbnail Charts
-
-Use `renderMode="minimal"` when rendering many small charts per screen (for example, watchlist rows or card grids).
-
-This mode defaults to a lighter configuration by disabling interaction and non-essential chart chrome unless you explicitly opt back in.
-
-```tsx
-<Chart
-  renderMode="minimal"
-  pixelRatio={1}
-  width={120}
-  height={60}
-  data={data}
->
-  <Panel>
-    <Candlesticks yAxis={false} legend={false} />
-  </Panel>
-</Chart>
-```
-
-- `renderMode="minimal"` defaults `crosshairs`, `grid`, `xAxis`, `borders`, `enableScroll`, and `enableZoom` to `false`.
-- You can still override any of these explicitly.
-- `pixelRatio` defaults to `'device'`; set `pixelRatio={1}` for cheaper rendering in dense lists.
-
 ## Why React Candlesticks?
 
 - **Canvas rendering** — smooth zoom, pan, and hover with predictable performance on large datasets
@@ -153,6 +129,30 @@ import { Chart } from 'react-candlesticks';
   ]}
 />
 ```
+
+### Minimal Mode for List/Thumbnail Charts
+
+Use `renderMode="minimal"` when rendering many small charts per screen (for example, watchlist rows or card grids).
+
+This mode defaults to a lighter configuration by disabling interaction and non-essential chart chrome unless you explicitly opt back in.
+
+```tsx
+<Chart
+  renderMode="minimal"
+  pixelRatio={1}
+  width={120}
+  height={60}
+  data={data}
+>
+  <Panel>
+    <Candlesticks yAxis={false} legend={false} />
+  </Panel>
+</Chart>
+```
+
+- `renderMode="minimal"` defaults `crosshairs`, `grid`, `xAxis`, `borders`, `enableScroll`, and `enableZoom` to `false`.
+- You can still override any of these explicitly.
+- `pixelRatio` defaults to `'device'`; set `pixelRatio={1}` for cheaper rendering in dense lists.
 
 ### Theming
 
