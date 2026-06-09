@@ -17,6 +17,10 @@ on:
         default: true
         type: boolean
 
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
 permissions:
   contents: read
   id-token: write
@@ -24,6 +28,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     environment: npm
     steps:
       - name: Checkout repository

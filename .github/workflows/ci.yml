@@ -7,23 +7,22 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        node-version:
-          - 20.19.0
-          - 24
         react-version:
-          - 18
           - 19
-    permissions:
-      contents: write  # elevated from read — required to push badge commits
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -31,7 +30,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: npm
 
       - name: Install dependencies
@@ -51,16 +50,15 @@ jobs:
         run: npm run test:coverage
 
       - name: Run consumer smoke test
-        if: matrix.node-version == '24' && matrix.react-version == '18'
         run: npm run smoke:consumer
 
       - name: Generate coverage badges
         run: node ./scripts/generate-coverage-badges.mjs
-        if: github.event_name == 'push' && matrix.node-version == '24' && matrix.react-version == '18' && !endsWith(github.actor, '[bot]')
+        if: github.event_name == 'push' && !endsWith(github.actor, '[bot]')
 
       - name: Upload coverage badges artifact
         uses: actions/upload-artifact@v4
-        if: github.event_name == 'push' && matrix.node-version == '24' && matrix.react-version == '18' && !endsWith(github.actor, '[bot]')
+        if: github.event_name == 'push' && !endsWith(github.actor, '[bot]')
         with:
           name: coverage-badges
           path: badges/coverage-*.svg
