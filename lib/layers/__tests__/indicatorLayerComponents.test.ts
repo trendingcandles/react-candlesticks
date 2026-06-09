@@ -5,6 +5,7 @@ import BollingerBandsLayer from '../bollingerBands/BollingerBandsLayer';
 import EMALayer from '../ema/EMALayer';
 import MACDLayer from '../macd/MACDLayer';
 import RSILayer from '../rsi/RSILayer';
+import ADXLayer from '../adx/ADXLayer';
 
 describe('indicator layer components', () => {
   it('all indicator layer components return null placeholders', () => {
@@ -13,5 +14,6 @@ describe('indicator layer components', () => {
     expect(EMALayer({} as never)).toBeNull();
     expect(MACDLayer({} as never)).toBeNull();
     expect(RSILayer({} as never)).toBeNull();
+    expect(ADXLayer({} as never)).toBeNull();
   });
 });

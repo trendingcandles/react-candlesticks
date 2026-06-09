@@ -9,6 +9,7 @@ export type LayerType =
   'price:candlesticks'
   | 'price:line'
   | 'volume:bars'
+  | 'adx'
   | 'atr'
   | 'bollinger-bands'
   | 'ema'

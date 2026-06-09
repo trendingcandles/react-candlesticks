@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { StatefulChartProps } from '../../StatefulChart/StatefulChart';
 import {
+  ADX,
   ATR,
   BollingerBands,
   Candlesticks,
@@ -43,6 +44,9 @@ describe('Chart all layers render', () => {
           <BollingerBands />
         </Panel>
         <Panel>
+          <ADX />
+        </Panel>
+        <Panel>
           <ATR />
         </Panel>
         <Panel>
@@ -58,11 +62,12 @@ describe('Chart all layers render', () => {
     );
 
     expect(capturedProps).toBeTruthy();
-    expect(capturedProps?.panels).toHaveLength(5);
+    expect(capturedProps?.panels).toHaveLength(6);
     expect(capturedProps?.panels[0]?.layers).toHaveLength(6);
     expect(capturedProps?.panels[1]?.layers).toHaveLength(1);
     expect(capturedProps?.panels[2]?.layers).toHaveLength(1);
     expect(capturedProps?.panels[3]?.layers).toHaveLength(1);
     expect(capturedProps?.panels[4]?.layers).toHaveLength(1);
+    expect(capturedProps?.panels[5]?.layers).toHaveLength(1);
   });
 });

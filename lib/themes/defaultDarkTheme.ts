@@ -173,6 +173,24 @@ const defaultDarkTheme: Theme = {
         ...themeDefaultDarkYAxis,
       }
     },
+    adx: {
+      series: {
+        value: { color: '#ddd', width: 1, style: 'solid' },
+      },
+      markers: {
+        value: {
+          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [{ output: 'value', color: '#ddd' }],
+      },
+      yAxis: {
+        ...themeDefaultDarkYAxis,
+      }
+    },
     atr: {
       series: {
         value: { color: '#ddd', width: 1, style: 'solid' },

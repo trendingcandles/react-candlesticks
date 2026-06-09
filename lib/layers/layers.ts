@@ -10,6 +10,7 @@ import { LayerType } from '../config/layer/LayerType';
 import candlesticks from './candlesticks';
 import priceLine from './priceLine';
 import volumeBars from './volumeBars';
+import adx from './adx';
 import atr from './atr';
 import bollingerBands from './bollingerBands';
 import ema from './ema';
@@ -21,6 +22,7 @@ import stochastic from './stochastic';
 const layers: Record<LayerType, Layer> = {
   'price:candlesticks': candlesticks,
   'price:line': priceLine,
+  adx,
   atr,
   'bollinger-bands': bollingerBands,
   ema,

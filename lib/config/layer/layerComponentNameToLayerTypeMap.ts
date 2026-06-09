@@ -11,6 +11,7 @@ const layerComponentNameToLayerTypeMap = {
   'CandlesticksLayer': 'price:candlesticks',
   'PriceLineLayer': 'price:line',
   'VolumeBarsLayer': 'volume:bars',
+  'ADXLayer': 'adx',
   'ATRLayer': 'atr',
   'BollingerBandsLayer': 'bollinger-bands',
   'EMALayer': 'ema',
