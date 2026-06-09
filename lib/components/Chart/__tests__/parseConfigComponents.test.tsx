@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mapLayerElementToConfig, mapPanelElementsToConfig } from '../parseConfigComponents';
 import parseConfigComponents from '../parseConfigComponents';
-import { ATR, Candlesticks, EMA, SMA } from '../../../layers';
+import { ADX, ATR, Candlesticks, EMA, SMA } from '../../../layers';
 import { FC } from 'react';
 import LAYER_COMPONENT_TYPE_KEY from '../../../config/layer/layerComponentTypeKey';
 
@@ -14,9 +14,11 @@ describe('parseConfigComponents', () => {
   it('maps acronym-cased indicator layer component names', () => {
     const ema = mapLayerElementToConfig(<EMA id="ema-1" period={20} />);
     const atr = mapLayerElementToConfig(<ATR id="atr-1" period={14} />);
+    const adx = mapLayerElementToConfig(<ADX id="adx-1" diLength={14} smoothing={14} />);
 
     expect(ema).toMatchObject({ id: 'ema-1', type: 'ema', period: 20 });
     expect(atr).toMatchObject({ id: 'atr-1', type: 'atr', period: 14 });
+    expect(adx).toMatchObject({ id: 'adx-1', type: 'adx', diLength: 14, smoothing: 14 });
   });
 
   it('uses static layer metadata when component names are minified', () => {

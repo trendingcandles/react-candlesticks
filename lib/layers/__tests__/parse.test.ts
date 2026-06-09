@@ -8,6 +8,7 @@ import parsePriceLine from '../priceLine/parse';
 import parseSma from '../sma/parse';
 import parseStochastic from '../stochastic/parse';
 import parseVolumeBars from '../volumeBars/parse';
+import parseAdx from '../adx/parse';
 
 describe('layer config parsers', () => {
   const layersTheme = defaultLightTheme.layers;
@@ -53,6 +54,30 @@ describe('layer config parsers', () => {
     ]);
     expect(cfg.defaultScale).toEqual({ key: 'value_auto', domain: 'value', range: { type: 'auto' } });
     expect(cfg.series.value).toBeTruthy();
+  });
+
+  it('parses adx config with bounded scale and strength guide', () => {
+    const cfg = parseAdx({
+      type: 'adx',
+      diLength: 10,
+      smoothing: 7,
+      series: { value: { color: 'blue' } },
+    }, layersTheme as never, 'p3d');
+
+    expect(cfg.id).toBe('adx-layer_p3d_10_7');
+    expect(cfg.diLength).toBe(10);
+    expect(cfg.smoothing).toBe(7);
+    expect(cfg.period).toBe(10);
+    expect(cfg.defaultScale).toEqual({ key: 'value_bounded_0_100', domain: 'value', range: { type: 'bounded', min: 0, max: 100 } });
+    expect(cfg.valueGridLines).toEqual([25]);
+    expect(cfg.outputs).toEqual(['value']);
+    expect(cfg.series.value?.color).toBe('blue');
+    expect(cfg.legend?.label).toBe('ADX 10 7');
+  });
+
+  it('validates adx lengths', () => {
+    expect(() => parseAdx({ type: 'adx', diLength: 0 }, layersTheme as never, 'p3e')).toThrow('adx.diLength must be > 0');
+    expect(() => parseAdx({ type: 'adx', smoothing: 0 }, layersTheme as never, 'p3e')).toThrow('adx.smoothing must be > 0');
   });
 
   it('parses stochastic config with derived id and fixed value grid lines', () => {

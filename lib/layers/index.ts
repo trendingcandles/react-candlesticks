@@ -10,6 +10,7 @@ import LAYER_COMPONENT_TYPE_KEY from '../config/layer/layerComponentTypeKey';
 import Candlesticks from './candlesticks/CandlesticksLayer';
 import PriceLine from './priceLine/PriceLineLayer';
 import VolumeBars from './volumeBars/VolumeBarsLayer';
+import ADX from './adx/ADXLayer';
 import ATR from './atr/ATRLayer';
 import BollingerBands from './bollingerBands/BollingerBandsLayer';
 import EMA from './ema/EMALayer';
@@ -25,6 +26,7 @@ type LayerComponent = {
 (Candlesticks as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'price:candlesticks';
 (PriceLine as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'price:line';
 (VolumeBars as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'volume:bars';
+(ADX as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'adx';
 (ATR as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'atr';
 (BollingerBands as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'bollinger-bands';
 (EMA as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'ema';
@@ -37,6 +39,7 @@ export {
   Candlesticks,
   PriceLine,
   VolumeBars,
+  ADX,
   ATR,
   BollingerBands,
   EMA,

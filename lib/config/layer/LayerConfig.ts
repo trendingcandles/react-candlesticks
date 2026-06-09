@@ -15,11 +15,13 @@ import { BollingerBandsLayerConfig, BollingerBandsLayerConfigComplete, Bollinger
 import { EmaLayerConfig, EmaLayerConfigComplete, EmaTheme } from '../../layers/ema/EmaLayerConfig';
 import { MacdLayerConfig, MacdLayerConfigComplete, MacdTheme } from '../../layers/macd/MacdLayerConfig';
 import { RsiLayerConfig, RsiLayerConfigComplete, RsiTheme } from '../../layers/rsi/RsiLayerConfig';
+import { AdxLayerConfig, AdxLayerConfigComplete, AdxTheme } from '../../layers/adx/AdxLayerConfig';
 
 export type LayerConfigComplete =
   CandlestickLayerConfigComplete
   | PriceLineLayerConfigComplete
   | VolumeBarsLayerConfigComplete
+  | AdxLayerConfigComplete
   | AtrLayerConfigComplete
   | BollingerBandsLayerConfigComplete
   | EmaLayerConfigComplete
@@ -33,6 +35,7 @@ export type LayerConfig =
   CandlestickLayerConfig
   | PriceLineLayerConfig
   | VolumeBarsLayerConfig
+  | AdxLayerConfig
   | AtrLayerConfig
   | BollingerBandsLayerConfig
   | EmaLayerConfig
@@ -46,6 +49,7 @@ export interface LayersTheme {
   candlesticks: CandlesticksTheme;
   priceLine: PriceLineTheme;
   volumeBars: VolumeBarsTheme;
+  adx: AdxTheme;
   atr: AtrTheme;
   bollingerBands: BollingerBandsTheme;
   ema: EmaTheme;

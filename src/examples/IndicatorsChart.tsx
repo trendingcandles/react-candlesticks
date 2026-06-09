@@ -1,4 +1,5 @@
 import {
+  ADX,
   BollingerBands,
   Candlesticks,
   Chart,
@@ -26,6 +27,9 @@ function IndicatorsChart() {
       </Panel>
       <Panel>
         <Stochastic/>
+      </Panel>
+      <Panel>
+        <ADX/>
       </Panel>
     </Chart>
   );

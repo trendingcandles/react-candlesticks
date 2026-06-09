@@ -4,6 +4,8 @@ import { REQUIRED_INPUT_KEYS as P_KEYS, priceLineLayerDefaults } from '../priceL
 import { REQUIRED_INPUT_KEYS as S_KEYS, smaDefaults } from '../sma/SmaLayerConfig';
 import { REQUIRED_INPUT_KEYS as ST_KEYS, stochasticDefaults } from '../stochastic/StochasticLayerConfig';
 import { REQUIRED_INPUT_KEYS as V_KEYS, volumeBarsDefaults } from '../volumeBars/VolumeBarsLayerConfig';
+import { REQUIRED_INPUT_KEYS as ADX_KEYS, adxDefaults } from '../adx/AdxLayerConfig';
+import adxCalc from '../adx/calc';
 import candlestickCalc from '../candlesticks/calc';
 import priceLineCalc from '../priceLine/calc';
 import smaCalc from '../sma/calc';
@@ -17,12 +19,15 @@ describe('layer config defaults', () => {
     expect(S_KEYS).toEqual(['input']);
     expect(ST_KEYS).toEqual(['high', 'low', 'close']);
     expect(V_KEYS).toEqual(['volume']);
+    expect(ADX_KEYS).toEqual(['high', 'low', 'close']);
 
     expect(candlestickLayerDefaults.id).toBe('candlestick-layer');
     expect(priceLineLayerDefaults.id).toBe('price-line');
     expect(smaDefaults.period).toBe(50);
     expect(stochasticDefaults.kSmoothing).toBe(3);
     expect(volumeBarsDefaults.id).toBe('volume-bars-layer');
+    expect(adxDefaults.diLength).toBe(14);
+    expect(adxDefaults.smoothing).toBe(14);
   });
 
   it('valueToY default projections return expected values', () => {
@@ -31,6 +36,7 @@ describe('layer config defaults', () => {
     expect(smaDefaults.valueToY(0, 100, 10, 50)(50)).toBe(35);
     expect(stochasticDefaults.valueToY(0, 100, 10, 50)(0)).toBe(60);
     expect(volumeBarsDefaults.valueToY(0, 100, 10, 50)(100)).toBe(10);
+    expect(adxDefaults.valueToY(0, 100, 10, 50)(25)).toBe(47.5);
   });
 });
 
@@ -85,5 +91,24 @@ describe('layer calc functions', () => {
     expect(k[2]).toBeCloseTo(83.333, 2);
     expect(kSmoothed[3]).toBeCloseTo(83.333, 2);
     expect(d[4]).toBeCloseTo(83.333, 2);
+  });
+
+  it('computes ADX with independent DI length and smoothing', () => {
+    const high = new Float64Array([10, 11, 13, 14, 16, 17, 19]);
+    const low = new Float64Array([8, 9, 10, 11, 13, 14, 16]);
+    const close = new Float64Array([9, 10, 12, 13, 15, 16, 18]);
+    const value = new Float64Array(high.length); value.fill(Number.NaN);
+
+    adxCalc(
+      { diLength: 3, smoothing: 2 } as never,
+      { high: { values: high }, low: { values: low }, close: { values: close } } as never,
+      { value },
+      0,
+      high.length,
+    );
+
+    expect(Number.isNaN(value[3])).toBe(true);
+    expect(value[4]).toBeCloseTo(100);
+    expect(value[6]).toBeCloseTo(100);
   });
 });

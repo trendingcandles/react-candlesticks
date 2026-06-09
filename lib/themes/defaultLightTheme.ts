@@ -259,6 +259,24 @@ const defaultLightTheme: Theme = {
         ...themeDefaultYAxis,
       }
     },
+    adx: {
+      series: {
+        value: { color: '#1a1a1a', width: 1, style: 'solid' },
+      },
+      markers: {
+        value: {
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ccc', borderColor: '#ccc', color: '#1a1a1a', borderWidth: 0, hPadding: 8, vPadding: 6 },
+          line: { color: '#555', width: 1, style: 'dashed', dashes: [5, 5] },
+        },
+      },
+      legend: {
+        ...themeDefaultLegend,
+        fields: [{ output: 'value', color: '#1a1a1a' }],
+      },
+      yAxis: {
+        ...themeDefaultYAxis,
+      }
+    },
     atr: {
       series: {
         value: { color: '#1a1a1a', width: 1, style: 'solid' },

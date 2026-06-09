@@ -21,6 +21,8 @@ describe('defaultLightTheme', () => {
     expect(defaultLightTheme.layers.candlesticks.series.body.down.backgroundColor).toBe('#ef4444');
     expect(defaultLightTheme.layers.priceLine.series.value.endDotSize).toBe(5);
     expect(defaultLightTheme.layers.stochastic.legend.fields).toHaveLength(2);
+    expect(defaultLightTheme.layers.adx.legend.fields).toHaveLength(1);
+    expect(defaultLightTheme.layers.adx.series.value.color).toBe(defaultLightTheme.layers.rsi.series.value.color);
   });
 
   it('defines panel defaults and value marker labels', () => {
@@ -42,6 +44,7 @@ describe('defaultDarkTheme', () => {
     expect(defaultDarkTheme.layers.volumeBars.series.bars.flat.backgroundColor).toBe('#555');
     expect(defaultDarkTheme.layers.sma.series.value.color).toBe('orange');
     expect(defaultDarkTheme.layers.stochastic.series.k.color).toBe('#ddd');
+    expect(defaultDarkTheme.layers.adx.series.value.color).toBe(defaultDarkTheme.layers.rsi.series.value.color);
   });
 
   it('defines panel controls and directional markers', () => {

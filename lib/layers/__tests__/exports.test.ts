@@ -5,7 +5,8 @@ import priceLine from '../priceLine';
 import sma from '../sma';
 import stochastic from '../stochastic';
 import volumeBars from '../volumeBars';
-import { Candlesticks, PriceLine, SMA, Stochastic, VolumeBars } from '../index';
+import adx from '../adx';
+import { ADX, Candlesticks, PriceLine, SMA, Stochastic, VolumeBars } from '../index';
 
 describe('layer exports', () => {
   it('maps layer types to layer implementations', () => {
@@ -14,6 +15,7 @@ describe('layer exports', () => {
     expect(layers.sma).toBe(sma);
     expect(layers.stochastic).toBe(stochastic);
     expect(layers['volume:bars']).toBe(volumeBars);
+    expect(layers.adx).toBe(adx);
   });
 
   it('exports React layer components', () => {
@@ -22,6 +24,7 @@ describe('layer exports', () => {
     expect(SMA({} as never)).toBeNull();
     expect(Stochastic({} as never)).toBeNull();
     expect(VolumeBars({} as never)).toBeNull();
+    expect(ADX({} as never)).toBeNull();
   });
 
   it('layer modules expose parse/calc/draw hooks', () => {
@@ -30,5 +33,6 @@ describe('layer exports', () => {
     expect(typeof sma.draw).toBe('function');
     expect(typeof stochastic.calculate2).toBe('function');
     expect(typeof volumeBars.parseConfig).toBe('function');
+    expect(typeof adx.calculate2).toBe('function');
   });
 });
