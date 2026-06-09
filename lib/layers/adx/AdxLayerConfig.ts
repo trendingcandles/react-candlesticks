@@ -59,7 +59,7 @@ export interface AdxTheme {
 export const adxDefaults: Omit<AdxLayerConfigComplete, 'type' | 'scale' | 'scalePolicy' | 'requiredInputKeys' | 'series' | 'markers' | 'legend' | 'yAxis'> = {
   ...baseLayerDefaults,
   id: 'adx-layer',
-  defaultScale: { key: 'value_bounded_0_100', domain: 'value', range: { type: 'bounded', min: 0, max: 100 } },
+  defaultScale: { key: 'value_auto', domain: 'value', range: { type: 'auto' } },
   indicator: true,
   inputs: [
     { key: 'high', source: { type: 'price', field: 'high' } },
