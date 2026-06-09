@@ -56,7 +56,7 @@ describe('layer config parsers', () => {
     expect(cfg.series.value).toBeTruthy();
   });
 
-  it('parses adx config with bounded scale and strength guide', () => {
+  it('parses adx config with viewport-based automatic scaling', () => {
     const cfg = parseAdx({
       type: 'adx',
       diLength: 10,
@@ -68,8 +68,9 @@ describe('layer config parsers', () => {
     expect(cfg.diLength).toBe(10);
     expect(cfg.smoothing).toBe(7);
     expect(cfg.period).toBe(10);
-    expect(cfg.defaultScale).toEqual({ key: 'value_bounded_0_100', domain: 'value', range: { type: 'bounded', min: 0, max: 100 } });
-    expect(cfg.valueGridLines).toEqual([25]);
+    expect(cfg.defaultScale).toEqual({ key: 'value_auto', domain: 'value', range: { type: 'auto' } });
+    expect(cfg.scalePolicy).toBe('derived');
+    expect(cfg.valueGridLines).toBeUndefined();
     expect(cfg.outputs).toEqual(['value']);
     expect(cfg.series.value?.color).toBe('blue');
     expect(cfg.legend?.label).toBe('ADX 10 7');
