@@ -2,12 +2,6 @@
 
 This package is released manually from GitHub Actions.
 
-## One-Time Setup
-
-1. Create an npm automation token with publish access for `react-candlesticks`.
-2. Add that token to the GitHub repository as the `NPM_TOKEN` secret.
-3. Create a protected GitHub Actions environment named `npm` if you want manual approval before publish.
-
 ## Release Checklist
 
 1. Confirm the package version in `package.json` is the version you want to ship.
@@ -34,6 +28,8 @@ The workflow will:
 3. Run `npm run pack:check`
 4. Run `npm run smoke:consumer`
 5. Publish with provenance when `dry_run` is disabled
+
+npm automatically generates provenance for trusted publishes from a public GitHub repository. The workflow does not need `NODE_AUTH_TOKEN`, `NPM_TOKEN`, or an explicit `--provenance` flag.
 
 ## Local Safety Gates
 
