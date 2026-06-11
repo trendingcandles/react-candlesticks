@@ -192,6 +192,7 @@ See the [Theme documentation](https://docs.reactcandlesticks.com/docs/api/theme/
 | `<Candlesticks>` | `'price:candlesticks'` | OHLC candlestick chart |
 | `<PriceLine>` | `'price:line'` | Line chart of a single price field |
 | `<VolumeBars>` | `'volume:bars'` | Volume bar chart |
+| `<ADX>` | `'adx'` | Average Directional Index |
 | `<ATR>` | `'atr'` | Average True Range |
 | `<BollingerBands>` | `'bollinger-bands'` | Bollinger Bands overlay |
 | `<EMA>` | `'ema'` | Exponential Moving Average |
