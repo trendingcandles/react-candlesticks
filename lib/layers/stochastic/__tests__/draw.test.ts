@@ -1,31 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const startMock = vi.hoisted(() => vi.fn());
-const drawMock = vi.hoisted(() => vi.fn());
-const endMock = vi.hoisted(() => vi.fn());
+const drawLineSeriesMock = vi.hoisted(() => vi.fn());
 const markerMock = vi.hoisted(() => vi.fn());
 
-vi.mock('../../../drawing/elements/line/startDrawLine', () => ({ default: startMock }));
-vi.mock('../../../drawing/elements/line/drawLine', () => ({ default: drawMock }));
-vi.mock('../../../drawing/elements/line/endDrawLine', () => ({ default: endMock }));
+vi.mock('../../../drawing/series/drawLineSeries', () => ({ default: drawLineSeriesMock }));
 vi.mock('../../../drawing/valueMarker/drawValueMarker', () => ({ default: markerMock }));
 
 import draw from '../draw';
 
 describe('stochastic draw', () => {
   beforeEach(() => {
-    startMock.mockReset();
-    drawMock.mockReset();
-    endMock.mockReset();
+    drawLineSeriesMock.mockReset();
     markerMock.mockReset();
   });
 
   it('returns early when both line configs are missing', () => {
     draw({} as never, {} as never, {} as never, {} as never, { id: 'st1', series: { k: null, d: null } } as never, {} as never, {} as never, {} as never, {} as never, {} as never);
-    expect(startMock).not.toHaveBeenCalled();
+    expect(drawLineSeriesMock).not.toHaveBeenCalled();
   });
 
   it('draws k/d lines and both markers', () => {
+    drawLineSeriesMock.mockReturnValue({ lastBarIndex: 2 });
     draw(
       {} as never,
       {} as never,
@@ -62,9 +57,7 @@ describe('stochastic draw', () => {
       { valueToY: (v: number) => v } as never,
     );
 
-    expect(startMock).toHaveBeenCalledTimes(2);
-    expect(drawMock).toHaveBeenCalledTimes(4);
-    expect(endMock).toHaveBeenCalledTimes(2);
+    expect(drawLineSeriesMock).toHaveBeenCalledTimes(2);
     expect(markerMock).toHaveBeenCalledTimes(2);
   });
 });

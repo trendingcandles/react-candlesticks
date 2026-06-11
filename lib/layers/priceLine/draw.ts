@@ -11,9 +11,7 @@ import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import startDrawLine from '../../drawing/elements/line/startDrawLine';
-import drawLine from '../../drawing/elements/line/drawLine';
-import endDrawLine from '../../drawing/elements/line/endDrawLine';
+import drawLineSeries from '../../drawing/series/drawLineSeries';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import ViewportData from '../../domain/types/ViewportData';
 import { PriceLineLayerConfigComplete } from './PriceLineLayerConfig';
@@ -72,49 +70,19 @@ const draw = (
 
   const { valueToY } = layerMetrics;
 
-  let lastX: number | undefined = undefined;
-  let lastBarIndex = -1;
-  for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-    const priceValue = values[barIndex];
+  const lineResult = drawLineSeries({
+    context,
+    values,
+    lineConfig: valueLineConfig,
+    valueToY,
+    startBarIndex,
+    endBarIndex,
+    intervalSize,
+    scrollOffset,
+  });
 
-    if (!isNaN(priceValue)) {
-      const x = (barIndex * intervalSize) - scrollOffset;
-
-      if (lastX === undefined) {
-        startDrawLine(
-          context,
-          valueToY,
-          priceValue,
-          x,
-          valueLineConfig,
-        );
-      } else {
-        drawLine(
-          context,
-          valueToY,
-          priceValue,
-          x,
-        );
-      }
-
-      lastX = x;
-      lastBarIndex = barIndex;
-    }
-  }
-
-  if (lastX && lastBarIndex >= 0) {
-    endDrawLine(
-      context,
-      valueToY,
-      values[lastBarIndex],
-      lastX,
-      valueLineConfig,
-      // lastBarIndex === lastBarIndexWithData,
-    );
-  }
-
-  if (valueMarkerConfig && lastBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastBarIndex);
+  if (valueMarkerConfig && lineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(lineResult.lastBarIndex);
 
     drawValueMarker(
       context,

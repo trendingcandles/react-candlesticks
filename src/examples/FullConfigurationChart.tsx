@@ -18,8 +18,17 @@ function FullConfigurationChart() {
     >
       <Panel heightRatio={3}>
         <Candlesticks/>
-        <SMA period={50}/>
-        <BollingerBands/>
+        <SMA
+          period={50}
+          series={{ value: { endDotSize: 5 } }}
+        />
+        <BollingerBands
+          series={{
+            upper: { endDotSize: 5 },
+            middle: { endDotSize: 5 },
+            lower: { endDotSize: 5 },
+          }}
+        />
       </Panel>
       <Panel>
         <VolumeBars/>
@@ -41,8 +50,8 @@ function FullConfigurationChart() {
           calculate={true}
           includeInAutoScale={true}
           series={{
-            k: { color: '#ccc', width: 1, style: 'solid' },
-            d: { color: '#ef4444', width: 1, style: 'solid' },
+            k: { color: '#ccc', width: 1, style: 'solid', endDotSize: 5 },
+            d: { color: '#ef4444', width: 1, style: 'solid', endDotSize: 5 },
           }}
           markers={{
             k: {

@@ -13,10 +13,8 @@ import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { MacdLayerConfigComplete } from './MacdLayerConfig';
 import drawBar from '../../drawing/elements/drawBar';
+import drawLineSeries from '../../drawing/series/drawLineSeries';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
-import startDrawLine from '../../drawing/elements/line/startDrawLine';
-import drawLine from '../../drawing/elements/line/drawLine';
-import endDrawLine from '../../drawing/elements/line/endDrawLine';
 import ViewportData from '../../domain/types/ViewportData';
 import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
@@ -79,89 +77,31 @@ const draw = (
 
   const { valueToY } = layerMetrics;
 
-  let lastMacdBarIndex = -1;
-  if (macdLineConfig) {
-    let lastX: number | undefined = undefined;
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const indicatorValue = macdValues[barIndex];
-
-      if (!isNaN(indicatorValue)) {
-        const x = (barIndex * intervalSize) - scrollOffset;
-
-        if (lastX === undefined) {
-          startDrawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-            macdLineConfig,
-          );
-        } else {
-          drawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-          );
-        }
-
-        lastX = x;
-        lastMacdBarIndex = barIndex;
-      }
-    }
-
-    if (lastX && lastMacdBarIndex >= 0) {
-      endDrawLine(
+  const macdLineResult = macdLineConfig
+    ? drawLineSeries({
         context,
+        values: macdValues,
+        lineConfig: macdLineConfig,
         valueToY,
-        macdValues[lastMacdBarIndex],
-        lastX,
-        macdLineConfig,
-      );
-    }
-  }
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+      })
+    : null;
 
-  let lastSignalBarIndex = -1;
-  if (signalLineConfig) {
-    let lastX: number | undefined = undefined;
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const indicatorValue = signalValues[barIndex];
-
-      if (!isNaN(indicatorValue)) {
-        const x = (barIndex * intervalSize) - scrollOffset;
-
-        if (lastX === undefined) {
-          startDrawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-            signalLineConfig,
-          );
-        } else {
-          drawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-          );
-        }
-
-        lastX = x;
-        lastSignalBarIndex = barIndex;
-      }
-    }
-
-    if (lastX && lastSignalBarIndex >= 0) {
-      endDrawLine(
+  const signalLineResult = signalLineConfig
+    ? drawLineSeries({
         context,
+        values: signalValues,
+        lineConfig: signalLineConfig,
         valueToY,
-        signalValues[lastSignalBarIndex],
-        lastX,
-        signalLineConfig,
-      );
-    }
-  }
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+      })
+    : null;
 
   // Draw Histogram as bars (green)
   if (upBarConfig && downBarConfig) {
@@ -203,8 +143,8 @@ const draw = (
     }
   }
 
-  if (signalValueMarkerConfig && lastSignalBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastSignalBarIndex);
+  if (signalValueMarkerConfig && signalLineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(signalLineResult.lastBarIndex);
 
     drawValueMarker(
       context,
@@ -224,8 +164,8 @@ const draw = (
     );
   }
   // display MACD active value label on top
-  if (macdValueMarkerConfig && lastMacdBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastMacdBarIndex);
+  if (macdValueMarkerConfig && macdLineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(macdLineResult.lastBarIndex);
 
     drawValueMarker(
       context,

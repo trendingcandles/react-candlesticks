@@ -1,14 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const startMock = vi.hoisted(() => vi.fn());
-const drawLineMock = vi.hoisted(() => vi.fn());
-const endMock = vi.hoisted(() => vi.fn());
+const drawLineSeriesMock = vi.hoisted(() => vi.fn());
 const drawBarMock = vi.hoisted(() => vi.fn());
 const markerMock = vi.hoisted(() => vi.fn());
 
-vi.mock('../../../drawing/elements/line/startDrawLine', () => ({ default: startMock }));
-vi.mock('../../../drawing/elements/line/drawLine', () => ({ default: drawLineMock }));
-vi.mock('../../../drawing/elements/line/endDrawLine', () => ({ default: endMock }));
+vi.mock('../../../drawing/series/drawLineSeries', () => ({ default: drawLineSeriesMock }));
 vi.mock('../../../drawing/elements/drawBar', () => ({ default: drawBarMock }));
 vi.mock('../../../drawing/valueMarker/drawValueMarker', () => ({ default: markerMock }));
 
@@ -16,9 +12,7 @@ import draw from '../draw';
 
 describe('macd draw', () => {
   beforeEach(() => {
-    startMock.mockReset();
-    drawLineMock.mockReset();
-    endMock.mockReset();
+    drawLineSeriesMock.mockReset();
     drawBarMock.mockReset();
     markerMock.mockReset();
   });
@@ -43,11 +37,12 @@ describe('macd draw', () => {
       {} as never,
     );
 
-    expect(startMock).not.toHaveBeenCalled();
+    expect(drawLineSeriesMock).not.toHaveBeenCalled();
     expect(drawBarMock).not.toHaveBeenCalled();
   });
 
   it('draws macd + signal lines, histogram bars, and markers', () => {
+    drawLineSeriesMock.mockReturnValue({ lastBarIndex: 2 });
     draw(
       {} as never,
       {} as never,
@@ -93,9 +88,7 @@ describe('macd draw', () => {
       { valueToY: (v: number) => v } as never,
     );
 
-    expect(startMock).toHaveBeenCalledTimes(2);
-    expect(drawLineMock).toHaveBeenCalledTimes(4);
-    expect(endMock).toHaveBeenCalledTimes(2);
+    expect(drawLineSeriesMock).toHaveBeenCalledTimes(2);
     expect(drawBarMock).toHaveBeenCalledTimes(3);
     expect(markerMock).toHaveBeenCalledTimes(2);
   });

@@ -11,10 +11,8 @@ import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
-import drawLine from '../../drawing/elements/line/drawLine';
+import drawLineSeries from '../../drawing/series/drawLineSeries';
 import { StochasticLayerConfigComplete } from './StochasticLayerConfig';
-import startDrawLine from '../../drawing/elements/line/startDrawLine';
-import endDrawLine from '../../drawing/elements/line/endDrawLine';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import ViewportData from '../../domain/types/ViewportData';
 import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
@@ -73,92 +71,34 @@ const draw = (
 
   const { valueToY } = layerMetrics;
 
-  let lastDBarIndex = -1;
-  if (dLineConfig) {
-    let lastX: number | undefined = undefined;
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const indicatorValue = dValues[barIndex];
-
-      if (!isNaN(indicatorValue)) {
-        const x = (barIndex * intervalSize) - scrollOffset;
-
-        if (lastX === undefined) {
-          startDrawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-            dLineConfig,
-          );
-        } else {
-          drawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-          );
-        }
-
-        lastX = x;
-        lastDBarIndex = barIndex;
-      }
-    }
-
-    if (lastX && lastDBarIndex >= 0) {
-      endDrawLine(
+  const dLineResult = dLineConfig
+    ? drawLineSeries({
         context,
+        values: dValues,
+        lineConfig: dLineConfig,
         valueToY,
-        dValues[lastDBarIndex],
-        lastX,
-        dLineConfig,
-      );
-    }
-  }
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+      })
+    : null;
 
-  let lastKBarIndex = -1;
-  if (kLineConfig) {
-    let lastX: number | undefined = undefined;
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const indicatorValue = kSmoothedValues[barIndex];
-
-      if (!isNaN(indicatorValue)) {
-        const x = (barIndex * intervalSize) - scrollOffset;
-
-        if (lastX === undefined) {
-          startDrawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-            kLineConfig,
-          );
-        } else {
-          drawLine(
-            context,
-            valueToY,
-            indicatorValue,
-            x,
-          );
-        }
-
-        lastX = x;
-        lastKBarIndex = barIndex;
-      }
-    }
-
-    if (lastX && lastKBarIndex >= 0) {
-      endDrawLine(
+  const kLineResult = kLineConfig
+    ? drawLineSeries({
         context,
+        values: kSmoothedValues,
+        lineConfig: kLineConfig,
         valueToY,
-        kSmoothedValues[lastKBarIndex],
-        lastX,
-        kLineConfig,
-      );
-    }
-  }
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+      })
+    : null;
 
-  if (dValueMarkerConfig && lastDBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastDBarIndex);
+  if (dValueMarkerConfig && dLineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(dLineResult.lastBarIndex);
 
     drawValueMarker(
       context,
@@ -177,8 +117,8 @@ const draw = (
       dValues[valueMarkerBarIndex],
     );
   }
-  if (kValueMarkerConfig && lastKBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastKBarIndex);
+  if (kValueMarkerConfig && kLineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(kLineResult.lastBarIndex);
 
     drawValueMarker(
       context,
