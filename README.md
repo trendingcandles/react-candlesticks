@@ -225,6 +225,8 @@ Build an interactive OHLC chart with volume bars, technical indicators, crosshai
 
 [View all articles →](https://blog.reactcandlesticks.com/)
 
+---
+
 ## Project Notes
 
 - [`CHANGELOG.md`](./CHANGELOG.md)
