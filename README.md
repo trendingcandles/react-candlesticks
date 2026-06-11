@@ -215,6 +215,16 @@ See the [Theme documentation](https://docs.reactcandlesticks.com/docs/api/theme/
 
 ---
 
+## Latest Articles
+
+### [Build a React Candlestick Chart with Volume and Indicators](https://blog.reactcandlesticks.com/react-candlestick-chart-with-volume-and-indicators/)
+
+**Jun 7, 2026 · 7 min read · Guides**
+
+Build an interactive OHLC chart with volume bars, technical indicators, crosshairs, zoom, and dark mode.
+
+[View all articles →](https://blog.reactcandlesticks.com/)
+
 ## Project Notes
 
 - [`CHANGELOG.md`](./CHANGELOG.md)
