@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const markerMock = vi.hoisted(() => vi.fn());
+const drawLineSeriesMock = vi.hoisted(() => vi.fn());
 
+vi.mock('../../../drawing/series/drawLineSeries', () => ({ default: drawLineSeriesMock }));
 vi.mock('../../../drawing/valueMarker/drawValueMarker', () => ({ default: markerMock }));
 
 import draw from '../draw';
@@ -23,6 +25,8 @@ const createContext = () => ({
 
 describe('bollinger bands draw', () => {
   beforeEach(() => {
+    drawLineSeriesMock.mockReset();
+    drawLineSeriesMock.mockReturnValue({ lastBarIndex: 2 });
     markerMock.mockReset();
   });
 
@@ -72,5 +76,10 @@ describe('bollinger bands draw', () => {
 
     expect(markerMock).toHaveBeenCalled();
     expect(markerMock.mock.calls[0][13]).toBe(102);
+    expect(drawLineSeriesMock).toHaveBeenCalledTimes(3);
+    expect(drawLineSeriesMock).toHaveBeenLastCalledWith(expect.objectContaining({
+      barOffset: 0,
+      values: expect.any(Float64Array),
+    }));
   });
 });

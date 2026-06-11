@@ -1,31 +1,26 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const startMock = vi.hoisted(() => vi.fn());
-const drawMock = vi.hoisted(() => vi.fn());
-const endMock = vi.hoisted(() => vi.fn());
+const drawLineSeriesMock = vi.hoisted(() => vi.fn());
 const markerMock = vi.hoisted(() => vi.fn());
 
-vi.mock('../../../drawing/elements/line/startDrawLine', () => ({ default: startMock }));
-vi.mock('../../../drawing/elements/line/drawLine', () => ({ default: drawMock }));
-vi.mock('../../../drawing/elements/line/endDrawLine', () => ({ default: endMock }));
+vi.mock('../../../drawing/series/drawLineSeries', () => ({ default: drawLineSeriesMock }));
 vi.mock('../../../drawing/valueMarker/drawValueMarker', () => ({ default: markerMock }));
 
 import draw from '../draw';
 
 describe('ema draw', () => {
   beforeEach(() => {
-    startMock.mockReset();
-    drawMock.mockReset();
-    endMock.mockReset();
+    drawLineSeriesMock.mockReset();
     markerMock.mockReset();
   });
 
   it('returns early when chart metrics are missing', () => {
     draw({} as never, {} as never, {} as never, {} as never, { id: 'e1', series: { value: { color: '#f90' } } } as never, {} as never, {} as never, null, {} as never, {} as never);
-    expect(startMock).not.toHaveBeenCalled();
+    expect(drawLineSeriesMock).not.toHaveBeenCalled();
   });
 
   it('draws ema line with offset and marker', () => {
+    drawLineSeriesMock.mockReturnValue({ lastBarIndex: 2 });
     draw(
       {} as never,
       {} as never,
@@ -58,9 +53,9 @@ describe('ema draw', () => {
       { valueToY: (v: number) => v } as never,
     );
 
-    expect(startMock).toHaveBeenCalledTimes(1);
-    expect(drawMock).toHaveBeenCalledTimes(2);
-    expect(endMock).toHaveBeenCalledTimes(1);
+    expect(drawLineSeriesMock).toHaveBeenCalledWith(expect.objectContaining({
+      barOffset: 1,
+    }));
     expect(markerMock).toHaveBeenCalledTimes(1);
   });
 });

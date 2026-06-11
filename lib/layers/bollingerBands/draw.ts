@@ -7,6 +7,7 @@
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
+import drawLineSeries from '../../drawing/series/drawLineSeries';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
@@ -81,47 +82,6 @@ const draw = (
 
   context.save();
 
-  const drawBandLine = (bandKey: string, color: string, lineWidth: number, lineStyle: 'solid' | 'dashed', dashes?: number[]): number => {
-
-    const values = outputValues[bandKey];
-
-    context.beginPath();
-    context.strokeStyle = color;
-    context.lineWidth = lineWidth;
-    if (lineStyle === 'dashed' && dashes) {
-      context.setLineDash(dashes);
-    }
-    
-    let pointsDrawn = 0;
-    let firstPoint = true;
-
-    let lastBarIndex = -1;
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const indicatorValue = values[barIndex];
-
-      if (!isNaN(indicatorValue)) {
-        const x = ((barIndex + offset) * intervalSize) - scrollOffset;
-        const y = valueToY(indicatorValue);
-
-        if (firstPoint) {
-          context.moveTo(x, y);
-          firstPoint = false;
-        } else {
-          context.lineTo(x, y);
-        }
-        pointsDrawn++;
-        lastBarIndex = barIndex;
-      }
-    }
-
-    if (pointsDrawn > 0) {
-      context.stroke();
-    }
-    context.setLineDash([]);
-
-    return lastBarIndex;
-  };
-
   // Fill the bands area first (so lines draw on top)
   if (channelBandConfig) {
     context.beginPath();
@@ -158,31 +118,56 @@ const draw = (
     context.fill();
   }
 
-  let lastBarIndex = -1;
-
   // Draw Upper Band (red/orange)
   if (upperLineConfig) {
-    const { color, width, style, dashes } = upperLineConfig;
-    drawBandLine('upper', color, width, style, dashes);
+    drawLineSeries({
+      context,
+      values: upperValues,
+      lineConfig: upperLineConfig,
+      valueToY,
+      startBarIndex,
+      endBarIndex,
+      intervalSize,
+      scrollOffset,
+      barOffset: offset,
+    });
   }
 
   // Draw Lower Band (red/orange)
   if (lowerLineConfig) {
-    const { color, width, style, dashes } = lowerLineConfig;
-    drawBandLine('lower', color, width, style, dashes);
+    drawLineSeries({
+      context,
+      values: lowerValues,
+      lineConfig: lowerLineConfig,
+      valueToY,
+      startBarIndex,
+      endBarIndex,
+      intervalSize,
+      scrollOffset,
+      barOffset: offset,
+    });
   }
 
   // Draw Middle Band (blue) - this is the SMA
-  if (midLineConfig) {
-    const { color, width, style, dashes } = midLineConfig;
-    lastBarIndex = drawBandLine('middle', color, width, style, dashes);
-  }
+  const middleLineResult = midLineConfig
+    ? drawLineSeries({
+        context,
+        values: middleValues,
+        lineConfig: midLineConfig,
+        valueToY,
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+        barOffset: offset,
+      })
+    : null;
 
   // Restore canvas state
   context.restore();
 
-  if (valueMarkerConfig && lastBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastBarIndex);
+  if (valueMarkerConfig && middleLineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(middleLineResult.lastBarIndex);
 
     drawValueMarker(
       context,
