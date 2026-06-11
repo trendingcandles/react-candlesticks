@@ -8,9 +8,7 @@
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import drawLine from '../../drawing/elements/line/drawLine';
-import endDrawLine from '../../drawing/elements/line/endDrawLine';
-import startDrawLine from '../../drawing/elements/line/startDrawLine';
+import drawLineSeries from '../../drawing/series/drawLineSeries';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
@@ -46,35 +44,24 @@ const draw = (
       getLastVisibleBarIndex,
     },
   } = viewportData;
-  const { valueToY } = layerMetrics;
   const lineConfig = series.value;
   const values = layerDataInstance.outputValues.value;
-  let lastBarIndex = -1;
-  let lastX: number | undefined;
 
-  if (lineConfig) {
-    for (let barIndex = startBarIndex; barIndex <= endBarIndex; barIndex++) {
-      const value = values[barIndex];
-      if (Number.isNaN(value)) continue;
+  const lineResult = lineConfig
+    ? drawLineSeries({
+        context,
+        values,
+        lineConfig,
+        valueToY: layerMetrics.valueToY,
+        startBarIndex,
+        endBarIndex,
+        intervalSize,
+        scrollOffset,
+      })
+    : null;
 
-      const x = (barIndex * intervalSize) - scrollOffset;
-      if (lastX === undefined) {
-        startDrawLine(context, valueToY, value, x, lineConfig);
-      } else {
-        drawLine(context, valueToY, value, x);
-      }
-
-      lastX = x;
-      lastBarIndex = barIndex;
-    }
-
-    if (lastX !== undefined && lastBarIndex >= 0) {
-      endDrawLine(context, valueToY, values[lastBarIndex], lastX, lineConfig);
-    }
-  }
-
-  if (markers.value && lastBarIndex >= 0) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lastBarIndex);
+  if (markers.value && lineResult) {
+    const valueMarkerBarIndex = getLastVisibleBarIndex(lineResult.lastBarIndex);
     drawValueMarker(
       context,
       axesContext,
