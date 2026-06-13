@@ -83,7 +83,7 @@ export const bollingerBandsDefaults: Omit<BollingerBandsLayerConfigComplete, 'ty
   ],
   outputs: ['middle', 'upper', 'lower'],
   period: 20,
-  lookback: (period: number) => period * 3,
+  lookback: (period: number) => period,
   // dataPointValues: (_indicatorId?: string) => (dp: DataPoint) => [],
   valueToY: (min: number = 0, max: number = 100, top: number, height: number) => {
     const range = max - min;

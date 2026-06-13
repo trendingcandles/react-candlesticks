@@ -61,6 +61,9 @@ export interface CciTheme {
   yAxis: YAxisTheme;
 }
 
+export const getCciLookback = (length: number, smoothingLength: number) =>
+  length + smoothingLength - 2;
+
 export const cciDefaults: Omit<CciLayerConfigComplete, 'type' | 'scale' | 'scalePolicy' | 'requiredInputKeys' | 'series' | 'markers' | 'legend' | 'yAxis'> = {
   ...baseLayerDefaults,
   id: 'cci-layer',
@@ -76,7 +79,7 @@ export const cciDefaults: Omit<CciLayerConfigComplete, 'type' | 'scale' | 'scale
   smoothingLength: 14,
   period: 20,
   offset: 0,
-  lookback: (period: number) => period * 2,
+  lookback: getCciLookback(20, 14),
   valueToY: (min: number, max: number, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

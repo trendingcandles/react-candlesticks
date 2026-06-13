@@ -6,7 +6,7 @@
  */
 
 import parseLookback from '../../config/layer/parseLookback';
-import { StochasticLayerConfigComplete, StochasticLayerConfig, stochasticDefaults, REQUIRED_INPUT_KEYS } from './StochasticLayerConfig';
+import { StochasticLayerConfigComplete, StochasticLayerConfig, stochasticDefaults, REQUIRED_INPUT_KEYS, getStochasticLookback } from './StochasticLayerConfig';
 import parseValueMarkerConfig from '../../config/valueMarker/parseValueMarkerConfig';
 import parseLineConfig from '../../config/elements/line/parseLineConfig';
 import parseLegendConfig from '../../config/legend/parseLegendConfig';
@@ -64,7 +64,9 @@ const parse = (partialConfig: StochasticLayerConfig, layersTheme: LayersTheme, p
     valueGridLines: [20, 80],
     kPeriod,
     period: kPeriod, // backward-compatible alias
-    lookback: parseLookback(kPeriod, partialConfig.lookback ?? stochasticDefaults.lookback),
+    lookback: partialConfig.lookback === undefined
+      ? getStochasticLookback(kPeriod, kSmoothing, dPeriod)
+      : parseLookback(kPeriod, partialConfig.lookback),
     calculate: partialConfig.calculate ?? stochasticDefaults.calculate,
     includeInAutoScale: partialConfig.includeInAutoScale ?? stochasticDefaults.includeInAutoScale,
     valueToY: partialConfig.valueToY ?? stochasticDefaults.valueToY,

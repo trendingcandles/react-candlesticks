@@ -64,7 +64,7 @@ export const atrDefaults: Omit<AtrLayerConfigComplete, 'type' | 'scale' | 'scale
   ],
   period: 14,
   offset: 0,
-  lookback: (period: number) => period * 2,
+  lookback: (period: number) => period * 3,
   valueToY: (min: number = 0, max: number = 100, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

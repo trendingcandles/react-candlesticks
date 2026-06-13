@@ -11,6 +11,7 @@ describe('stochastic parse', () => {
     expect(cfg.period).toBe(14);
     expect(cfg.kSmoothing).toBe(3);
     expect(cfg.dPeriod).toBe(3);
+    expect(cfg.lookback).toBe(17);
     expect(cfg.valueGridLines).toEqual([20, 80]);
   });
 
@@ -55,6 +56,7 @@ describe('stochastic parse', () => {
 
     expect(cfg.kPeriod).toBe(9);
     expect(cfg.period).toBe(9);
+    expect(cfg.lookback).toBe(12);
     expect(cfg.id).toBe('stochastic-layer_panel-c_9_3_3');
   });
 

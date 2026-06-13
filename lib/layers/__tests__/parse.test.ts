@@ -58,6 +58,7 @@ describe('layer config parsers', () => {
     ]);
     expect(cfg.defaultScale).toEqual({ key: 'value_auto', domain: 'value', range: { type: 'auto' } });
     expect(cfg.series.value).toBeTruthy();
+    expect(cfg.lookback).toBe(42);
   });
 
   it('parses adx config with viewport-based automatic scaling', () => {
@@ -101,6 +102,7 @@ describe('layer config parsers', () => {
     expect(cfg.outputs).toEqual(['k', 'kSmoothed', 'd']);
     expect(cfg.series.k?.color).toBe('#111');
     expect(cfg.series.d?.color).toBe('#222');
+    expect(cfg.lookback).toBe(17);
   });
 
   it('parses macd config with fastPeriod and maintains period alias', () => {
@@ -116,6 +118,7 @@ describe('layer config parsers', () => {
     const cfg = parseBollingerBands({ type: 'bollinger-bands' }, layersTheme as never, 'p5b');
     expect(cfg.defaultScale).toEqual({ key: 'price_auto', domain: 'price', range: { type: 'auto' } });
     expect(cfg.outputs).toEqual(['middle', 'upper', 'lower']);
+    expect(cfg.lookback).toBe(20);
   });
 
   it('parses macd series and markers visual configs', () => {
@@ -167,6 +170,7 @@ describe('layer config parsers', () => {
       start: 0.02,
       increment: 0.02,
       maxValue: 0.2,
+      lookback: 0,
       inputs: [
         { key: 'high', source: { type: 'price', field: 'close' } },
         { key: 'low', source: { type: 'price', field: 'open' } },
@@ -175,6 +179,7 @@ describe('layer config parsers', () => {
 
     const obv = parseObv({ type: 'obv', source: 'open' }, layersTheme as never, 'p8');
     expect(obv.smoothingLength).toBe(14);
+    expect(obv.lookback).toBe(0);
     expect(obv.inputs).toEqual([
       { key: 'price', source: { type: 'price', field: 'open' } },
       { key: 'volume', source: { type: 'volume', field: 'volume' } },
@@ -185,6 +190,7 @@ describe('layer config parsers', () => {
       length: 10,
       smoothingLength: 3,
       period: 10,
+      lookback: 11,
       outputs: ['value', 'smoothing'],
       valueGridLines: [-100, 100],
     });
@@ -193,6 +199,7 @@ describe('layer config parsers', () => {
     expect(williamsR).toMatchObject({
       length: 10,
       period: 10,
+      lookback: 10,
       valueGridLines: [-80, -20],
       defaultScale: { range: { type: 'bounded', min: -100, max: 0 } },
     });

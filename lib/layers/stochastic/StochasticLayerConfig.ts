@@ -64,6 +64,12 @@ export interface StochasticTheme {
   yAxis: YAxisTheme;
 }
 
+export const getStochasticLookback = (
+  kPeriod: number,
+  kSmoothing: number,
+  dPeriod: number,
+) => kPeriod + kSmoothing + dPeriod - 3;
+
 export const stochasticDefaults: Omit<StochasticLayerConfigComplete, 'type' | 'scale' | 'scalePolicy' | 'requiredInputKeys' | 'series' | 'markers' | 'legend' | 'yAxis'> = {
   ...baseLayerDefaults,
   id: 'stochastic-layer',
@@ -80,7 +86,7 @@ export const stochasticDefaults: Omit<StochasticLayerConfigComplete, 'type' | 's
   kSmoothing: 3,
   dPeriod: 3,
   offset: 0,
-  lookback: (period: number) => period * 2, // todo
+  lookback: getStochasticLookback(14, 3, 3),
   valueToY: (min: number = 0, max: number = 100, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

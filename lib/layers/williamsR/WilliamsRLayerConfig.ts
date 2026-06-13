@@ -66,7 +66,7 @@ export const williamsRDefaults: Omit<WilliamsRLayerConfigComplete, 'type' | 'sca
   length: 14,
   period: 14,
   offset: 0,
-  lookback: (period: number) => period * 2,
+  lookback: (period: number) => period,
   valueToY: (min: number = -100, max: number = 0, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

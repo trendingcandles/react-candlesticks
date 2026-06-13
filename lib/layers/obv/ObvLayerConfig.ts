@@ -69,7 +69,7 @@ export const obvDefaults: Omit<ObvLayerConfigComplete, 'type' | 'scale' | 'scale
   smoothingLength: 14,
   period: 14,
   offset: 0,
-  lookback: (period: number) => period * 2,
+  lookback: 0,
   valueToY: (min: number, max: number, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

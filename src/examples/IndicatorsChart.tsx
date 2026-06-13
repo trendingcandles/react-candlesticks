@@ -1,5 +1,6 @@
 import {
   ADX,
+  ATR,
   BollingerBands,
   Candlesticks,
   Chart,
@@ -30,6 +31,9 @@ function IndicatorsChart() {
       </Panel>
       <Panel>
         <ADX/>
+      </Panel>
+      <Panel>
+        <ATR/>
       </Panel>
     </Chart>
   );

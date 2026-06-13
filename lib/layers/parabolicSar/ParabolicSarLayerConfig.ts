@@ -60,7 +60,7 @@ export const parabolicSarDefaults: Omit<ParabolicSarLayerConfigComplete, 'type' 
   maxValue: 0.2,
   period: 1,
   offset: 0,
-  lookback: 2,
+  lookback: 0,
   valueToY: (min: number, max: number, top: number, height: number) => {
     const range = max - min;
     return (value: number) => top + ((max - value) / range) * height;

@@ -9,7 +9,7 @@ import parseYAxisConfig from '../../config/layer/yAxis/parseYAxisConfig';
 import parseValueMarkerConfig from '../../config/valueMarker/parseValueMarkerConfig';
 import { assertPositiveNumber } from '../../config/utils/validateNumber';
 import createSelector from '../../utils/createSelector';
-import { CciLayerConfig, CciLayerConfigComplete, REQUIRED_INPUT_KEYS, cciDefaults } from './CciLayerConfig';
+import { CciLayerConfig, CciLayerConfigComplete, REQUIRED_INPUT_KEYS, cciDefaults, getCciLookback } from './CciLayerConfig';
 
 const parse = (partialConfig: CciLayerConfig, layersTheme: LayersTheme, panelId: string): CciLayerConfigComplete => {
   const theme = layersTheme.cci;
@@ -44,7 +44,9 @@ const parse = (partialConfig: CciLayerConfig, layersTheme: LayersTheme, panelId:
     smoothingLength,
     period: length,
     offset: 0,
-    lookback: parseLookback(length, partialConfig.lookback ?? cciDefaults.lookback),
+    lookback: partialConfig.lookback === undefined
+      ? getCciLookback(length, smoothingLength)
+      : parseLookback(length, partialConfig.lookback),
     calculate: partialConfig.calculate ?? cciDefaults.calculate,
     includeInAutoScale: partialConfig.includeInAutoScale ?? cciDefaults.includeInAutoScale,
     valueToY: partialConfig.valueToY ?? cciDefaults.valueToY,
