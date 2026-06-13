@@ -195,11 +195,15 @@ See the [Theme documentation](https://docs.reactcandlesticks.com/docs/api/theme/
 | `<ADX>` | `'adx'` | Average Directional Index |
 | `<ATR>` | `'atr'` | Average True Range |
 | `<BollingerBands>` | `'bollinger-bands'` | Bollinger Bands overlay |
+| `<CCI>` | `'cci'` | Commodity Channel Index |
 | `<EMA>` | `'ema'` | Exponential Moving Average |
 | `<MACD>` | `'macd'` | MACD oscillator |
+| `<OBV>` | `'obv'` | On-Balance Volume |
+| `<ParabolicSAR>` | `'parabolic-sar'` | Parabolic Stop and Reverse overlay |
 | `<RSI>` | `'rsi'` | Relative Strength Index |
 | `<SMA>` | `'sma'` | Simple Moving Average |
 | `<Stochastic>` | `'stochastic'` | Stochastic Oscillator |
+| `<WilliamsR>` | `'williams-r'` | Williams %R oscillator |
 
 ---
 
