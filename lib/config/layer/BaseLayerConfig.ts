@@ -6,6 +6,7 @@
  */
 
 import { LegendConfig, LegendConfigComplete } from '../legend/LegendConfig';
+import defaultValueLabelFormatter from '../elements/valueLabel/defaultValueLabelFormatter';
 import { LayerType } from './LayerType';
 import { YAxisConfig, YAxisConfigComplete } from './yAxis/YAxisConfig';
 
@@ -94,7 +95,7 @@ export interface BaseLayerConfig {
 }
 
 export const baseLayerDefaults: Omit<BaseLayerConfigComplete, 'id' | 'type' | 'defaultScale' | 'scale' | 'scalePolicy' | 'requiredInputKeys' | 'period' | 'valueToY' | 'legend' | 'yAxis'> = {
-  valueLabelFormatter: (value: number) => value.toFixed(2),
+  valueLabelFormatter: defaultValueLabelFormatter,
   indicator: false,
   inputs: [{ key: 'input', source: { type: 'price', field: 'close' } }],
   outputs: ['value'],
