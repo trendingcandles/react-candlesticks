@@ -22,6 +22,7 @@ export interface LineIndicatorSeries {
   output: string;
   line: null | LineConfigComplete;
   marker: null | ValueMarkerConfigComplete;
+  barOffset?: number;
 }
 
 const drawLineIndicator = (
@@ -38,6 +39,7 @@ const drawLineIndicator = (
   series: LineIndicatorSeries[],
 ) => {
   if (!chartMetrics || !panelMetrics || !layerMetrics) return;
+  if (series.every(item => !item.line)) return;
 
   const {
     id,
@@ -68,6 +70,7 @@ const drawLineIndicator = (
       endBarIndex,
       intervalSize,
       scrollOffset,
+      ...(item.barOffset === undefined ? {} : { barOffset: item.barOffset }),
     });
 
     if (item.marker && lineResult) {

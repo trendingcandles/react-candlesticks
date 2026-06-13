@@ -7,8 +7,7 @@
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import drawLineSeries from '../../drawing/series/drawLineSeries';
-import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
+import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
@@ -29,79 +28,10 @@ const draw = (
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-
-  const atrLayerConfig: AtrLayerConfigComplete = layerConfig as AtrLayerConfigComplete;
-
-  if (!chartMetrics || !panelMetrics || !layerMetrics) return;
-
-  const {
-    id,
-    series: {
-      value: valueLineConfig,
-    },
-    markers: {
-      value: valueMarkerConfig,
-    },
-    yAxis,
-    valueLabelFormatter,
-  } = atrLayerConfig;
-
-  if (!valueLineConfig) return;
-
-  const {
-    timeScale: {
-      metadata: { intervalSize, scrollOffset },
-      startBarIndex,
-      endBarIndex,
-      getLastVisibleBarIndex,
-    },
-    layersData: {
-      layerDataInstances,
-    },
-  } = viewportData;
-
-  const layerDataInstance = layerDataInstances[id];
-
-  if (!layerDataInstance) return;
-
-  const { outputValues } = layerDataInstance;
-
-  const values = outputValues['value'];
-
-  const { valueToY } = layerMetrics;
-
-  const lineResult = drawLineSeries({
-    context,
-    values,
-    lineConfig: valueLineConfig,
-    valueToY,
-    startBarIndex,
-    endBarIndex,
-    intervalSize,
-    scrollOffset,
-  });
-
-  if (valueMarkerConfig && lineResult) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lineResult.lastBarIndex);
-
-    drawValueMarker(
-      context,
-      axesContext,
-      layout,
-      chartConfig,
-      panelConfig,
-      layerConfig,
-      yAxis,
-      valueLabelFormatter,
-      chartMetrics,
-      panelMetrics,
-      layerMetrics,
-      viewportData,
-      valueMarkerConfig,
-      values[valueMarkerBarIndex],
-    );
-  }
-
+  const atrLayerConfig = layerConfig as AtrLayerConfigComplete;
+  drawLineIndicator(context, axesContext, chartConfig, panelConfig, atrLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
+    { output: 'value', line: atrLayerConfig.series?.value ?? null, marker: atrLayerConfig.markers?.value ?? null },
+  ]);
 };
 
 export default draw;

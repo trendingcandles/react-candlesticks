@@ -11,9 +11,8 @@ import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import drawLineSeries from '../../drawing/series/drawLineSeries';
+import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { SmaLayerConfigComplete } from './SmaLayerConfig';
-import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import ViewportData from '../../domain/types/ViewportData';
 import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
@@ -29,81 +28,15 @@ const draw = (
   panelMetrics: PanelMetrics,
   layerMetrics: LayerMetrics,
 ) => {
-
-  const smaLayerConfig: SmaLayerConfigComplete = layerConfig as SmaLayerConfigComplete;
-
-  if (!chartMetrics) return;
-
-  const {
-    id,
-    series: {
-      value: valueLineConfig,
+  const smaLayerConfig = layerConfig as SmaLayerConfigComplete;
+  drawLineIndicator(context, axesContext, chartConfig, panelConfig, smaLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
+    {
+      output: 'value',
+      line: smaLayerConfig.series?.value ?? null,
+      marker: smaLayerConfig.markers?.value ?? null,
+      barOffset: smaLayerConfig.offset,
     },
-    offset,
-    markers: {
-      value: valueMarkerConfig,
-    },
-    yAxis,
-    valueLabelFormatter,
-  } = smaLayerConfig;
-
-  if (!valueLineConfig) return;
-
-  const {
-    timeScale: {
-      metadata: { intervalSize, scrollOffset },
-      startBarIndex,
-      endBarIndex,
-      getLastVisibleBarIndex,
-    },
-    layersData: {
-      layerDataInstances,
-    },
-  } = viewportData;
-
-  const layerDataInstance = layerDataInstances[id];
-
-  if (!layerDataInstance) return;
-
-  const { outputValues } = layerDataInstance;
-
-  const values = outputValues['value'];
-
-  const { valueToY } = layerMetrics;
-
-  const lineResult = drawLineSeries({
-    context,
-    values,
-    lineConfig: valueLineConfig,
-    valueToY,
-    startBarIndex,
-    endBarIndex,
-    intervalSize,
-    scrollOffset,
-    barOffset: offset,
-  });
-
-  if (valueMarkerConfig && lineResult) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lineResult.lastBarIndex);
-
-    drawValueMarker(
-      context,
-      axesContext,
-      layout,
-      chartConfig,
-      panelConfig,
-      layerConfig,
-      yAxis,
-      valueLabelFormatter,
-      chartMetrics,
-      panelMetrics,
-      layerMetrics,
-      viewportData,
-      valueMarkerConfig,
-      values[valueMarkerBarIndex],
-    );
-  }
-
+  ]);
 };
 
 export default draw;

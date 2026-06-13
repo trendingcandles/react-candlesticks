@@ -11,9 +11,8 @@ import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
-import drawLineSeries from '../../drawing/series/drawLineSeries';
+import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { StochasticLayerConfigComplete } from './StochasticLayerConfig';
-import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import ViewportData from '../../domain/types/ViewportData';
 import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 
@@ -29,115 +28,11 @@ const draw = (
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-
-  const stochasticLayerConfig: StochasticLayerConfigComplete = layerConfig as StochasticLayerConfigComplete;
-
-  if (!chartMetrics || !panelMetrics || !layerMetrics) return;
-
-  const {
-    id,
-    series,
-    markers,
-    yAxis,
-    valueLabelFormatter,
-  } = stochasticLayerConfig;
-  const kLineConfig = series.k;
-  const dLineConfig = series.d;
-  const kValueMarkerConfig = markers?.k;
-  const dValueMarkerConfig = markers?.d;
-
-  if (!kLineConfig && !dLineConfig) return;
-
-  const {
-    timeScale: {
-      metadata: { intervalSize, scrollOffset },
-      startBarIndex,
-      endBarIndex,
-      getLastVisibleBarIndex,
-    },
-    layersData: {
-      layerDataInstances,
-    },
-  } = viewportData;
-
-  const layerDataInstance = layerDataInstances[id];
-
-  if (!layerDataInstance) return;
-
-  const { outputValues } = layerDataInstance;
-
-  const kSmoothedValues = outputValues['kSmoothed'];
-  const dValues = outputValues['d'];
-
-  const { valueToY } = layerMetrics;
-
-  const dLineResult = dLineConfig
-    ? drawLineSeries({
-        context,
-        values: dValues,
-        lineConfig: dLineConfig,
-        valueToY,
-        startBarIndex,
-        endBarIndex,
-        intervalSize,
-        scrollOffset,
-      })
-    : null;
-
-  const kLineResult = kLineConfig
-    ? drawLineSeries({
-        context,
-        values: kSmoothedValues,
-        lineConfig: kLineConfig,
-        valueToY,
-        startBarIndex,
-        endBarIndex,
-        intervalSize,
-        scrollOffset,
-      })
-    : null;
-
-  if (dValueMarkerConfig && dLineResult) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(dLineResult.lastBarIndex);
-
-    drawValueMarker(
-      context,
-      axesContext,
-      layout,
-      chartConfig,
-      panelConfig,
-      stochasticLayerConfig,
-      yAxis,
-      valueLabelFormatter,
-      chartMetrics,
-      panelMetrics,
-      layerMetrics,
-      viewportData,
-      dValueMarkerConfig,
-      dValues[valueMarkerBarIndex],
-    );
-  }
-  if (kValueMarkerConfig && kLineResult) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(kLineResult.lastBarIndex);
-
-    drawValueMarker(
-      context,
-      axesContext,
-      layout,
-      chartConfig,
-      panelConfig,
-      stochasticLayerConfig,
-      yAxis,
-      valueLabelFormatter,
-      chartMetrics,
-      panelMetrics,
-      layerMetrics,
-      viewportData,
-      kValueMarkerConfig,
-      kSmoothedValues[valueMarkerBarIndex],
-    );
-  }
-
+  const stochasticLayerConfig = layerConfig as StochasticLayerConfigComplete;
+  drawLineIndicator(context, axesContext, chartConfig, panelConfig, stochasticLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
+    { output: 'd', line: stochasticLayerConfig.series?.d ?? null, marker: stochasticLayerConfig.markers?.d ?? null },
+    { output: 'kSmoothed', line: stochasticLayerConfig.series?.k ?? null, marker: stochasticLayerConfig.markers?.k ?? null },
+  ]);
 };
 
 export default draw;

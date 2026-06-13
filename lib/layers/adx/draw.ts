@@ -8,8 +8,7 @@
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import drawLineSeries from '../../drawing/series/drawLineSeries';
-import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
+import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
@@ -30,55 +29,9 @@ const draw = (
   layerMetrics: LayerMetrics | null,
 ) => {
   const adxLayerConfig = layerConfig as AdxLayerConfigComplete;
-  if (!chartMetrics || !panelMetrics || !layerMetrics) return;
-
-  const { id, series, markers, yAxis, valueLabelFormatter } = adxLayerConfig;
-  const layerDataInstance = viewportData.layersData.layerDataInstances[id];
-  if (!layerDataInstance) return;
-
-  const {
-    timeScale: {
-      metadata: { intervalSize, scrollOffset },
-      startBarIndex,
-      endBarIndex,
-      getLastVisibleBarIndex,
-    },
-  } = viewportData;
-  const lineConfig = series.value;
-  const values = layerDataInstance.outputValues.value;
-
-  const lineResult = lineConfig
-    ? drawLineSeries({
-        context,
-        values,
-        lineConfig,
-        valueToY: layerMetrics.valueToY,
-        startBarIndex,
-        endBarIndex,
-        intervalSize,
-        scrollOffset,
-      })
-    : null;
-
-  if (markers.value && lineResult) {
-    const valueMarkerBarIndex = getLastVisibleBarIndex(lineResult.lastBarIndex);
-    drawValueMarker(
-      context,
-      axesContext,
-      layout,
-      chartConfig,
-      panelConfig,
-      adxLayerConfig,
-      yAxis,
-      valueLabelFormatter,
-      chartMetrics,
-      panelMetrics,
-      layerMetrics,
-      viewportData,
-      markers.value,
-      values[valueMarkerBarIndex],
-    );
-  }
+  drawLineIndicator(context, axesContext, chartConfig, panelConfig, adxLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
+    { output: 'value', line: adxLayerConfig.series?.value ?? null, marker: adxLayerConfig.markers?.value ?? null },
+  ]);
 };
 
 export default draw;
