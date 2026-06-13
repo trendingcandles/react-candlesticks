@@ -12,9 +12,13 @@ export type LayerType =
   | 'adx'
   | 'atr'
   | 'bollinger-bands'
+  | 'cci'
   | 'ema'
   | 'macd'
+  | 'obv'
+  | 'parabolic-sar'
   | 'rsi'
   | 'sma'
   | 'stochastic'
+  | 'williams-r'
 ;

@@ -18,6 +18,10 @@ import MACD from './macd/MACDLayer';
 import RSI from './rsi/RSILayer';
 import SMA from './sma/SMALayer';
 import Stochastic from './stochastic/StochasticLayer';
+import CCI from './cci/CCILayer';
+import OBV from './obv/OBVLayer';
+import ParabolicSAR from './parabolicSar/ParabolicSARLayer';
+import WilliamsR from './williamsR/WilliamsRLayer';
 
 type LayerComponent = {
   [LAYER_COMPONENT_TYPE_KEY]?: LayerConfig['type'];
@@ -34,6 +38,10 @@ type LayerComponent = {
 (RSI as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'rsi';
 (SMA as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'sma';
 (Stochastic as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'stochastic';
+(CCI as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'cci';
+(OBV as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'obv';
+(ParabolicSAR as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'parabolic-sar';
+(WilliamsR as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'williams-r';
 
 export {
   Candlesticks,
@@ -47,4 +55,8 @@ export {
   RSI,
   SMA,
   Stochastic,
+  CCI,
+  OBV,
+  ParabolicSAR,
+  WilliamsR,
 };

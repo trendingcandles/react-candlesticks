@@ -210,6 +210,80 @@ const defaultDarkTheme: Theme = {
         ...themeDefaultYAxis,
       }
     },
+    cci: {
+      series: {
+        value: { color: '#ddd', width: 1, style: 'solid' },
+        smoothing: { color: '#ef4444', width: 1, style: 'solid' },
+      },
+      markers: {
+        value: {
+          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+        smoothing: {
+          line: { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [
+          { output: 'value', color: '#ddd' },
+          { output: 'smoothing', color: '#ef4444' },
+        ],
+      },
+      yAxis: { ...themeDefaultDarkYAxis },
+    },
+    obv: {
+      series: {
+        value: { color: '#ddd', width: 1, style: 'solid' },
+        smoothing: { color: '#ef4444', width: 1, style: 'solid' },
+      },
+      markers: {
+        value: {
+          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+        smoothing: {
+          line: { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [
+          { output: 'value', color: '#ddd' },
+          { output: 'smoothing', color: '#ef4444' },
+        ],
+      },
+      yAxis: { ...themeDefaultDarkYAxis },
+    },
+    parabolicSar: {
+      series: {
+        value: { color: 'dodgerblue', width: 1, style: 'solid' },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [{ output: 'value', color: 'dodgerblue' }],
+      },
+      yAxis: { ...themeDefaultDarkYAxis },
+    },
+    williamsR: {
+      series: {
+        value: { color: '#ddd', width: 1, style: 'solid' },
+      },
+      markers: {
+        value: {
+          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [{ output: 'value', color: '#ddd' }],
+      },
+      yAxis: { ...themeDefaultDarkYAxis },
+    },
     bollingerBands: {
       series: {
         upper: { color: '#777', width: 1, style: 'solid' },

@@ -6,11 +6,13 @@ import CustomizationChart from './examples/CustomizationChart';
 import FullConfigurationChart from './examples/FullConfigurationChart';
 import MinimalChart from './examples/MinimalChart';
 import NonInteractiveChart from './examples/NonInteractiveChart';
+import Indcators2Chart from './examples/Indcators2Chart';
 
 const examples = [
   'simple',
   'volume',
   'indicators',
+  'indcators2',
   'customization',
   'full-configuration',
   'minimal',
@@ -34,6 +36,7 @@ function App() {
         {exampleChart === "simple" && <SimpleChart />}
         {exampleChart === "volume" && <VolumeChart />}
         {exampleChart === "indicators" && <IndicatorsChart />}
+        {exampleChart === "indcators2" && <Indcators2Chart />}
         {exampleChart === "customization" && <CustomizationChart />}
         {exampleChart === "full-configuration" && <FullConfigurationChart />}
         {exampleChart === "minimal" && <MinimalChart />}

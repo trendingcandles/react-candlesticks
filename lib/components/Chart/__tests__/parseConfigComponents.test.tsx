@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { mapLayerElementToConfig, mapPanelElementsToConfig } from '../parseConfigComponents';
 import parseConfigComponents from '../parseConfigComponents';
-import { ADX, ATR, Candlesticks, EMA, SMA } from '../../../layers';
+import { ADX, ATR, CCI, Candlesticks, EMA, OBV, ParabolicSAR, SMA, WilliamsR } from '../../../layers';
 import { FC } from 'react';
 import LAYER_COMPONENT_TYPE_KEY from '../../../config/layer/layerComponentTypeKey';
 
@@ -15,10 +15,18 @@ describe('parseConfigComponents', () => {
     const ema = mapLayerElementToConfig(<EMA id="ema-1" period={20} />);
     const atr = mapLayerElementToConfig(<ATR id="atr-1" period={14} />);
     const adx = mapLayerElementToConfig(<ADX id="adx-1" diLength={14} smoothing={14} />);
+    const cci = mapLayerElementToConfig(<CCI id="cci-1" length={20} smoothingLength={14} />);
+    const obv = mapLayerElementToConfig(<OBV id="obv-1" smoothingLength={14} />);
+    const psar = mapLayerElementToConfig(<ParabolicSAR id="psar-1" start={0.02} increment={0.02} maxValue={0.2} />);
+    const williamsR = mapLayerElementToConfig(<WilliamsR id="wr-1" length={14} />);
 
     expect(ema).toMatchObject({ id: 'ema-1', type: 'ema', period: 20 });
     expect(atr).toMatchObject({ id: 'atr-1', type: 'atr', period: 14 });
     expect(adx).toMatchObject({ id: 'adx-1', type: 'adx', diLength: 14, smoothing: 14 });
+    expect(cci).toMatchObject({ id: 'cci-1', type: 'cci', length: 20, smoothingLength: 14 });
+    expect(obv).toMatchObject({ id: 'obv-1', type: 'obv', smoothingLength: 14 });
+    expect(psar).toMatchObject({ id: 'psar-1', type: 'parabolic-sar', start: 0.02, increment: 0.02, maxValue: 0.2 });
+    expect(williamsR).toMatchObject({ id: 'wr-1', type: 'williams-r', length: 14 });
   });
 
   it('uses static layer metadata when component names are minified', () => {
@@ -28,6 +36,18 @@ describe('parseConfigComponents', () => {
     const cfg = mapLayerElementToConfig(<X5 id="ema-2" period={9} />);
 
     expect(cfg).toMatchObject({ id: 'ema-2', type: 'ema', period: 9 });
+  });
+
+  it('maps new indicator component names through the fallback map', () => {
+    const CCILayer = () => null;
+    const OBVLayer = () => null;
+    const ParabolicSARLayer = () => null;
+    const WilliamsRLayer = () => null;
+
+    expect(mapLayerElementToConfig(<CCILayer />)).toMatchObject({ type: 'cci' });
+    expect(mapLayerElementToConfig(<OBVLayer />)).toMatchObject({ type: 'obv' });
+    expect(mapLayerElementToConfig(<ParabolicSARLayer />)).toMatchObject({ type: 'parabolic-sar' });
+    expect(mapLayerElementToConfig(<WilliamsRLayer />)).toMatchObject({ type: 'williams-r' });
   });
 
   it('throws for unknown layer component name', () => {
