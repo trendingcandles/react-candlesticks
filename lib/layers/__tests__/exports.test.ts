@@ -6,7 +6,11 @@ import sma from '../sma';
 import stochastic from '../stochastic';
 import volumeBars from '../volumeBars';
 import adx from '../adx';
-import { ADX, Candlesticks, PriceLine, SMA, Stochastic, VolumeBars } from '../index';
+import cci from '../cci';
+import obv from '../obv';
+import parabolicSar from '../parabolicSar';
+import williamsR from '../williamsR';
+import { ADX, CCI, Candlesticks, OBV, ParabolicSAR, PriceLine, SMA, Stochastic, VolumeBars, WilliamsR } from '../index';
 
 describe('layer exports', () => {
   it('maps layer types to layer implementations', () => {
@@ -16,6 +20,10 @@ describe('layer exports', () => {
     expect(layers.stochastic).toBe(stochastic);
     expect(layers['volume:bars']).toBe(volumeBars);
     expect(layers.adx).toBe(adx);
+    expect(layers.cci).toBe(cci);
+    expect(layers.obv).toBe(obv);
+    expect(layers['parabolic-sar']).toBe(parabolicSar);
+    expect(layers['williams-r']).toBe(williamsR);
   });
 
   it('exports React layer components', () => {
@@ -25,6 +33,10 @@ describe('layer exports', () => {
     expect(Stochastic({} as never)).toBeNull();
     expect(VolumeBars({} as never)).toBeNull();
     expect(ADX({} as never)).toBeNull();
+    expect(CCI({} as never)).toBeNull();
+    expect(OBV({} as never)).toBeNull();
+    expect(ParabolicSAR({} as never)).toBeNull();
+    expect(WilliamsR({} as never)).toBeNull();
   });
 
   it('layer modules expose parse/calc/draw hooks', () => {

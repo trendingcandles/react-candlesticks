@@ -18,6 +18,10 @@ import macd from './macd';
 import rsi from './rsi';
 import sma from './sma';
 import stochastic from './stochastic';
+import cci from './cci';
+import obv from './obv';
+import parabolicSar from './parabolicSar';
+import williamsR from './williamsR';
 
 const layers: Record<LayerType, Layer> = {
   'price:candlesticks': candlesticks,
@@ -25,11 +29,15 @@ const layers: Record<LayerType, Layer> = {
   adx,
   atr,
   'bollinger-bands': bollingerBands,
+  cci,
   ema,
   macd,
+  obv,
+  'parabolic-sar': parabolicSar,
   rsi,
   sma,
   stochastic,
+  'williams-r': williamsR,
   'volume:bars': volumeBars,
 };
 

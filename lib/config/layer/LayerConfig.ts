@@ -16,6 +16,10 @@ import { EmaLayerConfig, EmaLayerConfigComplete, EmaTheme } from '../../layers/e
 import { MacdLayerConfig, MacdLayerConfigComplete, MacdTheme } from '../../layers/macd/MacdLayerConfig';
 import { RsiLayerConfig, RsiLayerConfigComplete, RsiTheme } from '../../layers/rsi/RsiLayerConfig';
 import { AdxLayerConfig, AdxLayerConfigComplete, AdxTheme } from '../../layers/adx/AdxLayerConfig';
+import { CciLayerConfig, CciLayerConfigComplete, CciTheme } from '../../layers/cci/CciLayerConfig';
+import { ObvLayerConfig, ObvLayerConfigComplete, ObvTheme } from '../../layers/obv/ObvLayerConfig';
+import { ParabolicSarLayerConfig, ParabolicSarLayerConfigComplete, ParabolicSarTheme } from '../../layers/parabolicSar/ParabolicSarLayerConfig';
+import { WilliamsRLayerConfig, WilliamsRLayerConfigComplete, WilliamsRTheme } from '../../layers/williamsR/WilliamsRLayerConfig';
 
 export type LayerConfigComplete =
   CandlestickLayerConfigComplete
@@ -24,11 +28,15 @@ export type LayerConfigComplete =
   | AdxLayerConfigComplete
   | AtrLayerConfigComplete
   | BollingerBandsLayerConfigComplete
+  | CciLayerConfigComplete
   | EmaLayerConfigComplete
   | MacdLayerConfigComplete
+  | ObvLayerConfigComplete
+  | ParabolicSarLayerConfigComplete
   | RsiLayerConfigComplete
   | SmaLayerConfigComplete
   | StochasticLayerConfigComplete
+  | WilliamsRLayerConfigComplete
   ;
 
 export type LayerConfig =
@@ -38,11 +46,15 @@ export type LayerConfig =
   | AdxLayerConfig
   | AtrLayerConfig
   | BollingerBandsLayerConfig
+  | CciLayerConfig
   | EmaLayerConfig
   | MacdLayerConfig
+  | ObvLayerConfig
+  | ParabolicSarLayerConfig
   | RsiLayerConfig
   | SmaLayerConfig
   | StochasticLayerConfig
+  | WilliamsRLayerConfig
   ;
 
 export interface LayersTheme {
@@ -52,10 +64,14 @@ export interface LayersTheme {
   adx: AdxTheme;
   atr: AtrTheme;
   bollingerBands: BollingerBandsTheme;
+  cci: CciTheme;
   ema: EmaTheme;
   macd: MacdTheme;
+  obv: ObvTheme;
+  parabolicSar: ParabolicSarTheme;
   rsi: RsiTheme;
   sma: SmaTheme;
   stochastic: StochasticTheme;
+  williamsR: WilliamsRTheme;
 }
   

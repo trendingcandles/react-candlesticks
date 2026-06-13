@@ -14,11 +14,15 @@ const layerComponentNameToLayerTypeMap = {
   'ADXLayer': 'adx',
   'ATRLayer': 'atr',
   'BollingerBandsLayer': 'bollinger-bands',
+  'CCILayer': 'cci',
   'EMALayer': 'ema',
   'MACDLayer': 'macd',
+  'OBVLayer': 'obv',
+  'ParabolicSARLayer': 'parabolic-sar',
   'RSILayer': 'rsi',
   'SMALayer': 'sma',
   'StochasticLayer': 'stochastic',
+  'WilliamsRLayer': 'williams-r',
 } as const satisfies Record<string, LayerConfig['type']>;
 
 export default layerComponentNameToLayerTypeMap;

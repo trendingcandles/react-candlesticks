@@ -9,6 +9,10 @@ import parseSma from '../sma/parse';
 import parseStochastic from '../stochastic/parse';
 import parseVolumeBars from '../volumeBars/parse';
 import parseAdx from '../adx/parse';
+import parseCci from '../cci/parse';
+import parseObv from '../obv/parse';
+import parseParabolicSar from '../parabolicSar/parse';
+import parseWilliamsR from '../williamsR/parse';
 
 describe('layer config parsers', () => {
   const layersTheme = defaultLightTheme.layers;
@@ -151,5 +155,57 @@ describe('layer config parsers', () => {
     expect(cfg.type).toBe('volume:bars');
     expect(cfg.legend?.label).toBe('Volume');
     expect(cfg.outputs).toEqual(['volume']);
+  });
+
+  it('parses the new indicator configs and source shorthand', () => {
+    const psar = parseParabolicSar({
+      type: 'parabolic-sar',
+      source: { high: 'close', low: 'open' },
+    }, layersTheme as never, 'p7');
+    expect(psar).toMatchObject({
+      type: 'parabolic-sar',
+      start: 0.02,
+      increment: 0.02,
+      maxValue: 0.2,
+      inputs: [
+        { key: 'high', source: { type: 'price', field: 'close' } },
+        { key: 'low', source: { type: 'price', field: 'open' } },
+      ],
+    });
+
+    const obv = parseObv({ type: 'obv', source: 'open' }, layersTheme as never, 'p8');
+    expect(obv.smoothingLength).toBe(14);
+    expect(obv.inputs).toEqual([
+      { key: 'price', source: { type: 'price', field: 'open' } },
+      { key: 'volume', source: { type: 'volume', field: 'volume' } },
+    ]);
+
+    const cci = parseCci({ type: 'cci', length: 10, smoothingLength: 3 }, layersTheme as never, 'p9');
+    expect(cci).toMatchObject({
+      length: 10,
+      smoothingLength: 3,
+      period: 10,
+      outputs: ['value', 'smoothing'],
+      valueGridLines: [-100, 100],
+    });
+
+    const williamsR = parseWilliamsR({ type: 'williams-r', length: 10 }, layersTheme as never, 'p10');
+    expect(williamsR).toMatchObject({
+      length: 10,
+      period: 10,
+      valueGridLines: [-80, -20],
+      defaultScale: { range: { type: 'bounded', min: -100, max: 0 } },
+    });
+  });
+
+  it('validates the new indicator parameters', () => {
+    expect(() => parseParabolicSar({ type: 'parabolic-sar', start: 0.3, maxValue: 0.2 }, layersTheme as never, 'p11'))
+      .toThrow('parabolic-sar.start must be <= parabolic-sar.maxValue');
+    expect(() => parseObv({ type: 'obv', smoothingLength: 0 }, layersTheme as never, 'p11'))
+      .toThrow('obv.smoothingLength must be > 0');
+    expect(() => parseCci({ type: 'cci', length: 0 }, layersTheme as never, 'p11'))
+      .toThrow('cci.length must be > 0');
+    expect(() => parseWilliamsR({ type: 'williams-r', length: 0 }, layersTheme as never, 'p11'))
+      .toThrow('williams-r.length must be > 0');
   });
 });

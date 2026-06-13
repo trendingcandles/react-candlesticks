@@ -11,6 +11,14 @@ import priceLineCalc from '../priceLine/calc';
 import smaCalc from '../sma/calc';
 import stochasticCalc from '../stochastic/calc';
 import volumeBarsCalc from '../volumeBars/calc';
+import { REQUIRED_INPUT_KEYS as CCI_KEYS, cciDefaults } from '../cci/CciLayerConfig';
+import cciCalc from '../cci/calc';
+import { REQUIRED_INPUT_KEYS as OBV_KEYS, obvDefaults } from '../obv/ObvLayerConfig';
+import obvCalc from '../obv/calc';
+import { REQUIRED_INPUT_KEYS as PSAR_KEYS, parabolicSarDefaults } from '../parabolicSar/ParabolicSarLayerConfig';
+import parabolicSarCalc from '../parabolicSar/calc';
+import { REQUIRED_INPUT_KEYS as WR_KEYS, williamsRDefaults } from '../williamsR/WilliamsRLayerConfig';
+import williamsRCalc from '../williamsR/calc';
 
 describe('layer config defaults', () => {
   it('exports required input keys and defaults', () => {
@@ -20,6 +28,10 @@ describe('layer config defaults', () => {
     expect(ST_KEYS).toEqual(['high', 'low', 'close']);
     expect(V_KEYS).toEqual(['volume']);
     expect(ADX_KEYS).toEqual(['high', 'low', 'close']);
+    expect(CCI_KEYS).toEqual(['high', 'low', 'close']);
+    expect(OBV_KEYS).toEqual(['price', 'volume']);
+    expect(PSAR_KEYS).toEqual(['high', 'low']);
+    expect(WR_KEYS).toEqual(['high', 'low', 'close']);
 
     expect(candlestickLayerDefaults.id).toBe('candlestick-layer');
     expect(priceLineLayerDefaults.id).toBe('price-line');
@@ -28,6 +40,11 @@ describe('layer config defaults', () => {
     expect(volumeBarsDefaults.id).toBe('volume-bars-layer');
     expect(adxDefaults.diLength).toBe(14);
     expect(adxDefaults.smoothing).toBe(14);
+    expect(cciDefaults.length).toBe(20);
+    expect(cciDefaults.smoothingLength).toBe(14);
+    expect(obvDefaults.smoothingLength).toBe(14);
+    expect(parabolicSarDefaults).toMatchObject({ start: 0.02, increment: 0.02, maxValue: 0.2 });
+    expect(williamsRDefaults.length).toBe(14);
   });
 
   it('valueToY default projections return expected values', () => {
@@ -110,5 +127,77 @@ describe('layer calc functions', () => {
     expect(Number.isNaN(value[3])).toBe(true);
     expect(value[4]).toBeCloseTo(100);
     expect(value[6]).toBeCloseTo(100);
+  });
+
+  it('computes OBV and its SMA smoothing', () => {
+    const price = new Float64Array([1, 2, 1]);
+    const volume = new Float64Array([10, 20, 30]);
+    const value = new Float64Array(3); value.fill(Number.NaN);
+    const smoothing = new Float64Array(3); smoothing.fill(Number.NaN);
+
+    obvCalc(
+      { smoothingLength: 2 } as never,
+      { price: { values: price }, volume: { values: volume } } as never,
+      { value, smoothing },
+      0,
+      3,
+    );
+
+    expect([...value]).toEqual([0, 20, -10]);
+    expect(smoothing[1]).toBe(10);
+    expect(smoothing[2]).toBe(5);
+  });
+
+  it('computes CCI and its SMA smoothing', () => {
+    const prices = new Float64Array([1, 2, 3, 4]);
+    const value = new Float64Array(4); value.fill(Number.NaN);
+    const smoothing = new Float64Array(4); smoothing.fill(Number.NaN);
+
+    cciCalc(
+      { length: 3, smoothingLength: 2 } as never,
+      { high: { values: prices }, low: { values: prices }, close: { values: prices } } as never,
+      { value, smoothing },
+      0,
+      4,
+    );
+
+    expect(value[2]).toBeCloseTo(100);
+    expect(value[3]).toBeCloseTo(100);
+    expect(smoothing[3]).toBeCloseTo(100);
+  });
+
+  it('computes Williams %R on a bounded scale', () => {
+    const high = new Float64Array([1, 2, 3]);
+    const low = new Float64Array([0, 1, 2]);
+    const close = new Float64Array([0.5, 1.5, 2.5]);
+    const value = new Float64Array(3); value.fill(Number.NaN);
+
+    williamsRCalc(
+      { length: 3 } as never,
+      { high: { values: high }, low: { values: low }, close: { values: close } } as never,
+      { value },
+      0,
+      3,
+    );
+
+    expect(value[2]).toBeCloseTo(-16.6667, 3);
+  });
+
+  it('computes Parabolic SAR points', () => {
+    const high = new Float64Array([10, 11, 12, 13, 14]);
+    const low = new Float64Array([9, 10, 11, 12, 13]);
+    const value = new Float64Array(5); value.fill(Number.NaN);
+
+    parabolicSarCalc(
+      { start: 0.02, increment: 0.02, maxValue: 0.2 } as never,
+      { high: { values: high }, low: { values: low } } as never,
+      { value },
+      0,
+      5,
+    );
+
+    expect(value[1]).toBe(9);
+    expect(value[4]).toBeGreaterThanOrEqual(9);
+    expect(value[4]).toBeLessThan(low[4]);
   });
 });
