@@ -7,7 +7,7 @@
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { LineConfigComplete } from '../../config/elements/line/LineConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { ValueMarkerConfigComplete } from '../../config/valueMarker/ValueMarkerConfig';
 import { Layout } from '../../domain/types/Layout';
@@ -30,7 +30,7 @@ const drawLineIndicator = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BaseLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,

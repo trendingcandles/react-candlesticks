@@ -16,14 +16,13 @@ import drawBar from '../../drawing/elements/drawBar';
 import drawLineSeries from '../../drawing/series/drawLineSeries';
 import drawValueMarker from '../../drawing/valueMarker/drawValueMarker';
 import ViewportData from '../../domain/types/ViewportData';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: MacdLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
@@ -31,7 +30,7 @@ const draw = (
   layerMetrics: LayerMetrics | null,
 ) => {
 
-  const macdLayerConfig: MacdLayerConfigComplete = layerConfig as MacdLayerConfigComplete;
+  const macdLayerConfig = layerConfig;
 
   if (!chartMetrics || !panelMetrics || !layerMetrics) return;
 

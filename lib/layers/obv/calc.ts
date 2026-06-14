@@ -5,18 +5,17 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { ObvLayerConfigComplete } from './ObvLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: ObvLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
-  const { smoothingLength } = layerConfig as ObvLayerConfigComplete;
+  const { smoothingLength } = layerConfig;
   const prices = inputs.price.values;
   const volumes = inputs.volume.values;
   const values = outputValues.value;

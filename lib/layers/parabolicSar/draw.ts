@@ -6,7 +6,6 @@
  */
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
@@ -20,7 +19,7 @@ const draw = (
   _axesContext: CanvasRenderingContext2D,
   _chartConfig: ChartConfigComplete,
   _panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: ParabolicSarLayerConfigComplete,
   _layout: Layout,
   viewportData: ViewportData,
   _chartMetrics: ChartMetrics | null,
@@ -28,7 +27,7 @@ const draw = (
   layerMetrics: LayerMetrics | null,
 ) => {
   if (!layerMetrics) return;
-  const config = layerConfig as ParabolicSarLayerConfigComplete;
+  const config = layerConfig;
   const line = config.series.value;
   if (!line) return;
 

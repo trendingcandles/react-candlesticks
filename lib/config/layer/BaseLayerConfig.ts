@@ -7,7 +7,6 @@
 
 import { LegendConfig, LegendConfigComplete } from '../legend/LegendConfig';
 import defaultValueLabelFormatter from '../elements/valueLabel/defaultValueLabelFormatter';
-import { LayerType } from './LayerType';
 import { YAxisConfig, YAxisConfigComplete } from './yAxis/YAxisConfig';
 
 export type ScaleDomain =
@@ -53,7 +52,7 @@ export type ValueToYFunction = (min: number, max: number, top: number, height: n
 
 export interface BaseLayerConfigComplete {
   id: string;
-  type: LayerType;
+  type: string;
   indicator: boolean;
   defaultScale: LayerScale;
   scale: null | LayerScale;
@@ -77,7 +76,7 @@ export interface BaseLayerConfigComplete {
 
 export interface BaseLayerConfig {
   id?: string;
-  type: LayerType;
+  type: string;
   scale?: LayerScale;
   inputs?: InputSource[];
   outputs?: string[];

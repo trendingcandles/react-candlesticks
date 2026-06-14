@@ -11,8 +11,15 @@ import parseLineConfig from '../elements/line/parseLineConfig';
 import { assertNonNegativeNumber, assertPositiveNumber } from '../utils/validateNumber';
 import parsePanelControlsConfig from './controls/parsePanelControlsConfig';
 import { PanelConfig, PanelConfigComplete, panelDefaults } from './PanelConfig';
+import { LayerRegistry } from '../layer/LayerRegistry';
+import layers from '../../layers/layers';
 
-const parsePanelConfig = (partialConfig: PanelConfig, theme: Theme, panelIndex: number): Omit<PanelConfigComplete, 'yAxes'> => {
+const parsePanelConfig = (
+  partialConfig: PanelConfig,
+  theme: Theme,
+  panelIndex: number,
+  layerRegistry: LayerRegistry = layers,
+): Omit<PanelConfigComplete, 'yAxes'> => {
   const panelTheme = theme.panels;
 
   const id = partialConfig.id ?? `panel_${panelIndex}`;
@@ -35,7 +42,7 @@ const parsePanelConfig = (partialConfig: PanelConfig, theme: Theme, panelIndex: 
     paddingTop,
     paddingBottom,
     borderTop: parseLineConfig(partialConfig.borderTop, panelTheme.borderTop),
-    layers: parseLayerConfigs(partialConfig.layers, theme.layers, id),
+    layers: parseLayerConfigs(partialConfig.layers, theme.layers, id, layerRegistry),
     controls: parsePanelControlsConfig(partialConfig.controls ?? {}, panelTheme.controls),
   };
 

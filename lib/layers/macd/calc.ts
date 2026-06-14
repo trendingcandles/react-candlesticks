@@ -5,19 +5,18 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { MacdLayerConfigComplete } from './MacdLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: MacdLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
 
-  const macdLayerConfig: MacdLayerConfigComplete = layerConfig as MacdLayerConfigComplete;
+  const macdLayerConfig = layerConfig;
 
   const {
     fastPeriod: parsedFastPeriod,

@@ -9,17 +9,19 @@ import { AtrLayerConfig, AtrLayerConfigComplete } from './AtrLayerConfig';
 import parse from './parse';
 import calc from './calc';
 import draw from './draw';
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 
 export type {
   AtrLayerConfig,
   AtrLayerConfigComplete,
 };
 
-const atr: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
-  calculate2: calc,
+const atr = defineLayer<AtrLayerConfig, AtrLayerConfigComplete>({
+  type: 'atr',
+  displayName: 'ATRLayer',
+  parseConfig: parse,
+  calculate: calc,
   draw,
-};
+});
 
 export default atr;

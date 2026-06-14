@@ -15,7 +15,6 @@ import React, {
 } from 'react';
 import { PanelConfig } from '../../config/panel/PanelConfig';
 import { LayerConfig } from '../../config/layer/LayerConfig';
-import layerComponentNameToLayerTypeMap from '../../config/layer/layerComponentNameToLayerTypeMap';
 import LAYER_COMPONENT_TYPE_KEY from '../../config/layer/layerComponentTypeKey';
 
 export interface ConfigNode {
@@ -36,8 +35,8 @@ export interface PanelConfigNode {
 interface LayerComponentMeta {
   displayName?: string;
   name?: string;
-  layerType?: LayerConfig['type'];
-  [LAYER_COMPONENT_TYPE_KEY]?: LayerConfig['type'];
+  layerType?: string;
+  [LAYER_COMPONENT_TYPE_KEY]?: string;
 }
 
 export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null {
@@ -51,7 +50,7 @@ export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null 
   const { type, props } = layerElement;
 
   let layerComponentName: string;
-  let layerType: LayerConfig['type'] | undefined;
+  let layerType: string | undefined;
 
   if (typeof type === 'string') {
     layerComponentName = type;
@@ -60,8 +59,6 @@ export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null 
     layerComponentName = maybeComponent.displayName || maybeComponent.name || 'Anonymous';
     layerType = maybeComponent[LAYER_COMPONENT_TYPE_KEY] ?? maybeComponent.layerType;
   }
-
-  layerType = layerType ?? layerComponentNameToLayerTypeMap[layerComponentName as keyof typeof layerComponentNameToLayerTypeMap];
 
   if (layerType === undefined) {
     throw new Error(`Invalid layer: ${layerComponentName}`);

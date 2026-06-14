@@ -11,7 +11,7 @@ import parseValueMarkerConfig from '../../config/valueMarker/parseValueMarkerCon
 import parseLegendConfig from '../../config/legend/parseLegendConfig';
 import { LegendFieldConfigDefaultsForLayer } from '../../config/legend/LegendFieldConfig';
 import createSelector from '../../utils/createSelector';
-import { LayersTheme } from '../../config/layer/LayerConfig';
+import { LayersTheme } from '../../config/layer/LayersTheme';
 import parseYAxisConfig from '../../config/layer/yAxis/parseYAxisConfig';
 import validateLayerInputs from '../../config/layer/validateLayerInputs';
 

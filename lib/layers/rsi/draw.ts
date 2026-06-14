@@ -14,21 +14,20 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { RsiLayerConfigComplete } from './RsiLayerConfig';
 import ViewportData from '../../domain/types/ViewportData';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: RsiLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const rsiLayerConfig = layerConfig as RsiLayerConfigComplete;
+  const rsiLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, rsiLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'value', line: rsiLayerConfig.series?.value ?? null, marker: rsiLayerConfig.markers?.value ?? null },
   ]);

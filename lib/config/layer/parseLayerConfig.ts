@@ -8,8 +8,14 @@
 import { LayerConfig, LayerConfigComplete, LayersTheme } from './LayerConfig';
 import layers from '../../layers/layers';
 import { assertFiniteNumber, assertNonNegativeNumber, assertPositiveNumber } from '../utils/validateNumber';
+import { LayerRegistry } from './LayerRegistry';
 
-const parseLayerConfig = (partialConfig: LayerConfig, layersTheme: LayersTheme, panelId: string): LayerConfigComplete => {
+const parseLayerConfig = (
+  partialConfig: LayerConfig,
+  layersTheme: LayersTheme,
+  panelId: string,
+  layerRegistry: LayerRegistry = layers,
+): LayerConfigComplete => {
   if (partialConfig.period !== undefined) {
     assertPositiveNumber(partialConfig.period, `${partialConfig.type}.period`);
   }
@@ -24,8 +30,8 @@ const parseLayerConfig = (partialConfig: LayerConfig, layersTheme: LayersTheme, 
     }
   }
 
-  if (partialConfig.type in layers) {
-    return layers[partialConfig.type].parseConfig(partialConfig, layersTheme, panelId) as LayerConfigComplete;
+  if (partialConfig.type in layerRegistry) {
+    return layerRegistry[partialConfig.type].parseConfig(partialConfig, layersTheme, panelId) as LayerConfigComplete;
   } else {
     throw new Error(`Invalid layer type: ${partialConfig.type || 'unspecified'}`);
   }
