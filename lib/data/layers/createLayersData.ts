@@ -8,6 +8,8 @@
 import { LayersTopology } from '../../config/layer/createLayerTopology';
 import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerDataInstance, LayersData } from '../../domain/types/LayersData';
+import builtInLayers from '../../layers/layers';
+import { LayerRegistry } from '../../config/layer/LayerRegistry';
 
 const createLayerDataInstance = (layerConfig: LayerConfigComplete, barsLength: number): LayerDataInstance => {
   const outputValues = layerConfig.outputs.reduce((acc, outputKey) => {
@@ -31,6 +33,7 @@ export const createLayersData = (
   layers: LayerConfigComplete[],
   layersTopology: LayersTopology,
   barsLength: number,
+  layerRegistry: LayerRegistry = builtInLayers,
 ): LayersData => {
   const layerDataInstances: Record<string, LayerDataInstance> = {};
 
@@ -43,5 +46,6 @@ export const createLayersData = (
   return {
     layerDataInstances,
     layersTopology,
+    layerRegistry,
   };
 }

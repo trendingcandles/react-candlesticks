@@ -130,6 +130,88 @@ import { Chart } from 'react-candlesticks';
 />
 ```
 
+### Custom indicator layers
+
+Use `defineLayer` to add an indicator implementation to a specific chart. A
+definition controls config parsing, calculation, and Canvas drawing, and
+provides a JSX component through its `Component` property.
+
+```tsx
+import {
+  Candlesticks,
+  Chart,
+  Panel,
+  defineLayer,
+  drawLineSeries,
+  parseLineConfig,
+} from 'react-candlesticks';
+
+const doubleClose = defineLayer({
+  type: 'custom:double-close',
+  parseConfig: (config, _theme, panelId) => ({
+    ...config,
+    id: config.id ?? `double-close_${panelId}`,
+    type: 'custom:double-close',
+    indicator: true,
+    defaultScale: { key: 'value', domain: 'value', range: { type: 'auto' } },
+    scale: config.scale ?? null,
+    scalePolicy: 'derived',
+    requiredInputKeys: ['input'],
+    inputs: config.inputs ?? [
+      { key: 'input', source: { type: 'price', field: 'close' } },
+    ],
+    outputs: ['value'],
+    period: 1,
+    offset: 0,
+    lookback: 0,
+    calculate: true,
+    includeInAutoScale: true,
+    valueToY: (min, max, top, height) =>
+      value => top + ((max - value) / (max - min)) * height,
+    legend: null,
+    yAxis: null,
+    valueLabelFormatter: String,
+  }),
+  calculate: (_config, inputs, outputs, start, end) => {
+    for (let index = start; index < end; index++) {
+      outputs.value[index] = inputs.input.values[index] * 2;
+    }
+  },
+  draw: (
+    context, _axes, _chart, _panel, config, _layout, viewport,
+    _chartMetrics, _panelMetrics, layerMetrics,
+  ) => {
+    const values =
+      viewport.layersData.layerDataInstances[config.id].outputValues.value;
+    const { intervalSize, scrollOffset } = viewport.timeScale.metadata;
+
+    drawLineSeries({
+      context,
+      values,
+      lineConfig: parseLineConfig({ color: '#8b5cf6', width: 2 })!,
+      valueToY: layerMetrics.valueToY,
+      startBarIndex: viewport.timeScale.startBarIndex,
+      endBarIndex: viewport.timeScale.endBarIndex,
+      intervalSize,
+      scrollOffset,
+    });
+  },
+});
+
+const DoubleClose = doubleClose.Component;
+
+<Chart data={data} customLayers={[doubleClose]}>
+  <Panel>
+    <Candlesticks />
+    <DoubleClose />
+  </Panel>
+</Chart>
+```
+
+Custom type names must not collide with built-in or other custom layer types.
+Definitions are chart-scoped, so separate charts can use independent custom
+layer sets without global registration.
+
 ### Minimal Mode for List/Thumbnail Charts
 
 Use `renderMode="minimal"` when rendering many small charts per screen (for example, watchlist rows or card grids).

@@ -32,8 +32,10 @@ const drawLayer = (
     type,
   } = layerConfig;
 
-  if (layers[type].draw) {
-    layers[type].draw(
+  const layer = viewportData.layersData?.layerRegistry?.[type] ?? layers[type];
+
+  if (layer?.draw) {
+    layer.draw(
       context,
       axesContext,
       chartConfig,

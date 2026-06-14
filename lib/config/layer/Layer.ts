@@ -7,7 +7,6 @@
 
 import { ChartConfigComplete } from '../chart/ChartConfig';
 import { PanelConfigComplete } from '../panel/PanelConfig';
-import { DataPoint } from '../../domain/types/DataPoint';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
@@ -16,35 +15,54 @@ import { LayerConfig, LayerConfigComplete, LayersTheme } from './LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import ViewportData from '../../domain/types/ViewportData';
 
-interface Layer {
+export type LayerCalculate<C extends LayerConfigComplete = LayerConfigComplete> = (
+  layerConfig: C,
+  inputs: Record<string, LayerInputSeries>,
+  outputValues: Record<string, Float64Array>,
+  startBarIndex: number,
+  endBarIndex: number,
+) => void;
 
-  parseConfig: (config: LayerConfig, layersTheme: LayersTheme, panelId: string) => LayerConfigComplete;
+export type LayerDraw<C extends LayerConfigComplete = LayerConfigComplete> = (
+  context: CanvasRenderingContext2D,
+  axesContext: CanvasRenderingContext2D,
+  chartConfig: ChartConfigComplete,
+  panelConfig: PanelConfigComplete,
+  layerConfig: C,
+  layout: Layout,
+  viewportData: ViewportData,
+  chartMetrics: ChartMetrics | null,
+  panelMetrics: PanelMetrics,
+  layerMetrics: LayerMetrics,
+) => void;
 
-  calculate?: ((
-    data: DataPoint[],
-    config: LayerConfigComplete,
-  ) => DataPoint[]) | null;
+interface Layer<
+  C extends LayerConfig = LayerConfig,
+  Complete extends LayerConfigComplete = LayerConfigComplete,
+> {
 
-  calculate2?: ((
-    layerConfig: LayerConfigComplete,
+  parseConfig(config: C, layersTheme: LayersTheme, panelId: string): Complete;
+
+  calculate?(
+    layerConfig: Complete,
     inputs: Record<string, LayerInputSeries>,
     outputValues: Record<string, Float64Array>,
     startBarIndex: number,
     endBarIndex: number,
-  ) => void) | null;
+  ): void;
 
-  draw?: (
+  draw?(
     context: CanvasRenderingContext2D,
     axesContext: CanvasRenderingContext2D,
     chartConfig: ChartConfigComplete,
     panelConfig: PanelConfigComplete,
-    layerConfig: LayerConfigComplete,
+    layerConfig: Complete,
     layout: Layout,
     viewportData: ViewportData,
     chartMetrics: ChartMetrics | null,
     panelMetrics: PanelMetrics,
     layerMetrics: LayerMetrics,
-  ) => void;
+  ): void;
   
 }
 

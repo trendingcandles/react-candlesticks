@@ -8,7 +8,7 @@ export type { WilliamsRLayerConfig, WilliamsRLayerConfigComplete };
 
 const williamsR: Layer = {
   parseConfig: parse as Layer['parseConfig'],
-  calculate2: calc,
+  calculate: calc,
   draw,
 };
 

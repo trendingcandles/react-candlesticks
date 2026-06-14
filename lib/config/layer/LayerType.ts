@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-export type LayerType =
+export type BuiltInLayerType =
   'price:candlesticks'
   | 'price:line'
   | 'volume:bars'
@@ -22,3 +22,5 @@ export type LayerType =
   | 'stochastic'
   | 'williams-r'
 ;
+
+export type LayerType = BuiltInLayerType | (string & {});

@@ -8,6 +8,7 @@
 import { LayersTopology } from '../../config/layer/createLayerTopology';
 import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerType } from '../../config/layer/LayerType';
+import { LayerRegistry } from '../../config/layer/LayerRegistry';
 
 export interface LayerInputSeries {
   id: string; // 'close', 'hlc3', 'ema20.value', etc
@@ -29,4 +30,5 @@ export interface LayerDataInstance {
 export interface LayersData {
   layerDataInstances: Record<string, LayerDataInstance>;
   layersTopology: LayersTopology;
+  layerRegistry?: LayerRegistry;
 }

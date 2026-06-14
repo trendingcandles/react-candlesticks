@@ -7,9 +7,9 @@
 
 import { InputSource } from '../../config/layer/BaseLayerConfig';
 import { DataMap } from '../../domain/types/DataMap';
-import layers from '../../layers/layers';
 import { LayerDataInstance, LayerInputSeries, LayersData } from '../../domain/types/LayersData';
 import createPriceVolumeDerivedLayerCalculationContext from './createPriceVolumeDerivedLayerCalculationContext';
+import builtInLayers from '../../layers/layers';
 
 export interface CalculationContext {
   resolve(input: InputSource): LayerInputSeries | null;
@@ -48,7 +48,7 @@ const updateLayerDataInstance = (
     computedEndIndex,
   } = layerDataInstance;
 
-  const calculateFunction = layers[layerType].calculate2;
+  const calculateFunction = (layersData.layerRegistry ?? builtInLayers)[layerType]?.calculate;
   if (!calculateFunction) {
     return;
   }

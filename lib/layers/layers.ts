@@ -5,8 +5,6 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import Layer from '../config/layer/Layer';
-import { LayerType } from '../config/layer/LayerType';
 import candlesticks from './candlesticks';
 import priceLine from './priceLine';
 import volumeBars from './volumeBars';
@@ -22,8 +20,9 @@ import cci from './cci';
 import obv from './obv';
 import parabolicSar from './parabolicSar';
 import williamsR from './williamsR';
+import { LayerRegistry } from '../config/layer/LayerRegistry';
 
-const layers: Record<LayerType, Layer> = {
+const layers: LayerRegistry = {
   'price:candlesticks': candlesticks,
   'price:line': priceLine,
   adx,

@@ -8,7 +8,7 @@ export type { ObvLayerConfig, ObvLayerConfigComplete };
 
 const obv: Layer = {
   parseConfig: parse as Layer['parseConfig'],
-  calculate2: calc,
+  calculate: calc,
   draw,
 };
 

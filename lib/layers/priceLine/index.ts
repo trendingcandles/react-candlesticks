@@ -18,7 +18,7 @@ export type {
 
 const priceLine: Layer = {
   parseConfig: parse as Layer['parseConfig'],
-  calculate2: calc,
+  calculate: calc,
   draw,
 };
 

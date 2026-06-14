@@ -20,6 +20,17 @@ import { CciLayerConfig, CciLayerConfigComplete, CciTheme } from '../../layers/c
 import { ObvLayerConfig, ObvLayerConfigComplete, ObvTheme } from '../../layers/obv/ObvLayerConfig';
 import { ParabolicSarLayerConfig, ParabolicSarLayerConfigComplete, ParabolicSarTheme } from '../../layers/parabolicSar/ParabolicSarLayerConfig';
 import { WilliamsRLayerConfig, WilliamsRLayerConfigComplete, WilliamsRTheme } from '../../layers/williamsR/WilliamsRLayerConfig';
+import { BaseLayerConfig, BaseLayerConfigComplete } from './BaseLayerConfig';
+
+export interface CustomLayerConfig extends BaseLayerConfig {
+  type: string;
+  [key: string]: unknown;
+}
+
+export interface CustomLayerConfigComplete extends BaseLayerConfigComplete {
+  type: string;
+  [key: string]: unknown;
+}
 
 export type LayerConfigComplete =
   CandlestickLayerConfigComplete
@@ -37,6 +48,7 @@ export type LayerConfigComplete =
   | SmaLayerConfigComplete
   | StochasticLayerConfigComplete
   | WilliamsRLayerConfigComplete
+  | CustomLayerConfigComplete
   ;
 
 export type LayerConfig =
@@ -55,6 +67,7 @@ export type LayerConfig =
   | SmaLayerConfig
   | StochasticLayerConfig
   | WilliamsRLayerConfig
+  | CustomLayerConfig
   ;
 
 export interface LayersTheme {

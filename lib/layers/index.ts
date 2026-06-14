@@ -5,7 +5,6 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfig } from '../config/layer/LayerConfig';
 import LAYER_COMPONENT_TYPE_KEY from '../config/layer/layerComponentTypeKey';
 import Candlesticks from './candlesticks/CandlesticksLayer';
 import PriceLine from './priceLine/PriceLineLayer';
@@ -22,9 +21,48 @@ import CCI from './cci/CCILayer';
 import OBV from './obv/OBVLayer';
 import ParabolicSAR from './parabolicSar/ParabolicSARLayer';
 import WilliamsR from './williamsR/WilliamsRLayer';
+export { default as defineLayer } from './defineLayer';
+export type {
+  CustomLayerComponent,
+  CustomLayerDefinition,
+  CustomLayerOptions,
+} from './defineLayer';
+export type {
+  CustomLayerConfig,
+  CustomLayerConfigComplete,
+} from '../config/layer/LayerConfig';
+export type {
+  LayerCalculate,
+  LayerDraw,
+} from '../config/layer/Layer';
+export type {
+  BaseLayerConfig,
+  BaseLayerConfigComplete,
+  InputSource,
+  LayerScale,
+  ScaleDomain,
+  ScalePolicy,
+  ScaleRange,
+  ValueToYFunction,
+} from '../config/layer/BaseLayerConfig';
+export { default as drawLineIndicator } from '../drawing/layer/drawLineIndicator';
+export type { LineIndicatorSeries } from '../drawing/layer/drawLineIndicator';
+export { default as drawLineSeries } from '../drawing/series/drawLineSeries';
+export type {
+  DrawLineSeriesOptions,
+  DrawLineSeriesResult,
+} from '../drawing/series/drawLineSeries';
+export { default as parseLineConfig } from '../config/elements/line/parseLineConfig';
+export type {
+  LineConfig,
+  LineConfigComplete,
+  LineTheme,
+} from '../config/elements/line/LineConfig';
+export { default as parseLegendConfig } from '../config/legend/parseLegendConfig';
+export { default as parseYAxisConfig } from '../config/layer/yAxis/parseYAxisConfig';
 
 type LayerComponent = {
-  [LAYER_COMPONENT_TYPE_KEY]?: LayerConfig['type'];
+  [LAYER_COMPONENT_TYPE_KEY]?: string;
 };
 
 (Candlesticks as LayerComponent)[LAYER_COMPONENT_TYPE_KEY] = 'price:candlesticks';

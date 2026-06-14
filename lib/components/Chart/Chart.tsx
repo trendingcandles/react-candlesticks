@@ -29,6 +29,10 @@ import deduceGranularity from '../../data/utils/deduceGranulairty';
 import createLayerTopology from '../../config/layer/createLayerTopology';
 import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
+import { CustomLayerDefinition } from '../../layers/defineLayer';
+import createLayerRegistry from '../../layers/createLayerRegistry';
+
+const EMPTY_CUSTOM_LAYERS: readonly CustomLayerDefinition[] = [];
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   renderMode?: 'full' | 'minimal';
@@ -50,6 +54,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onZoom?: (newIntervalWidthPx: number) => void;
   enableScroll?: boolean;
   enableZoom?: boolean;
+  customLayers?: readonly CustomLayerDefinition[];
 }
 
 interface PanelsAsPropChartProps extends ChartPropsBase {
@@ -87,6 +92,7 @@ const Chart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  customLayers = EMPTY_CUSTOM_LAYERS,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -142,6 +148,11 @@ const Chart = ({
     return typeof theme === 'string' ? themes[theme as ThemeName] : theme; // todo: validate theme
   }, [theme]);
 
+  const layerRegistry = useMemo(
+    () => createLayerRegistry(customLayers),
+    [customLayers],
+  );
+
   // Parse chart config (everything that's not panels/layers)
   const chartConfigComplete = useMemo(() => {
     const chartConfig = {
@@ -156,14 +167,18 @@ const Chart = ({
 
   // Parse panel configs and create layer topology
   const { panelConfigs: panelConfigsComplete, layersTopology } = useMemo(() => {
-    const panelConfigsWithoutYAxis = parsePanelConfigs(effectivePanels as readonly[PanelConfig, ...[PanelConfig]], effectiveTheme);
+    const panelConfigsWithoutYAxis = parsePanelConfigs(
+      effectivePanels as readonly [PanelConfig, ...PanelConfig[]],
+      effectiveTheme,
+      layerRegistry,
+    );
     const layersTopology = createLayerTopology(panelConfigsWithoutYAxis);
     const panelConfigs = setPanelYAxes(panelConfigsWithoutYAxis, layersTopology);
     return {
       panelConfigs,
       layersTopology,
     };
-  }, [effectivePanels, effectiveTheme]);
+  }, [effectivePanels, effectiveTheme, layerRegistry]);
 
   // Create layout object
   const layout = useMemo(() =>
@@ -187,8 +202,13 @@ const Chart = ({
   }, [data, deducedGranularity]);
 
   const layersData = useMemo(() => {
-    return createLayersData(panelConfigsComplete.flatMap(p => p.layers), layersTopology, indexProvider.barsLength);
-  }, [panelConfigsComplete, layersTopology, indexProvider.barsLength]);
+    return createLayersData(
+      panelConfigsComplete.flatMap(p => p.layers),
+      layersTopology,
+      indexProvider.barsLength,
+      layerRegistry,
+    );
+  }, [panelConfigsComplete, layersTopology, indexProvider.barsLength, layerRegistry]);
 
 
   useEffect(() => {
