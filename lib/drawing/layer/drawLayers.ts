@@ -12,7 +12,7 @@ import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { TimeScale } from '../../domain/types/TimeScale';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import drawLayer from './drawLayer';
 import ViewportData from '../../domain/types/ViewportData';
 
@@ -21,7 +21,7 @@ const drawLayers = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layers: LayerConfigComplete[],
+  layers: BaseLayerConfigComplete[],
   layout: Layout,
   timeScale: TimeScale,
   viewportData: ViewportData,

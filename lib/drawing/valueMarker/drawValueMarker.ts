@@ -16,7 +16,7 @@ import { ValueMarkerConfigComplete } from '../../config/valueMarker/ValueMarkerC
 import ViewportData from '../../domain/types/ViewportData';
 import { YAxisConfigComplete } from '../../config/layer/yAxis/YAxisConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 
 const drawValueMarker = (
   context: CanvasRenderingContext2D,
@@ -24,7 +24,7 @@ const drawValueMarker = (
   layout: Layout,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BaseLayerConfigComplete,
   yAxisConfig: YAxisConfigComplete | null,
   valueLabelFormatter: (value: number) => string,
   chartMatrics: ChartMetrics,

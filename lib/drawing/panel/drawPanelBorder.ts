@@ -11,14 +11,14 @@ import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import ViewportData from '../../domain/types/ViewportData';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 
 const drawPanelBorder = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layers: LayerConfigComplete[],
+  layers: BaseLayerConfigComplete[],
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics,

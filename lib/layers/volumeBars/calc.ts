@@ -5,11 +5,11 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
+import { VolumeBarsLayerConfigComplete } from './VolumeBarsLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: VolumeBarsLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number, // eslint-disable-line @typescript-eslint/no-unused-vars

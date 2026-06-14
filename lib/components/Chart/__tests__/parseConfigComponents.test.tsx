@@ -38,16 +38,9 @@ describe('parseConfigComponents', () => {
     expect(cfg).toMatchObject({ id: 'ema-2', type: 'ema', period: 9 });
   });
 
-  it('maps new indicator component names through the fallback map', () => {
+  it('does not infer layer types from component names alone', () => {
     const CCILayer = () => null;
-    const OBVLayer = () => null;
-    const ParabolicSARLayer = () => null;
-    const WilliamsRLayer = () => null;
-
-    expect(mapLayerElementToConfig(<CCILayer />)).toMatchObject({ type: 'cci' });
-    expect(mapLayerElementToConfig(<OBVLayer />)).toMatchObject({ type: 'obv' });
-    expect(mapLayerElementToConfig(<ParabolicSARLayer />)).toMatchObject({ type: 'parabolic-sar' });
-    expect(mapLayerElementToConfig(<WilliamsRLayer />)).toMatchObject({ type: 'williams-r' });
+    expect(() => mapLayerElementToConfig(<CCILayer />)).toThrow('Invalid layer: CCILayer');
   });
 
   it('throws for unknown layer component name', () => {

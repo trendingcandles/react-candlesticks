@@ -7,7 +7,7 @@
 
 import { LineConfigComplete } from '../../config/elements/line/LineConfig';
 
-interface DrawLineSeriesOptions {
+export interface DrawLineSeriesOptions {
   context: CanvasRenderingContext2D;
   values: Float64Array;
   lineConfig: LineConfigComplete;

@@ -11,7 +11,7 @@ import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import layers from '../../layers/layers';
 import ViewportData from '../../domain/types/ViewportData';
 
@@ -20,7 +20,7 @@ const drawLayer = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BaseLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics,
@@ -32,8 +32,10 @@ const drawLayer = (
     type,
   } = layerConfig;
 
-  if (layers[type].draw) {
-    layers[type].draw(
+  const layer = viewportData.layersData?.layerRegistry?.[type] ?? layers[type];
+
+  if (layer?.draw) {
+    layer.draw(
       context,
       axesContext,
       chartConfig,

@@ -9,7 +9,7 @@ import { Fragment, forwardRef, memo, useCallback, useImperativeHandle, useRef } 
 import { LegendConfigComplete } from '../../../../config/legend/LegendConfig';
 import { DataPoint } from '../../../../domain/types/DataPoint';
 import styles from './styles.module.scss';
-import { LayerConfigComplete } from '../../../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../../../config/layer/BaseLayerConfig';
 import DataPointInfo from '../../../../domain/types/DataPointInfo';
 
 export interface LegendHandle {
@@ -17,7 +17,7 @@ export interface LegendHandle {
 }
 
 export interface LegendProps {
-  layer: LayerConfigComplete;
+  layer: BaseLayerConfigComplete;
   legend: LegendConfigComplete;
 }
 

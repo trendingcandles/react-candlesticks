@@ -14,8 +14,7 @@ import drawValueGridLines from '../chart/grid/value/drawValueGridLines';
 import { TimeScale } from '../../domain/types/TimeScale';
 import drawLayers from '../layer/drawLayers';
 import calculateLayerMetrics from '../../metrics/layer/calculateLayerMetrics';
-import { LayerScale } from '../../config/layer/BaseLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete, LayerScale } from '../../config/layer/BaseLayerConfig';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import drawValueGridLabels from '../elements/labels/valueLabel/drawValueGridLabels';
@@ -33,7 +32,7 @@ const drawLayersForScale = (
   panelMetrics: PanelMetrics,
   panelIndex: number,
   scale: LayerScale,
-  layerConfigs: LayerConfigComplete[],
+  layerConfigs: BaseLayerConfigComplete[],
 ): LayerMetrics | undefined => {
 
   const {

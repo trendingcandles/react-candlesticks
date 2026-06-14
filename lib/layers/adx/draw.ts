@@ -6,7 +6,6 @@
  */
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
-import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { Layout } from '../../domain/types/Layout';
@@ -21,14 +20,14 @@ const draw = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: BaseLayerConfigComplete,
+  layerConfig: AdxLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const adxLayerConfig = layerConfig as AdxLayerConfigComplete;
+  const adxLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, adxLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'value', line: adxLayerConfig.series?.value ?? null, marker: adxLayerConfig.markers?.value ?? null },
   ]);

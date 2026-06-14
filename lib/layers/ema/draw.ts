@@ -14,21 +14,20 @@ import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { EmaLayerConfigComplete } from './EmaLayerConfig';
 import ViewportData from '../../domain/types/ViewportData';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: EmaLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics,
   layerMetrics: LayerMetrics,
 ) => {
-  const emaLayerConfig = layerConfig as EmaLayerConfigComplete;
+  const emaLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, emaLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     {
       output: 'value',

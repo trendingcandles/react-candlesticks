@@ -14,21 +14,20 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import ViewportData from '../../domain/types/ViewportData';
 import { AtrLayerConfigComplete } from './AtrLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: AtrLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const atrLayerConfig = layerConfig as AtrLayerConfigComplete;
+  const atrLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, atrLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'value', line: atrLayerConfig.series?.value ?? null, marker: atrLayerConfig.markers?.value ?? null },
   ]);

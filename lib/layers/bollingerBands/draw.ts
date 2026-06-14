@@ -15,14 +15,13 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import ViewportData from '../../domain/types/ViewportData';
 import { BollingerBandsLayerConfigComplete } from './BollingerBandsLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BollingerBandsLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
@@ -30,7 +29,7 @@ const draw = (
   layerMetrics: LayerMetrics | null,
 ) => {
 
-  const bbLayerConfig: BollingerBandsLayerConfigComplete = layerConfig as BollingerBandsLayerConfigComplete;
+  const bbLayerConfig = layerConfig;
 
   if (!chartMetrics || !panelMetrics || !layerMetrics) return;
 

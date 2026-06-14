@@ -7,7 +7,7 @@
 
 import { ChartConfigComplete } from '../../../../config/chart/ChartConfig';
 import { PanelConfigComplete } from '../../../../config/panel/PanelConfig';
-import { LayerConfigComplete } from '../../../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../../../config/layer/BaseLayerConfig';
 import { Layout } from '../../../../domain/types/Layout';
 import { PanelMetrics } from '../../../../domain/types/metrics/PanelMetrics';
 import { ValueGridLine } from '../../../chart/grid/value/ValueGridLine';
@@ -18,7 +18,7 @@ const drawValueGridLabels = (
   layout: Layout,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BaseLayerConfigComplete,
   valueGridLines: ValueGridLine[],
   panelMetrics: PanelMetrics,
   panelYAxis: PanelYAxis,

@@ -8,9 +8,16 @@
 import { Theme } from '../../domain/types/Theme';
 import { PanelConfig, PanelConfigComplete } from './PanelConfig';
 import parsePanelConfig from './parsePanelConfig';
+import layers from '../../layers/layers';
+import { LayerRegistry } from '../layer/LayerRegistry';
 
-const parsePanelConfigs = (partialPanelConfigs: readonly[PanelConfig, ...PanelConfig[]], theme: Theme): Omit<PanelConfigComplete, 'yAxes'>[] => {
-  const panelConfigs = partialPanelConfigs.map((panel, panelIndex) => parsePanelConfig(panel, theme, panelIndex));
+const parsePanelConfigs = (
+  partialPanelConfigs: readonly [PanelConfig, ...PanelConfig[]],
+  theme: Theme,
+  layerRegistry: LayerRegistry = layers,
+): Omit<PanelConfigComplete, 'yAxes'>[] => {
+  const panelConfigs = partialPanelConfigs.map((panel, panelIndex) =>
+    parsePanelConfig(panel, theme, panelIndex, layerRegistry));
   const panelIds = panelConfigs.map(panel => panel.id);
   const duplicatePanelIds = panelIds.filter((id, index) => panelIds.indexOf(id) !== index);
 

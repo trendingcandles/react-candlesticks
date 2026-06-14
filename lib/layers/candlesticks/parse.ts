@@ -12,7 +12,7 @@ import parseDirectionalValueMarkerConfig from '../../config/valueMarker/parseDir
 import parseLegendConfig from '../../config/legend/parseLegendConfig';
 import createSelector from '../../utils/createSelector';
 import { LegendFieldConfigDefaultsForLayer } from '../../config/legend/LegendFieldConfig';
-import { LayersTheme } from '../../config/layer/LayerConfig';
+import { LayersTheme } from '../../config/layer/LayersTheme';
 import parseYAxisConfig from '../../config/layer/yAxis/parseYAxisConfig';
 import validateLayerInputs from '../../config/layer/validateLayerInputs';
 

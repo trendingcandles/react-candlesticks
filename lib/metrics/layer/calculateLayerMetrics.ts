@@ -5,8 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerScale } from '../../config/layer/BaseLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete, LayerScale } from '../../config/layer/BaseLayerConfig';
 import { LayerDataInstance, LayersData } from '../../domain/types/LayersData';
 import { DataMap } from '../../domain/types/DataMap';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
@@ -18,8 +17,8 @@ const calculateLayerMetrics = (
   layerData: LayersData,
   startBarIndex: number,
   endBarIndex: number,
-  layerConfigs: LayerConfigComplete[],
-  layerConfig0: LayerConfigComplete,
+  layerConfigs: BaseLayerConfigComplete[],
+  layerConfig0: BaseLayerConfigComplete,
   panelMetrics: PanelMetrics,
   scale: LayerScale,
 ): LayerMetrics | null => {

@@ -8,7 +8,7 @@
 import { GridTheme } from '../../config/chart/grid/GridConfig';
 import { CrosshairsTheme } from '../../config/chart/crosshairs/CrosshairsConfig';
 import { PanelTheme } from '../../config/panel/PanelConfig';
-import { LayersTheme } from '../../config/layer/LayerConfig';
+import { LayersTheme } from '../../config/layer/LayersTheme';
 import { BordersTheme } from '../../config/chart/borders/BordersConfig';
 import { XAxisTheme } from '../../config/chart/xAxis/XAxisConfig';
 

@@ -14,21 +14,20 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import { StochasticLayerConfigComplete } from './StochasticLayerConfig';
 import ViewportData from '../../domain/types/ViewportData';
-import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: BaseLayerConfigComplete,
+  layerConfig: StochasticLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const stochasticLayerConfig = layerConfig as StochasticLayerConfigComplete;
+  const stochasticLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, stochasticLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'd', line: stochasticLayerConfig.series?.d ?? null, marker: stochasticLayerConfig.markers?.d ?? null },
     { output: 'kSmoothed', line: stochasticLayerConfig.series?.k ?? null, marker: stochasticLayerConfig.markers?.k ?? null },

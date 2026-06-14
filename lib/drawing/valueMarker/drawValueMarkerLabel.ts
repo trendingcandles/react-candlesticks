@@ -15,14 +15,14 @@ import { BoxedValueLabelConfigComplete } from '../../config/elements/boxedValueL
 import ViewportData from '../../domain/types/ViewportData';
 import { YAxisConfigComplete } from '../../config/layer/yAxis/YAxisConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 
 const drawValueMarkerLabel = (
   axesContext: CanvasRenderingContext2D,
   layout: Layout,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: BaseLayerConfigComplete,
   yAxisConfig: YAxisConfigComplete,
   valueLabelFormatter: (value: number) => string,
   valueMarkerLabelConfig: BoxedValueLabelConfigComplete,

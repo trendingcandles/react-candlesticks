@@ -5,19 +5,18 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { RsiLayerConfigComplete } from './RsiLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: RsiLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
 
-  const rsiLayerConfig: RsiLayerConfigComplete = layerConfig as RsiLayerConfigComplete;
+  const rsiLayerConfig = layerConfig;
 
   const {
     period,
