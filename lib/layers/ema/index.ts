@@ -7,7 +7,7 @@
 
 import parse from './parse';
 import { EmaLayerConfig, EmaLayerConfigComplete } from './EmaLayerConfig';
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 import calc from './calc';
 import draw from './draw';
 
@@ -16,10 +16,12 @@ export type {
   EmaLayerConfigComplete,
 };
 
-const ema: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
+const ema = defineLayer<EmaLayerConfig, EmaLayerConfigComplete>({
+  type: 'ema',
+  displayName: 'EMALayer',
+  parseConfig: parse,
   calculate: calc,
   draw,
-};
+});
 
 export default ema;

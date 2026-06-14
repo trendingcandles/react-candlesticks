@@ -14,7 +14,6 @@ import drawVolumeBar from './drawVolumeBar';
 import { LayerMetrics } from '../../../domain/types/metrics/LayerMetrics';
 import drawValueMarker from '../../../drawing/valueMarker/drawValueMarker';
 import { VolumeBarsLayerConfigComplete } from '../VolumeBarsLayerConfig';
-import { LayerConfigComplete } from '../../../config/layer/LayerConfig';
 import ViewportData from '../../../domain/types/ViewportData';
 
 const draw = (
@@ -22,7 +21,7 @@ const draw = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: VolumeBarsLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
@@ -30,7 +29,7 @@ const draw = (
   layerMetrics: LayerMetrics | null,
 ) => {
 
-  const volumeBarsLayerConfig: VolumeBarsLayerConfigComplete = layerConfig as VolumeBarsLayerConfigComplete;
+  const volumeBarsLayerConfig = layerConfig;
 
   const {
     timeScale: {

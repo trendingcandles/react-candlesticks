@@ -1,5 +1,4 @@
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
@@ -14,14 +13,14 @@ const draw = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: ObvLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const config = layerConfig as ObvLayerConfigComplete;
+  const config = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, layerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'value', line: config.series.value, marker: config.markers.value },
     { output: 'smoothing', line: config.series.smoothing, marker: config.markers.smoothing },

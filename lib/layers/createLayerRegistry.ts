@@ -8,7 +8,6 @@
 import { LayerRegistry } from '../config/layer/LayerRegistry';
 import builtInLayers from './layers';
 import { CustomLayerDefinition } from './defineLayer';
-import Layer from '../config/layer/Layer';
 
 const createLayerRegistry = (
   customLayers: readonly CustomLayerDefinition[] = [],
@@ -21,7 +20,7 @@ const createLayerRegistry = (
     if (registry[customLayer.type]) {
       throw new Error(`Duplicate layer type: ${customLayer.type}`);
     }
-    registry[customLayer.type] = customLayer as unknown as Layer;
+    registry[customLayer.type] = customLayer;
   }
 
   return Object.freeze(registry);

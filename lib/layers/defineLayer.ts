@@ -5,36 +5,55 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { ComponentType } from 'react';
+import { FunctionComponent } from 'react';
 import Layer from '../config/layer/Layer';
-import { CustomLayerConfig, CustomLayerConfigComplete } from '../config/layer/LayerConfig';
+import { BaseLayerConfig, BaseLayerConfigComplete } from '../config/layer/BaseLayerConfig';
 import LAYER_COMPONENT_TYPE_KEY from '../config/layer/layerComponentTypeKey';
 
-export type CustomLayerComponent<C extends CustomLayerConfig = CustomLayerConfig> =
-  ComponentType<Omit<C, 'type'>>;
+export type LayerComponent<C extends BaseLayerConfig = BaseLayerConfig> =
+  FunctionComponent<Omit<C, 'type'>>;
 
-export interface CustomLayerDefinition<
-  C extends CustomLayerConfig = CustomLayerConfig,
-  Complete extends CustomLayerConfigComplete = CustomLayerConfigComplete,
+export interface LayerDefinition<
+  C extends BaseLayerConfig = BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete = BaseLayerConfigComplete,
 > extends Layer<C, Complete> {
   type: C['type'];
-  Component: CustomLayerComponent<C>;
+  Component: LayerComponent<C>;
 }
 
-export type CustomLayerOptions<
-  C extends CustomLayerConfig,
-  Complete extends CustomLayerConfigComplete,
+export type DefineLayerOptions<
+  C extends BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete,
 > = Layer<C, Complete> & {
   type: C['type'];
   displayName?: string;
 };
 
+export type LayerDefinitionConfig<D> =
+  D extends LayerDefinition<infer C, BaseLayerConfigComplete> ? C : never;
+
+export type LayerDefinitionConfigComplete<D> =
+  D extends LayerDefinition<BaseLayerConfig, infer Complete> ? Complete : never;
+
+export type CustomLayerComponent<C extends BaseLayerConfig = BaseLayerConfig> =
+  LayerComponent<C>;
+
+export type CustomLayerDefinition<
+  C extends BaseLayerConfig = BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete = BaseLayerConfigComplete,
+> = LayerDefinition<C, Complete>;
+
+export type CustomLayerOptions<
+  C extends BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete,
+> = DefineLayerOptions<C, Complete>;
+
 const defineLayer = <
-  C extends CustomLayerConfig,
-  Complete extends CustomLayerConfigComplete,
+  C extends BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete,
 >(
-  options: CustomLayerOptions<C, Complete>,
-): CustomLayerDefinition<C, Complete> => {
+  options: DefineLayerOptions<C, Complete>,
+): LayerDefinition<C, Complete> => {
   const {
     type,
     displayName = `${type}Layer`,
@@ -42,10 +61,10 @@ const defineLayer = <
   } = options;
 
   if (!type) {
-    throw new Error('Custom layer type must be a non-empty string');
+    throw new Error('Layer type must be a non-empty string');
   }
 
-  const Component = (() => null) as CustomLayerComponent<C> & {
+  const Component = (() => null) as LayerComponent<C> & {
     displayName?: string;
     [LAYER_COMPONENT_TYPE_KEY]?: string;
   };
@@ -57,7 +76,7 @@ const defineLayer = <
     ...layer,
     type,
     Component,
-  } as CustomLayerDefinition<C, Complete>;
+  } as LayerDefinition<C, Complete>;
 };
 
 export default defineLayer;

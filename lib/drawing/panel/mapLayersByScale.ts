@@ -5,10 +5,9 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerScale } from '../../config/layer/BaseLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete, LayerScale } from '../../config/layer/BaseLayerConfig';
 
-const mapLayerByScale = (layerConfigs: LayerConfigComplete[], layerScalesByLayerId: Record<string, LayerScale>) => {
+const mapLayerByScale = (layerConfigs: BaseLayerConfigComplete[], layerScalesByLayerId: Record<string, LayerScale>) => {
 
   const layersByScale = layerConfigs.reduce((acc, layer) => {
     const deducedScale = layerScalesByLayerId[layer.id];
@@ -17,7 +16,7 @@ const mapLayerByScale = (layerConfigs: LayerConfigComplete[], layerScalesByLayer
       ...acc,
       [deducedScale.key]: [...scaleLayers, layer],
     };
-  }, {} as Record<LayerScale['key'], LayerConfigComplete[]>);
+  }, {} as Record<LayerScale['key'], BaseLayerConfigComplete[]>);
 
   return layersByScale;
 

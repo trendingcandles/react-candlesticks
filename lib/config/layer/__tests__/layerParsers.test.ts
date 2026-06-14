@@ -4,7 +4,6 @@ import validateLayerInputs from '../validateLayerInputs';
 import createLayerTopology from '../createLayerTopology';
 import parseLayerConfig from '../parseLayerConfig';
 import parseLayerConfigs from '../parseLayerConfigs';
-import layerComponentNameToLayerTypeMap from '../layerComponentNameToLayerTypeMap';
 import defaultLightTheme from '../../../themes/defaultLightTheme';
 import type { LayerConfigComplete } from '../LayerConfig';
 
@@ -34,8 +33,6 @@ describe('layer parsers and utils', () => {
   });
 
   it('parses layer configs and validates numeric fields', () => {
-    expect(layerComponentNameToLayerTypeMap.CandlesticksLayer).toBe('price:candlesticks');
-
     expect(() => parseLayerConfig({ type: 'sma', period: 0 } as never, defaultLightTheme.layers, 'panel_0')).toThrow('sma.period must be > 0');
     expect(() => parseLayerConfig({ type: 'sma', lookback: -1 } as never, defaultLightTheme.layers, 'panel_0')).toThrow('sma.lookback must be >= 0');
     expect(() => parseLayerConfig({ type: 'sma', valueGridLines: [1, Number.NaN] } as never, defaultLightTheme.layers, 'panel_0')).toThrow('sma.valueGridLines[1] must be a finite number');

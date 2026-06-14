@@ -6,13 +6,13 @@
  */
 
 import { LayersTopology } from '../../config/layer/createLayerTopology';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
 import { LayerDataInstance, LayersData } from '../../domain/types/LayersData';
 import builtInLayers from '../../layers/layers';
 import { LayerRegistry } from '../../config/layer/LayerRegistry';
 
-const createLayerDataInstance = (layerConfig: LayerConfigComplete, barsLength: number): LayerDataInstance => {
-  const outputValues = layerConfig.outputs.reduce((acc, outputKey) => {
+const createLayerDataInstance = (layerConfig: BaseLayerConfigComplete, barsLength: number): LayerDataInstance => {
+  const outputValues = layerConfig.outputs.reduce<Record<string, Float64Array>>((acc, outputKey) => {
     const values = new Float64Array(barsLength);
     values.fill(NaN);
     return {...acc, [outputKey]: values };
@@ -30,7 +30,7 @@ const createLayerDataInstance = (layerConfig: LayerConfigComplete, barsLength: n
 };
 
 export const createLayersData = (
-  layers: LayerConfigComplete[],
+  layers: BaseLayerConfigComplete[],
   layersTopology: LayersTopology,
   barsLength: number,
   layerRegistry: LayerRegistry = builtInLayers,

@@ -13,7 +13,7 @@ import parseLegendConfig from '../../config/legend/parseLegendConfig';
 import parseLookback from '../../config/layer/parseLookback';
 import createSelector from '../../utils/createSelector';
 import { MacdLayerConfig, MacdLayerConfigComplete, REQUIRED_INPUT_KEYS, macdDefaults } from './MacdLayerConfig';
-import { LayersTheme } from '../../config/layer/LayerConfig';
+import { LayersTheme } from '../../config/layer/LayersTheme';
 import parseYAxisConfig from '../../config/layer/yAxis/parseYAxisConfig';
 import validateLayerInputs from '../../config/layer/validateLayerInputs';
 import { resolveSingleInputSource } from '../../config/layer/inputSourceShorthand';

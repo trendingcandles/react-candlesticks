@@ -14,21 +14,20 @@ import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import drawLineIndicator from '../../drawing/layer/drawLineIndicator';
 import ViewportData from '../../domain/types/ViewportData';
 import { PriceLineLayerConfigComplete } from './PriceLineLayerConfig';
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 
 const draw = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: PriceLineLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelMetrics: PanelMetrics | null,
   layerMetrics: LayerMetrics | null,
 ) => {
-  const priceLineLayerConfig = layerConfig as PriceLineLayerConfigComplete;
+  const priceLineLayerConfig = layerConfig;
   drawLineIndicator(context, axesContext, chartConfig, panelConfig, priceLineLayerConfig, layout, viewportData, chartMetrics, panelMetrics, layerMetrics, [
     { output: 'price', line: priceLineLayerConfig.series?.value ?? null, marker: priceLineLayerConfig.markers?.value ?? null },
   ]);

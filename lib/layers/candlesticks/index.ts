@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 import calc from './calc';
 import { CandlestickLayerConfig, CandlestickLayerConfigComplete } from './CandlestickLayerConfig';
 import draw from './draw/draw';
@@ -16,10 +16,12 @@ export type {
   CandlestickLayerConfigComplete,
 };
 
-const candlesticks: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
+const candlesticks = defineLayer<CandlestickLayerConfig, CandlestickLayerConfigComplete>({
+  type: 'price:candlesticks',
+  displayName: 'CandlesticksLayer',
+  parseConfig: parse,
   calculate: calc,
   draw,
-};
+});
 
 export default candlesticks;

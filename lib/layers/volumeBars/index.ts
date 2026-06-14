@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 import { VolumeBarsLayerConfig, VolumeBarsLayerConfigComplete } from './VolumeBarsLayerConfig';
 import calc from './calc';
 import draw from './draw/draw';
@@ -16,10 +16,12 @@ export type {
   VolumeBarsLayerConfigComplete,
 };
 
-const volumeBars: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
+const volumeBars = defineLayer<VolumeBarsLayerConfig, VolumeBarsLayerConfigComplete>({
+  type: 'volume:bars',
+  displayName: 'VolumeBarsLayer',
+  parseConfig: parse,
   calculate: calc,
   draw,
-};
+});
 
 export default volumeBars;

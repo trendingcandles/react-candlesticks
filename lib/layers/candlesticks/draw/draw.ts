@@ -14,7 +14,6 @@ import { LayerMetrics } from '../../../domain/types/metrics/LayerMetrics';
 import { PanelConfigComplete } from '../../../config/panel/PanelConfig';
 import drawDirectionalValueMarker from '../../../drawing/valueMarker/drawDirectionalValueMarker';
 import { CandlestickLayerConfigComplete } from '../CandlestickLayerConfig';
-import { LayerConfigComplete } from '../../../config/layer/LayerConfig';
 import ViewportData from '../../../domain/types/ViewportData';
 
 const draw = (
@@ -22,7 +21,7 @@ const draw = (
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
   panelConfig: PanelConfigComplete,
-  layerConfig: LayerConfigComplete,
+  layerConfig: CandlestickLayerConfigComplete,
   layout: Layout,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
@@ -30,7 +29,7 @@ const draw = (
   layerMetrics: LayerMetrics,
 ) => {
 
-  const candlesticksLayerConfig: CandlestickLayerConfigComplete = layerConfig as CandlestickLayerConfigComplete;
+  const candlesticksLayerConfig = layerConfig;
 
   const {
     timeScale: {

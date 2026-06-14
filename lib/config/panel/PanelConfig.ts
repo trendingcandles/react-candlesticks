@@ -6,7 +6,8 @@
  */
 
 import { PanelYAxes } from '../../drawing/panel/getPanelYAxes';
-import { LayerConfig, LayerConfigComplete } from '../../config/layer/LayerConfig';
+import { LayerConfig } from '../../config/layer/LayerConfig';
+import { BaseLayerConfigComplete } from '../layer/BaseLayerConfig';
 import { LineConfig, LineConfigComplete } from '../elements/line/LineConfig';
 import { PanelControlsConfig, PanelControlsConfigComplete, PanelControlsTheme } from './controls/PanelControlsConfig';
 
@@ -16,7 +17,7 @@ export interface PanelConfigComplete {
   paddingTop: number;
   paddingBottom: number;
   borderTop: null | LineConfigComplete;
-  layers: LayerConfigComplete[];
+  layers: BaseLayerConfigComplete[];
   controls: PanelControlsConfigComplete;
   yAxes: PanelYAxes;
 }

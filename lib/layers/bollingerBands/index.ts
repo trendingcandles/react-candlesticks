@@ -7,7 +7,7 @@
 
 import { BollingerBandsLayerConfig, BollingerBandsLayerConfigComplete } from './BollingerBandsLayerConfig';
 import parse from './parse';
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 import calc from './calc';
 import draw from './draw';
 
@@ -16,10 +16,12 @@ export type {
   BollingerBandsLayerConfigComplete,
 };
 
-const bollingerBands: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
+const bollingerBands = defineLayer<BollingerBandsLayerConfig, BollingerBandsLayerConfigComplete>({
+  type: 'bollinger-bands',
+  displayName: 'BollingerBandsLayer',
+  parseConfig: parse,
   calculate: calc,
   draw,
-};
+});
 
 export default bollingerBands;

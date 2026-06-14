@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import Layer from '../../config/layer/Layer';
+import defineLayer from '../defineLayer';
 import calc from './calc';
 import draw from './draw';
 import parse from './parse';
@@ -16,10 +16,12 @@ export type {
   RsiLayerConfigComplete,
 };
 
-const rsi: Layer = {
-  parseConfig: parse as Layer['parseConfig'],
+const rsi = defineLayer<RsiLayerConfig, RsiLayerConfigComplete>({
+  type: 'rsi',
+  displayName: 'RSILayer',
+  parseConfig: parse,
   calculate: calc,
   draw,
-};
+});
 
 export default rsi;

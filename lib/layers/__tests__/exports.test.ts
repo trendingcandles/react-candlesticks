@@ -10,10 +10,13 @@ import cci from '../cci';
 import obv from '../obv';
 import parabolicSar from '../parabolicSar';
 import williamsR from '../williamsR';
+import builtInLayerDefinitions from '../builtInLayers';
 import { ADX, CCI, Candlesticks, OBV, ParabolicSAR, PriceLine, SMA, Stochastic, VolumeBars, WilliamsR } from '../index';
 
 describe('layer exports', () => {
   it('maps layer types to layer implementations', () => {
+    expect(Object.keys(layers)).toHaveLength(builtInLayerDefinitions.length);
+    expect(builtInLayerDefinitions.map(layer => layer.type)).toEqual(Object.keys(layers));
     expect(layers['price:candlesticks']).toBe(candlesticks);
     expect(layers['price:line']).toBe(priceLine);
     expect(layers.sma).toBe(sma);
@@ -27,6 +30,8 @@ describe('layer exports', () => {
   });
 
   it('exports React layer components', () => {
+    expect(Candlesticks).toBe(candlesticks.Component);
+    expect(SMA).toBe(sma.Component);
     expect(Candlesticks({} as never)).toBeNull();
     expect(PriceLine({} as never)).toBeNull();
     expect(SMA({} as never)).toBeNull();

@@ -15,7 +15,6 @@ import React, {
 } from 'react';
 import { PanelConfig } from '../../config/panel/PanelConfig';
 import { LayerConfig } from '../../config/layer/LayerConfig';
-import layerComponentNameToLayerTypeMap from '../../config/layer/layerComponentNameToLayerTypeMap';
 import LAYER_COMPONENT_TYPE_KEY from '../../config/layer/layerComponentTypeKey';
 
 export interface ConfigNode {
@@ -60,8 +59,6 @@ export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null 
     layerComponentName = maybeComponent.displayName || maybeComponent.name || 'Anonymous';
     layerType = maybeComponent[LAYER_COMPONENT_TYPE_KEY] ?? maybeComponent.layerType;
   }
-
-  layerType = layerType ?? layerComponentNameToLayerTypeMap[layerComponentName as keyof typeof layerComponentNameToLayerTypeMap];
 
   if (layerType === undefined) {
     throw new Error(`Invalid layer: ${layerComponentName}`);

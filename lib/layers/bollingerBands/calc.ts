@@ -5,19 +5,18 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { BollingerBandsLayerConfigComplete } from './BollingerBandsLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: BollingerBandsLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
 
-  const bbLayerConfig: BollingerBandsLayerConfigComplete = layerConfig as BollingerBandsLayerConfigComplete;
+  const bbLayerConfig = layerConfig;
 
   const {
     period = 20,

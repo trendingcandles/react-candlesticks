@@ -11,11 +11,12 @@ import { Layout } from '../../domain/types/Layout';
 import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
-import { LayerConfig, LayerConfigComplete, LayersTheme } from './LayerConfig';
+import { BaseLayerConfig, BaseLayerConfigComplete } from './BaseLayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import ViewportData from '../../domain/types/ViewportData';
+import { LayersTheme } from './LayersTheme';
 
-export type LayerCalculate<C extends LayerConfigComplete = LayerConfigComplete> = (
+export type LayerCalculate<C extends BaseLayerConfigComplete = BaseLayerConfigComplete> = (
   layerConfig: C,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
@@ -23,7 +24,7 @@ export type LayerCalculate<C extends LayerConfigComplete = LayerConfigComplete> 
   endBarIndex: number,
 ) => void;
 
-export type LayerDraw<C extends LayerConfigComplete = LayerConfigComplete> = (
+export type LayerDraw<C extends BaseLayerConfigComplete = BaseLayerConfigComplete> = (
   context: CanvasRenderingContext2D,
   axesContext: CanvasRenderingContext2D,
   chartConfig: ChartConfigComplete,
@@ -37,8 +38,8 @@ export type LayerDraw<C extends LayerConfigComplete = LayerConfigComplete> = (
 ) => void;
 
 interface Layer<
-  C extends LayerConfig = LayerConfig,
-  Complete extends LayerConfigComplete = LayerConfigComplete,
+  C extends BaseLayerConfig = BaseLayerConfig,
+  Complete extends BaseLayerConfigComplete = BaseLayerConfigComplete,
 > {
 
   parseConfig(config: C, layersTheme: LayersTheme, panelId: string): Complete;

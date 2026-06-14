@@ -6,11 +6,10 @@
  */
 
 import { PanelConfigComplete } from '../panel/PanelConfig';
-import { LayerScale } from './BaseLayerConfig';
-import { LayerConfigComplete } from './LayerConfig';
+import { BaseLayerConfigComplete, LayerScale } from './BaseLayerConfig';
 
-const getLayersById = (layers: LayerConfigComplete[]): Record<string, LayerConfigComplete> => {
-  const layersById: Record<string, LayerConfigComplete> = {};
+const getLayersById = (layers: BaseLayerConfigComplete[]): Record<string, BaseLayerConfigComplete> => {
+  const layersById: Record<string, BaseLayerConfigComplete> = {};
   for (const layer of layers) {
     layersById[layer.id] = layer;
   }
@@ -21,7 +20,7 @@ const getLayersById = (layers: LayerConfigComplete[]): Record<string, LayerConfi
 const getLayerDependencies = (): string[] => [];
 
 const topoSortLayers = (
-  layersById: Record<string, LayerConfigComplete>,
+  layersById: Record<string, BaseLayerConfigComplete>,
 ): string[] => {
   const visited = new Set<string>();
   const temp = new Set<string>();
@@ -58,7 +57,7 @@ const topoSortLayers = (
 };
 
 const deduceLayerScale = (
-  layer: LayerConfigComplete,
+  layer: BaseLayerConfigComplete,
 ): LayerScale => {
 
   // 1. Explicit scale
@@ -73,8 +72,8 @@ const deduceLayerScale = (
 };
 
 const deduceLayerScales = (
-  layersInDependencyOrder: LayerConfigComplete[],
-): Record<LayerConfigComplete['id'], LayerScale> => {
+  layersInDependencyOrder: BaseLayerConfigComplete[],
+): Record<BaseLayerConfigComplete['id'], LayerScale> => {
   const deducedLayerScales: Record<string, LayerScale> = {}
 
   for (const layer of layersInDependencyOrder) {
@@ -88,8 +87,8 @@ const deduceLayerScales = (
 };
 
 export interface LayersTopology {
-  layersInDependencyOrder: LayerConfigComplete[];
-  deducedLayerScales: Record<LayerConfigComplete['id'], LayerScale>;
+  layersInDependencyOrder: BaseLayerConfigComplete[];
+  deducedLayerScales: Record<BaseLayerConfigComplete['id'], LayerScale>;
 }
 
 const createLayerTopology = (panels: (PanelConfigComplete | Omit<PanelConfigComplete, 'yAxes'>)[]): LayersTopology => {

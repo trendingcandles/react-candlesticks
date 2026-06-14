@@ -5,19 +5,18 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { SmaLayerConfigComplete } from './SmaLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: SmaLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
 
-  const smaLayerConfig: SmaLayerConfigComplete = layerConfig as SmaLayerConfigComplete;
+  const smaLayerConfig = layerConfig;
   
   const {
     period,

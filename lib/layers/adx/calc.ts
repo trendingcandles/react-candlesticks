@@ -5,18 +5,17 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { AdxLayerConfigComplete } from './AdxLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: AdxLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
-  const { diLength, smoothing } = layerConfig as AdxLayerConfigComplete;
+  const { diLength, smoothing } = layerConfig;
   const highs = inputs.high.values;
   const lows = inputs.low.values;
   const closes = inputs.close.values;

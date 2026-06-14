@@ -6,7 +6,7 @@
  */
 
 import parseLineConfig from '../../config/elements/line/parseLineConfig';
-import { LayersTheme } from '../../config/layer/LayerConfig';
+import { LayersTheme } from '../../config/layer/LayersTheme';
 import parseLookback from '../../config/layer/parseLookback';
 import { sourceFieldToInput } from '../../config/layer/inputSourceShorthand';
 import validateLayerInputs from '../../config/layer/validateLayerInputs';

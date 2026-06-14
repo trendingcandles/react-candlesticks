@@ -5,18 +5,17 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { LayerConfigComplete } from '../../config/layer/LayerConfig';
 import { LayerInputSeries } from '../../domain/types/LayersData';
 import { ParabolicSarLayerConfigComplete } from './ParabolicSarLayerConfig';
 
 const calc = (
-  layerConfig: LayerConfigComplete,
+  layerConfig: ParabolicSarLayerConfigComplete,
   inputs: Record<string, LayerInputSeries>,
   outputValues: Record<string, Float64Array>,
   startBarIndex: number,
   endBarIndex: number,
 ) => {
-  const { start, increment, maxValue } = layerConfig as ParabolicSarLayerConfigComplete;
+  const { start, increment, maxValue } = layerConfig;
   const highs = inputs.high.values;
   const lows = inputs.low.values;
   const values = outputValues.value;
