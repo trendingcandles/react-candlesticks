@@ -153,7 +153,8 @@ const doubleClose = defineLayer({
     id: config.id ?? `double-close_${panelId}`,
     type: 'custom:double-close',
     indicator: true,
-    defaultScale: { key: 'value', domain: 'value', range: { type: 'auto' } },
+    // Share the candlestick price scale so doubled values use price coordinates.
+    defaultScale: { key: 'price_auto', domain: 'price', range: { type: 'auto' } },
     scale: config.scale ?? null,
     scalePolicy: 'derived',
     requiredInputKeys: ['input'],
