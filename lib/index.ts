@@ -8,6 +8,7 @@
 export * from './components';
 export * from './config';
 export * from './layers';
+export * from './drawings';
 export * from './domain/types/DataPoint';
 export * from './exampleData';
 export type { Theme } from './domain/types/Theme';

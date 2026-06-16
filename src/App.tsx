@@ -8,6 +8,7 @@ import MinimalChart from './examples/MinimalChart';
 import NonInteractiveChart from './examples/NonInteractiveChart';
 import Indcators2Chart from './examples/Indcators2Chart';
 import CustomLayerChart from './examples/CustomLayerChart';
+import CustomDrawingChart from './examples/CustomDrawingChart';
 
 const examples = [
   'simple',
@@ -15,6 +16,7 @@ const examples = [
   'indicators',
   'indcators2',
   'custom-layer',
+  'custom-drawing',
   'customization',
   'full-configuration',
   'minimal',
@@ -40,6 +42,7 @@ function App() {
         {exampleChart === "indicators" && <IndicatorsChart />}
         {exampleChart === "indcators2" && <Indcators2Chart />}
         {exampleChart === "custom-layer" && <CustomLayerChart />}
+        {exampleChart === "custom-drawing" && <CustomDrawingChart />}
         {exampleChart === "customization" && <CustomizationChart />}
         {exampleChart === "full-configuration" && <FullConfigurationChart />}
         {exampleChart === "minimal" && <MinimalChart />}

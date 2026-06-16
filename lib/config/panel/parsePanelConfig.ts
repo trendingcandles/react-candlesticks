@@ -13,12 +13,15 @@ import parsePanelControlsConfig from './controls/parsePanelControlsConfig';
 import { PanelConfig, PanelConfigComplete, panelDefaults } from './PanelConfig';
 import { LayerRegistry } from '../layer/LayerRegistry';
 import layers from '../../layers/layers';
+import parseDrawingConfigs from '../drawing/parseDrawingConfigs';
+import { DrawingRegistry } from '../drawing/DrawingRegistry';
 
 const parsePanelConfig = (
   partialConfig: PanelConfig,
   theme: Theme,
   panelIndex: number,
   layerRegistry: LayerRegistry = layers,
+  drawingRegistry: DrawingRegistry = {},
 ): Omit<PanelConfigComplete, 'yAxes'> => {
   const panelTheme = theme.panels;
 
@@ -43,6 +46,7 @@ const parsePanelConfig = (
     paddingBottom,
     borderTop: parseLineConfig(partialConfig.borderTop, panelTheme.borderTop),
     layers: parseLayerConfigs(partialConfig.layers, theme.layers, id, layerRegistry),
+    drawings: parseDrawingConfigs(partialConfig.drawings, id, drawingRegistry),
     controls: parsePanelControlsConfig(partialConfig.controls ?? {}, panelTheme.controls),
   };
 

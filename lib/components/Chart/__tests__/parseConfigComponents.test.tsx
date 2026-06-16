@@ -1,9 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { mapLayerElementToConfig, mapPanelElementsToConfig } from '../parseConfigComponents';
+import { mapDrawingElementToConfig, mapLayerElementToConfig, mapPanelElementsToConfig } from '../parseConfigComponents';
 import parseConfigComponents from '../parseConfigComponents';
 import { ADX, ATR, CCI, Candlesticks, EMA, OBV, ParabolicSAR, SMA, WilliamsR } from '../../../layers';
 import { FC } from 'react';
 import LAYER_COMPONENT_TYPE_KEY from '../../../config/layer/layerComponentTypeKey';
+import defineDrawing from '../../../drawings/defineDrawing';
+
+const customDrawing = defineDrawing({
+  type: 'custom:test-drawing',
+  draw: () => {},
+});
+const CustomDrawing = customDrawing.Component;
 
 describe('parseConfigComponents', () => {
   it('maps layer element to config and strips children', () => {
@@ -48,13 +55,25 @@ describe('parseConfigComponents', () => {
     expect(() => mapLayerElementToConfig(<Unknown />)).toThrow('Invalid layer: Unknown');
   });
 
+  it('maps drawing elements to drawing configs', () => {
+    const drawing = mapDrawingElementToConfig(<CustomDrawing id="d1" value={123} />);
+
+    expect(drawing).toMatchObject({
+      id: 'd1',
+      type: 'custom:test-drawing',
+      value: 123,
+    });
+  });
+
   it('maps panel elements with child layers', () => {
-    const panel = <div id="p1"><Candlesticks id="l1" /><SMA id="l2" period={10} /></div>;
+    const panel = <div id="p1"><Candlesticks id="l1" /><SMA id="l2" period={10} /><CustomDrawing id="d1" /></div>;
     const cfg = mapPanelElementsToConfig(panel);
 
     expect(cfg?.id).toBe('p1');
     expect(cfg?.layers).toHaveLength(2);
     expect(cfg?.layers[1]).toMatchObject({ id: 'l2', type: 'sma', period: 10 });
+    expect(cfg?.drawings).toHaveLength(1);
+    expect(cfg?.drawings?.[0]).toMatchObject({ id: 'd1', type: 'custom:test-drawing' });
   });
 
   it('parses top-level chart children into panel configs', () => {

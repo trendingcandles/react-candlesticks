@@ -18,6 +18,7 @@ import styles from './styles.module.scss';
 import { LayerScale } from '../../config/layer/BaseLayerConfig';
 import DataPointInfo from '../../domain/types/DataPointInfo';
 import ViewportData from '../../domain/types/ViewportData';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 
 export type ChartCanvasesHandle = {
   requestDraw: (viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => void;
@@ -32,6 +33,7 @@ export interface ChartCanvasesProps {
   layout: Layout;
   config: ChartConfigComplete;
   panels: PanelConfigComplete[];
+  drawingRegistry?: DrawingRegistry;
   showCrosshairsCanvas?: boolean;
 }
 
@@ -39,6 +41,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
   config,
   panels,
   layout,
+  drawingRegistry,
   showCrosshairsCanvas = true,
 }, ref) {
   
@@ -75,7 +78,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
     const drawingsContext = getCanvasContext(drawingsChartCanvasRef, layout.drawingAreaWidth, layout.chartHeight, layout.dpr, prevDrawingAreaSizeRef.current);
     const axesContext = getCanvasContext(axesChartCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevAxesSizeRef.current);
     if (drawingsContext && axesContext) {
-      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout)!;
+      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout, drawingRegistry)!;
       if (updatePanelMetrics) {
         updatePanelMetrics(metricsByPanelRef.current);
       }
@@ -90,7 +93,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
       height: layout.chartHeight,
       dpr: layout.dpr,
     };
-  }, [config, panels]);
+  }, [config, drawingRegistry, panels]);
 
   const requestDraw = useCallback((viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => {
     if (drawAnimationFrameRef.current !== null) {

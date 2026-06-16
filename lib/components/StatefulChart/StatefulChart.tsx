@@ -27,6 +27,7 @@ import { IndexProvider } from '../../domain/types/IndexProvider';
 import DataPointInfo from '../../domain/types/DataPointInfo';
 import ViewportData from '../../domain/types/ViewportData';
 import { DataMap } from '../../domain/types/DataMap';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import styles from './styles.module.scss';
 
 const LOOKBACK_PAD = 10;
@@ -50,6 +51,7 @@ export interface StatefulChartProps {
   onZoom?: (newIntervalSize: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
+  drawingRegistry?: DrawingRegistry;
   minimal?: boolean;
 }
 
@@ -72,6 +74,7 @@ const StatefulChart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  drawingRegistry,
   minimal = false,
 }: StatefulChartProps) => {
 
@@ -356,6 +359,7 @@ const StatefulChart = ({
         layout={layout}
         config={config}
         panels={panels}
+        drawingRegistry={drawingRegistry}
         showCrosshairsCanvas={minimal === false}
       />
       {!minimal &&

@@ -10,14 +10,16 @@ import { PanelConfig, PanelConfigComplete } from './PanelConfig';
 import parsePanelConfig from './parsePanelConfig';
 import layers from '../../layers/layers';
 import { LayerRegistry } from '../layer/LayerRegistry';
+import { DrawingRegistry } from '../drawing/DrawingRegistry';
 
 const parsePanelConfigs = (
   partialPanelConfigs: readonly [PanelConfig, ...PanelConfig[]],
   theme: Theme,
   layerRegistry: LayerRegistry = layers,
+  drawingRegistry: DrawingRegistry = {},
 ): Omit<PanelConfigComplete, 'yAxes'>[] => {
   const panelConfigs = partialPanelConfigs.map((panel, panelIndex) =>
-    parsePanelConfig(panel, theme, panelIndex, layerRegistry));
+    parsePanelConfig(panel, theme, panelIndex, layerRegistry, drawingRegistry));
   const panelIds = panelConfigs.map(panel => panel.id);
   const duplicatePanelIds = panelIds.filter((id, index) => panelIds.indexOf(id) !== index);
 

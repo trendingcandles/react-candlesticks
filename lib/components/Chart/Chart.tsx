@@ -31,8 +31,11 @@ import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
 import { CustomLayerDefinition } from '../../layers/defineLayer';
 import createLayerRegistry from '../../layers/createLayerRegistry';
+import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
+import createDrawingRegistry from '../../drawings/createDrawingRegistry';
 
 const EMPTY_CUSTOM_LAYERS: readonly CustomLayerDefinition[] = [];
+const EMPTY_CUSTOM_DRAWINGS: readonly CustomDrawingDefinition[] = [];
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   renderMode?: 'full' | 'minimal';
@@ -55,6 +58,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   enableScroll?: boolean;
   enableZoom?: boolean;
   customLayers?: readonly CustomLayerDefinition[];
+  customDrawings?: readonly CustomDrawingDefinition[];
 }
 
 interface PanelsAsPropChartProps extends ChartPropsBase {
@@ -93,6 +97,7 @@ const Chart = ({
   enableScroll,
   enableZoom,
   customLayers = EMPTY_CUSTOM_LAYERS,
+  customDrawings = EMPTY_CUSTOM_DRAWINGS,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -152,6 +157,10 @@ const Chart = ({
     () => createLayerRegistry(customLayers),
     [customLayers],
   );
+  const drawingRegistry = useMemo(
+    () => createDrawingRegistry(customDrawings),
+    [customDrawings],
+  );
 
   // Parse chart config (everything that's not panels/layers)
   const chartConfigComplete = useMemo(() => {
@@ -171,6 +180,7 @@ const Chart = ({
       effectivePanels as readonly [PanelConfig, ...PanelConfig[]],
       effectiveTheme,
       layerRegistry,
+      drawingRegistry,
     );
     const layersTopology = createLayerTopology(panelConfigsWithoutYAxis);
     const panelConfigs = setPanelYAxes(panelConfigsWithoutYAxis, layersTopology);
@@ -178,7 +188,7 @@ const Chart = ({
       panelConfigs,
       layersTopology,
     };
-  }, [effectivePanels, effectiveTheme, layerRegistry]);
+  }, [effectivePanels, effectiveTheme, layerRegistry, drawingRegistry]);
 
   // Create layout object
   const layout = useMemo(() =>
@@ -276,6 +286,7 @@ const Chart = ({
           onZoom={handleZoom}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
+          drawingRegistry={drawingRegistry}
           minimal={isMinimal}
         />
       }
