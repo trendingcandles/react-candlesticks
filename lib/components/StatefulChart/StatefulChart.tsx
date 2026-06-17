@@ -105,6 +105,9 @@ const StatefulChart = ({
     drawingCursor,
     handleDrawingHover,
     handleDrawingClick,
+    handleDrawingDragStart,
+    handleDrawingDragMove,
+    handleDrawingDragEnd,
   } = useDrawingInteractions({
     chartCanvasesRef,
     viewportDataRef,
@@ -399,6 +402,9 @@ const StatefulChart = ({
           onScroll={handleScroll}
           onMouseMove={handleMouseMove}
           onClick={handleDrawingClick}
+          onPointerDragStart={handleDrawingDragStart}
+          onPointerDragMove={handleDrawingDragMove}
+          onPointerDragEnd={handleDrawingDragEnd}
           cursor={drawingCursor}
           onZoom={handleZoom}
           enableScroll={enableScroll}

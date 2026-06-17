@@ -21,6 +21,7 @@ export interface DrawingPointer {
   chartY: number;
   panelX: number;
   panelY: number;
+  index?: number;
   barIndex?: number;
   timestamp?: number;
   value?: number;
@@ -61,6 +62,25 @@ export interface DrawingHitTestContext<C extends DrawingConfigComplete = Drawing
   pointer: DrawingPointer;
 }
 
+export interface DrawingPointerDelta {
+  clientX: number;
+  clientY: number;
+  chartX: number;
+  chartY: number;
+  panelX: number;
+  panelY: number;
+  index?: number;
+  barIndex?: number;
+  timestamp?: number;
+  value?: number;
+}
+
+export interface DrawingDragContext<C extends DrawingConfigComplete = DrawingConfigComplete> extends DrawingHitTestContext<C> {
+  hit: DrawingHit;
+  start: DrawingHitTestContext<C>;
+  delta: DrawingPointerDelta;
+}
+
 export type DrawingDraw<C extends DrawingConfigComplete = DrawingConfigComplete> = {
   bivarianceHack(renderContext: DrawingRenderContext<C>): void;
 }['bivarianceHack'];
@@ -74,6 +94,18 @@ export type DrawingHoverHandler<C extends DrawingConfigComplete = DrawingConfigC
 }['bivarianceHack'];
 
 export type DrawingClickHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(hit: DrawingHit, hitTestContext: DrawingHitTestContext<C>): void;
+}['bivarianceHack'];
+
+export type DrawingDragStartHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(hit: DrawingHit, hitTestContext: DrawingHitTestContext<C>): void;
+}['bivarianceHack'];
+
+export type DrawingDragHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(dragContext: DrawingDragContext<C>): void;
+}['bivarianceHack'];
+
+export type DrawingDragEndHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
   bivarianceHack(hit: DrawingHit, hitTestContext: DrawingHitTestContext<C>): void;
 }['bivarianceHack'];
 
@@ -93,6 +125,9 @@ interface Drawing<
   hitTest?: DrawingHitTest<Complete>;
   onHover?: DrawingHoverHandler<Complete>;
   onClick?: DrawingClickHandler<Complete>;
+  onDragStart?: DrawingDragStartHandler<Complete>;
+  onDrag?: DrawingDragHandler<Complete>;
+  onDragEnd?: DrawingDragEndHandler<Complete>;
 }
 
 export default Drawing;

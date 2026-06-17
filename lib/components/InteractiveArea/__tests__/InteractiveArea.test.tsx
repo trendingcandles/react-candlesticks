@@ -119,6 +119,96 @@ describe('InteractiveArea', () => {
     raf.mockRestore();
   });
 
+  it('lets pointer drag handlers claim a drag instead of scrolling', () => {
+    const onScroll = vi.fn();
+    const onMouseMove = vi.fn();
+    const onClick = vi.fn();
+    const onZoom = vi.fn();
+    const onPointerDragStart = vi.fn(() => true);
+    const onPointerDragMove = vi.fn();
+    const onPointerDragEnd = vi.fn();
+
+    const raf = mockRaf();
+
+    const { container } = render(
+      <InteractiveArea
+        onScroll={onScroll}
+        onMouseMove={onMouseMove}
+        onClick={onClick}
+        onPointerDragStart={onPointerDragStart}
+        onPointerDragMove={onPointerDragMove}
+        onPointerDragEnd={onPointerDragEnd}
+        onZoom={onZoom}
+        enableScroll
+        enableZoom
+      />,
+    );
+    const area = container.firstElementChild as HTMLElement;
+    mockPointerCapture(area);
+
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'mouse', button: 0 });
+    dispatchPointerEvent(area, 'pointermove', { pointerId: 1, clientX: 20, clientY: 15, pointerType: 'mouse' });
+    dispatchPointerEvent(area, 'pointerup', { pointerId: 1, clientX: 20, clientY: 15, pointerType: 'mouse' });
+    fireEvent.click(area, { clientX: 20, clientY: 15 });
+
+    expect(onPointerDragStart).toHaveBeenCalledWith(10, 10);
+    expect(onPointerDragMove).toHaveBeenCalledWith(20, 15);
+    expect(onPointerDragEnd).toHaveBeenCalledWith(20, 15);
+    expect(onScroll).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+
+    raf.mockRestore();
+  });
+
+  it('keeps a claimed drag active when the cursor prop changes', () => {
+    const onScroll = vi.fn();
+    const onMouseMove = vi.fn();
+    const onZoom = vi.fn();
+    const onPointerDragStart = vi.fn(() => true);
+    const onPointerDragMove = vi.fn();
+    const onPointerDragEnd = vi.fn();
+
+    const raf = mockRaf();
+
+    const { container, rerender } = render(
+      <InteractiveArea
+        onScroll={onScroll}
+        onMouseMove={onMouseMove}
+        onPointerDragStart={onPointerDragStart}
+        onPointerDragMove={onPointerDragMove}
+        onPointerDragEnd={onPointerDragEnd}
+        onZoom={onZoom}
+        enableScroll
+        enableZoom
+      />,
+    );
+    const area = container.firstElementChild as HTMLElement;
+    mockPointerCapture(area);
+
+    dispatchPointerEvent(area, 'pointerdown', { pointerId: 1, clientX: 10, clientY: 10, pointerType: 'mouse', button: 0 });
+    rerender(
+      <InteractiveArea
+        onScroll={onScroll}
+        onMouseMove={onMouseMove}
+        onPointerDragStart={onPointerDragStart}
+        onPointerDragMove={onPointerDragMove}
+        onPointerDragEnd={onPointerDragEnd}
+        cursor="grabbing"
+        onZoom={onZoom}
+        enableScroll
+        enableZoom
+      />,
+    );
+    dispatchPointerEvent(area, 'pointermove', { pointerId: 1, clientX: 20, clientY: 15, pointerType: 'mouse' });
+    dispatchPointerEvent(area, 'pointerup', { pointerId: 1, clientX: 20, clientY: 15, pointerType: 'mouse' });
+
+    expect(onPointerDragMove).toHaveBeenCalledWith(20, 15);
+    expect(onPointerDragEnd).toHaveBeenCalledWith(20, 15);
+    expect(onScroll).not.toHaveBeenCalled();
+
+    raf.mockRestore();
+  });
+
   it('routes wheel gesture to scroll (horizontal) and zoom (vertical)', () => {
     const onScroll = vi.fn();
     const onMouseMove = vi.fn();

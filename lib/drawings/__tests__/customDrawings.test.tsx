@@ -95,6 +95,7 @@ describe('custom drawings', () => {
       target: 'segment',
       cursor: 'pointer',
       data: {
+        index: pointer.index,
         panelX: pointer.panelX,
         value: pointer.value,
       },
@@ -170,6 +171,7 @@ describe('custom drawings', () => {
       target: 'segment',
       cursor: 'pointer',
       data: {
+        index: 2,
         panelX: 20,
         value: 50,
       },

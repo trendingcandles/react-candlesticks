@@ -12,6 +12,9 @@ export interface InteractiveAreaProps {
   onScroll: (deltaX: number, deltaY: number, wheel?: boolean) => void;
   onMouseMove: (clientX: number, clientY: number, isOverButton?: boolean) => void;
   onClick?: (clientX: number, clientY: number) => void;
+  onPointerDragStart?: (clientX: number, clientY: number) => boolean;
+  onPointerDragMove?: (clientX: number, clientY: number) => void;
+  onPointerDragEnd?: (clientX: number, clientY: number) => void;
   cursor?: string;
   onZoom: (delta: number) => void;
   enableScroll: boolean;
@@ -22,6 +25,9 @@ const InteractiveArea = ({
   onScroll,
   onMouseMove,
   onClick,
+  onPointerDragStart,
+  onPointerDragMove,
+  onPointerDragEnd,
   cursor,
   onZoom,
   enableScroll,
@@ -35,8 +41,20 @@ const InteractiveArea = ({
   const pendingDelta = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const pendingZoom = useRef<number>(1);
   const activePointers = useRef(new Map<number, { x: number; y: number }>());
+  const claimedPointerRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    moved: boolean;
+  } | null>(null);
+  const suppressNextClickRef = useRef(false);
   const pinchDistance = useRef<number | null>(null);
   const resetCursor = cursor ?? 'crosshair';
+  const resetCursorRef = useRef(resetCursor);
+
+  useEffect(() => {
+    resetCursorRef.current = resetCursor;
+  }, [resetCursor]);
 
   const getPointerDistance = () => {
     const pointers = Array.from(activePointers.current.values());
@@ -69,6 +87,23 @@ const InteractiveArea = ({
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
 
+    if (onPointerDragStart?.(e.clientX, e.clientY)) {
+      claimedPointerRef.current = {
+        pointerId: e.pointerId,
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false,
+      };
+
+      if (dragRef.current?.setPointerCapture) {
+        dragRef.current.setPointerCapture(e.pointerId);
+      }
+      if (dragRef.current) {
+        dragRef.current.style.cursor = 'grabbing';
+      }
+      return;
+    }
+
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
     // Capture touch/pen pointers so gestures remain stable if the finger/stylus
@@ -100,6 +135,17 @@ const InteractiveArea = ({
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (claimedPointerRef.current?.pointerId === e.pointerId) {
+      if (
+        claimedPointerRef.current.moved === false &&
+        Math.hypot(e.clientX - claimedPointerRef.current.startX, e.clientY - claimedPointerRef.current.startY) > 3
+      ) {
+        claimedPointerRef.current.moved = true;
+      }
+      onPointerDragMove?.(e.clientX, e.clientY);
+      return;
+    }
+
     if (!activePointers.current.has(e.pointerId)) return;
 
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -135,6 +181,20 @@ const InteractiveArea = ({
   };
 
   const handlePointerEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (claimedPointerRef.current?.pointerId === e.pointerId) {
+      onPointerDragEnd?.(e.clientX, e.clientY);
+      suppressNextClickRef.current = claimedPointerRef.current.moved;
+      claimedPointerRef.current = null;
+
+      if (dragRef.current?.hasPointerCapture?.(e.pointerId)) {
+        dragRef.current.releasePointerCapture(e.pointerId);
+      }
+      if (dragRef.current) {
+        dragRef.current.style.cursor = resetCursor;
+      }
+      return;
+    }
+
     activePointers.current.delete(e.pointerId);
 
     if (dragRef.current?.hasPointerCapture?.(e.pointerId)) {
@@ -198,15 +258,26 @@ const InteractiveArea = ({
       pinchDistance.current = null;
       pendingDelta.current = { x: 0, y: 0 };
       pendingZoom.current = 1;
-      element.style.cursor = resetCursor;
+      element.style.cursor = resetCursorRef.current;
     };
-  }, [handleWheel, resetCursor]);
+  }, [handleWheel]);
 
   useEffect(() => {
     const element = dragRef.current;
     if (!element) return;
 
     const handleWindowPointerUp = (event: PointerEvent) => {
+      if (claimedPointerRef.current?.pointerId === event.pointerId) {
+        onPointerDragEnd?.(event.clientX, event.clientY);
+        suppressNextClickRef.current = claimedPointerRef.current.moved;
+        claimedPointerRef.current = null;
+
+        if (dragRef.current) {
+          dragRef.current.style.cursor = resetCursor;
+        }
+        return;
+      }
+
       if (!activePointers.current.has(event.pointerId)) return;
 
       activePointers.current.delete(event.pointerId);
@@ -240,9 +311,20 @@ const InteractiveArea = ({
         zoomAnimationFrame.current = null;
       }
     };
-  }, [resetCursor]);
+  }, [onPointerDragEnd, resetCursor]);
 
   const handleLostPointerCapture = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (claimedPointerRef.current?.pointerId === e.pointerId) {
+      onPointerDragEnd?.(e.clientX, e.clientY);
+      suppressNextClickRef.current = claimedPointerRef.current.moved;
+      claimedPointerRef.current = null;
+
+      if (dragRef.current) {
+        dragRef.current.style.cursor = resetCursor;
+      }
+      return;
+    }
+
     if (!activePointers.current.has(e.pointerId)) return;
 
     activePointers.current.delete(e.pointerId);
@@ -281,7 +363,14 @@ const InteractiveArea = ({
       className={styles.interactiveArea}
       style={cursor ? { cursor } : undefined}
       onMouseMove={handleMouseMove}
-      onClick={(event) => onClick?.(event.clientX, event.clientY)}
+      onClick={(event) => {
+        if (suppressNextClickRef.current) {
+          suppressNextClickRef.current = false;
+          return;
+        }
+
+        onClick?.(event.clientX, event.clientY);
+      }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}

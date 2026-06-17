@@ -7,13 +7,14 @@
 
 import { useCallback, useRef, useState } from 'react';
 import type { ChartConfigComplete } from '../../config/chart/ChartConfig';
-import type { DrawingHit } from '../../config/drawing/Drawing';
+import type { DrawingDragContext, DrawingHit, DrawingHitTestContext, DrawingPointer, DrawingPointerDelta } from '../../config/drawing/Drawing';
 import type { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import type { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import type { Layout } from '../../domain/types/Layout';
 import type ViewportData from '../../domain/types/ViewportData';
 import type { ChartCanvasesHandle } from '../ChartCanvases/ChartCanvases';
 import hitTestDrawings, { DrawingHitResult, MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
+import createDrawingPointer from '../../drawing/drawing/createDrawingPointer';
 
 interface CurrentRef<T> {
   current: T;
@@ -48,6 +49,7 @@ const useDrawingInteractions = ({
   const [drawingCursor, setDrawingCursor] = useState<string | undefined>();
   const containerRef = useRef<HTMLDivElement>(null);
   const lastDrawingHoverRef = useRef<DrawingHitResult | null>(null);
+  const activeDragRef = useRef<DrawingHitResult | null>(null);
 
   const runDrawingHitTest = useCallback((clientX: number, clientY: number): DrawingHitResult | null => {
     const container = containerRef.current;
@@ -77,6 +79,50 @@ const useDrawingInteractions = ({
       chartContext.axesContext,
     );
   }, [chartCanvasesRef, config, drawingRegistry, layout, metricsByPanelRef, panels, viewportDataRef]);
+
+  const createCurrentDragContext = useCallback((
+    activeDrag: DrawingHitResult,
+    clientX: number,
+    clientY: number,
+  ): DrawingHitTestContext => {
+    const container = containerRef.current;
+    const { left, top } = container?.getBoundingClientRect() ?? { left: 0, top: 0 };
+    const chartX = clientX - left;
+    const chartY = clientY - top;
+    const panelX = chartX - activeDrag.context.layout.drawingAreaX;
+    const panelY = chartY - activeDrag.context.panelMetrics.topPx;
+
+    return {
+      ...activeDrag.context,
+      pointer: createDrawingPointer({
+        clientX,
+        clientY,
+        chartX,
+        chartY,
+        panelX,
+        panelY,
+        panelMetrics: activeDrag.context.panelMetrics,
+        layerMetrics: activeDrag.context.layerMetrics,
+        viewportData: activeDrag.context.viewportData,
+      }),
+    };
+  }, []);
+
+  const createPointerDelta = (
+    start: DrawingPointer,
+    current: DrawingPointer,
+  ): DrawingPointerDelta => ({
+    clientX: current.clientX - start.clientX,
+    clientY: current.clientY - start.clientY,
+    chartX: current.chartX - start.chartX,
+    chartY: current.chartY - start.chartY,
+    panelX: current.panelX - start.panelX,
+    panelY: current.panelY - start.panelY,
+    index: start.index === undefined || current.index === undefined ? undefined : current.index - start.index,
+    barIndex: start.barIndex === undefined || current.barIndex === undefined ? undefined : current.barIndex - start.barIndex,
+    timestamp: start.timestamp === undefined || current.timestamp === undefined ? undefined : current.timestamp - start.timestamp,
+    value: start.value === undefined || current.value === undefined ? undefined : current.value - start.value,
+  });
 
   const handleDrawingHover = useCallback((clientX: number, clientY: number) => {
     const next = runDrawingHitTest(clientX, clientY);
@@ -111,11 +157,58 @@ const useDrawingInteractions = ({
     onDrawingClick?.(result.hit);
   }, [drawingRegistry, onDrawingClick, runDrawingHitTest]);
 
+  const handleDrawingDragStart = useCallback((clientX: number, clientY: number): boolean => {
+    const result = runDrawingHitTest(clientX, clientY);
+    if (!result) return false;
+
+    const drawing = drawingRegistry?.[result.hit.drawingType];
+    if (!drawing?.onDrag && !drawing?.onDragStart && !drawing?.onDragEnd) return false;
+
+    activeDragRef.current = result;
+    drawing.onDragStart?.(result.hit, result.context);
+    setDrawingCursor('grabbing');
+
+    return true;
+  }, [drawingRegistry, runDrawingHitTest]);
+
+  const handleDrawingDragMove = useCallback((clientX: number, clientY: number) => {
+    const activeDrag = activeDragRef.current;
+    if (!activeDrag) return;
+
+    const drawing = drawingRegistry?.[activeDrag.hit.drawingType];
+    if (!drawing?.onDrag) return;
+
+    const currentContext = createCurrentDragContext(activeDrag, clientX, clientY);
+    const dragContext: DrawingDragContext = {
+      ...currentContext,
+      hit: activeDrag.hit,
+      start: activeDrag.context,
+      delta: createPointerDelta(activeDrag.context.pointer, currentContext.pointer),
+    };
+
+    drawing.onDrag(dragContext);
+  }, [createCurrentDragContext, drawingRegistry]);
+
+  const handleDrawingDragEnd = useCallback((clientX: number, clientY: number) => {
+    const activeDrag = activeDragRef.current;
+    if (!activeDrag) return;
+
+    const drawing = drawingRegistry?.[activeDrag.hit.drawingType];
+    const currentContext = createCurrentDragContext(activeDrag, clientX, clientY);
+
+    drawing?.onDragEnd?.(activeDrag.hit, currentContext);
+    activeDragRef.current = null;
+    setDrawingCursor(activeDrag.hit.cursor);
+  }, [createCurrentDragContext, drawingRegistry]);
+
   return {
     containerRef,
     drawingCursor,
     handleDrawingHover,
     handleDrawingClick,
+    handleDrawingDragStart,
+    handleDrawingDragMove,
+    handleDrawingDragEnd,
   };
 };
 

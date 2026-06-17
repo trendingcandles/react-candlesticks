@@ -6,7 +6,7 @@
  */
 
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
-import { DrawingHit, DrawingHitTestContext, DrawingPointer } from '../../config/drawing/Drawing';
+import { DrawingHit, DrawingHitTestContext } from '../../config/drawing/Drawing';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { Layout } from '../../domain/types/Layout';
@@ -15,6 +15,7 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import ViewportData from '../../domain/types/ViewportData';
 import createDrawingContext from './createDrawingContext';
+import createDrawingPointer from './createDrawingPointer';
 
 export interface DrawingHitResult {
   hit: DrawingHit;
@@ -25,53 +26,6 @@ export type MetricsByPanel = Record<string, {
   panelMetrics: PanelMetrics;
   layerMetricsByScale: Record<string, LayerMetrics>;
 }>;
-
-const getYToValue = (
-  min: number,
-  max: number,
-  top: number,
-  height: number,
-) => {
-  const range = max - min;
-  return (y: number) => max - ((y - top) / height) * range;
-};
-
-const createPointer = (
-  clientX: number,
-  clientY: number,
-  chartX: number,
-  chartY: number,
-  panelX: number,
-  panelY: number,
-  panelMetrics: PanelMetrics,
-  layerMetrics?: LayerMetrics,
-  viewportData?: ViewportData,
-): DrawingPointer => {
-  const barIndex = viewportData?.timeScale.xToBarIndex(panelX);
-  const timestamp = barIndex === undefined
-    ? undefined
-    : viewportData?.indexProvider.indexToTimestamp(barIndex);
-  const value = layerMetrics
-    ? getYToValue(
-      layerMetrics.min,
-      layerMetrics.max,
-      panelMetrics.paddedTopPx,
-      panelMetrics.paddedHeightPx,
-    )(chartY)
-    : undefined;
-
-  return {
-    clientX,
-    clientY,
-    chartX,
-    chartY,
-    panelX,
-    panelY,
-    barIndex,
-    timestamp,
-    value,
-  };
-};
 
 const hitTestDrawings = (
   clientX: number,
@@ -130,17 +84,17 @@ const hitTestDrawings = (
       });
       const hitTestContext: DrawingHitTestContext = {
         ...drawingContext,
-        pointer: createPointer(
+        pointer: createDrawingPointer({
           clientX,
           clientY,
           chartX,
           chartY,
           panelX,
-          chartY - panelMetrics.topPx,
+          panelY: chartY - panelMetrics.topPx,
           panelMetrics,
-          drawingContext.layerMetrics,
+          layerMetrics: drawingContext.layerMetrics,
           viewportData,
-        ),
+        }),
       };
       const hit = drawing.hitTest(hitTestContext);
 
