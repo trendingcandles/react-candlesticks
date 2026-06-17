@@ -14,6 +14,31 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import ViewportData from '../../domain/types/ViewportData';
 import { DrawingConfig, DrawingConfigComplete } from './DrawingConfig';
 
+export interface DrawingPointer {
+  clientX: number;
+  clientY: number;
+  chartX: number;
+  chartY: number;
+  panelX: number;
+  panelY: number;
+  barIndex?: number;
+  timestamp?: number;
+  value?: number;
+}
+
+export interface DrawingHit {
+  drawingId: string;
+  drawingType: string;
+  panelId: string;
+  target?: string;
+  cursor?: string;
+  data?: unknown;
+}
+
+export type DrawingHitTestResult =
+  Omit<DrawingHit, 'drawingId' | 'drawingType' | 'panelId'> &
+  Partial<Pick<DrawingHit, 'drawingId' | 'drawingType' | 'panelId'>>;
+
 export interface DrawingRenderContext<C extends DrawingConfigComplete = DrawingConfigComplete> {
   context: CanvasRenderingContext2D;
   axesContext: CanvasRenderingContext2D;
@@ -22,7 +47,7 @@ export interface DrawingRenderContext<C extends DrawingConfigComplete = DrawingC
   drawingConfig: C;
   layout: Layout;
   viewportData: ViewportData;
-  chartMetrics: ChartMetrics;
+  chartMetrics: ChartMetrics | null;
   panelMetrics: PanelMetrics;
   layerMetricsByScale: Record<string, LayerMetrics>;
   scaleKey?: string;
@@ -32,8 +57,24 @@ export interface DrawingRenderContext<C extends DrawingConfigComplete = DrawingC
   valueToY: (value: number, scaleKey?: string) => number | undefined;
 }
 
+export interface DrawingHitTestContext<C extends DrawingConfigComplete = DrawingConfigComplete> extends DrawingRenderContext<C> {
+  pointer: DrawingPointer;
+}
+
 export type DrawingDraw<C extends DrawingConfigComplete = DrawingConfigComplete> = {
   bivarianceHack(renderContext: DrawingRenderContext<C>): void;
+}['bivarianceHack'];
+
+export type DrawingHitTest<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(hitTestContext: DrawingHitTestContext<C>): DrawingHitTestResult | null;
+}['bivarianceHack'];
+
+export type DrawingHoverHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(hit: DrawingHit | null, hitTestContext: DrawingHitTestContext<C>): void;
+}['bivarianceHack'];
+
+export type DrawingClickHandler<C extends DrawingConfigComplete = DrawingConfigComplete> = {
+  bivarianceHack(hit: DrawingHit, hitTestContext: DrawingHitTestContext<C>): void;
 }['bivarianceHack'];
 
 export type DrawingParseConfig<
@@ -49,6 +90,9 @@ interface Drawing<
 > {
   parseConfig?: DrawingParseConfig<C, Complete>;
   draw: DrawingDraw<Complete>;
+  hitTest?: DrawingHitTest<Complete>;
+  onHover?: DrawingHoverHandler<Complete>;
+  onClick?: DrawingClickHandler<Complete>;
 }
 
 export default Drawing;

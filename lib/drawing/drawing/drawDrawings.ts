@@ -13,6 +13,7 @@ import { ChartMetrics } from '../../domain/types/metrics/ChartMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import ViewportData from '../../domain/types/ViewportData';
+import createDrawingContext from './createDrawingContext';
 
 const drawDrawings = (
   context: CanvasRenderingContext2D,
@@ -30,12 +31,6 @@ const drawDrawings = (
 
   if (drawings.length === 0) return;
 
-  const defaultScaleKey = Object.keys(layerMetricsByScale)[0];
-  const {
-    intervalSize,
-    scrollOffset,
-  } = viewportData.timeScale.metadata;
-
   context.save();
   context.beginPath();
   context.rect(0, panelMetrics.topPx, layout.drawingAreaWidth, panelMetrics.heightPx);
@@ -47,12 +42,7 @@ const drawDrawings = (
     const drawing = drawingRegistry[drawingConfig.type];
     if (!drawing) continue;
 
-    const scaleKey = drawingConfig.scaleKey && layerMetricsByScale[drawingConfig.scaleKey]
-      ? drawingConfig.scaleKey
-      : defaultScaleKey;
-    const layerMetrics = scaleKey ? layerMetricsByScale[scaleKey] : undefined;
-
-    drawing.draw({
+    drawing.draw(createDrawingContext({
       context,
       axesContext,
       chartConfig,
@@ -63,16 +53,7 @@ const drawDrawings = (
       chartMetrics,
       panelMetrics,
       layerMetricsByScale,
-      scaleKey,
-      layerMetrics,
-      xForIndex: (index: number) => index * intervalSize - scrollOffset,
-      xForTimestamp: (timestamp: number, nearest = true) => {
-        const index = viewportData.timeScale.timestampToIndex(timestamp, nearest);
-        return index === undefined ? undefined : index * intervalSize - scrollOffset;
-      },
-      valueToY: (value: number, requestedScaleKey = scaleKey) =>
-        requestedScaleKey ? layerMetricsByScale[requestedScaleKey]?.valueToY(value) : undefined,
-    });
+    }));
   }
 
   context.restore();

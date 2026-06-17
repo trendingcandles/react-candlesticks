@@ -19,5 +19,12 @@ export type {
 } from '../config/drawing/DrawingConfig';
 export type {
   DrawingDraw,
+  DrawingClickHandler,
+  DrawingHit,
+  DrawingHitTest,
+  DrawingHitTestContext,
+  DrawingHitTestResult,
+  DrawingHoverHandler,
+  DrawingPointer,
   DrawingRenderContext,
 } from '../config/drawing/Drawing';

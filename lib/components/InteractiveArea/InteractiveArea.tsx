@@ -11,6 +11,8 @@ import styles from './styles.module.scss';
 export interface InteractiveAreaProps {
   onScroll: (deltaX: number, deltaY: number, wheel?: boolean) => void;
   onMouseMove: (clientX: number, clientY: number, isOverButton?: boolean) => void;
+  onClick?: (clientX: number, clientY: number) => void;
+  cursor?: string;
   onZoom: (delta: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
@@ -19,6 +21,8 @@ export interface InteractiveAreaProps {
 const InteractiveArea = ({
   onScroll,
   onMouseMove,
+  onClick,
+  cursor,
   onZoom,
   enableScroll,
   enableZoom,
@@ -32,6 +36,7 @@ const InteractiveArea = ({
   const pendingZoom = useRef<number>(1);
   const activePointers = useRef(new Map<number, { x: number; y: number }>());
   const pinchDistance = useRef<number | null>(null);
+  const resetCursor = cursor ?? 'crosshair';
 
   const getPointerDistance = () => {
     const pointers = Array.from(activePointers.current.values());
@@ -138,7 +143,7 @@ const InteractiveArea = ({
 
     if (activePointers.current.size === 0) {
       if (dragRef.current) {
-        dragRef.current.style.cursor = 'crosshair';
+        dragRef.current.style.cursor = resetCursor;
       }
       lastPosition.current = null;
       pinchDistance.current = null;
@@ -193,9 +198,9 @@ const InteractiveArea = ({
       pinchDistance.current = null;
       pendingDelta.current = { x: 0, y: 0 };
       pendingZoom.current = 1;
-      element.style.cursor = 'crosshair';
+      element.style.cursor = resetCursor;
     };
-  }, [handleWheel]);
+  }, [handleWheel, resetCursor]);
 
   useEffect(() => {
     const element = dragRef.current;
@@ -208,7 +213,7 @@ const InteractiveArea = ({
 
       if (activePointers.current.size === 0) {
         if (dragRef.current) {
-          dragRef.current.style.cursor = 'crosshair';
+          dragRef.current.style.cursor = resetCursor;
         }
         lastPosition.current = null;
         pinchDistance.current = null;
@@ -235,7 +240,7 @@ const InteractiveArea = ({
         zoomAnimationFrame.current = null;
       }
     };
-  }, []);
+  }, [resetCursor]);
 
   const handleLostPointerCapture = (e: React.PointerEvent<HTMLDivElement>) => {
     if (!activePointers.current.has(e.pointerId)) return;
@@ -244,7 +249,7 @@ const InteractiveArea = ({
 
     if (activePointers.current.size === 0) {
       if (dragRef.current) {
-        dragRef.current.style.cursor = 'crosshair';
+        dragRef.current.style.cursor = resetCursor;
       }
       lastPosition.current = null;
       pinchDistance.current = null;
@@ -274,7 +279,9 @@ const InteractiveArea = ({
     <div
       ref={dragRef}
       className={styles.interactiveArea}
+      style={cursor ? { cursor } : undefined}
       onMouseMove={handleMouseMove}
+      onClick={(event) => onClick?.(event.clientX, event.clientY)}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerEnd}
