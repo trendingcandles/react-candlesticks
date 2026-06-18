@@ -34,6 +34,7 @@ import createLayerRegistry from '../../layers/createLayerRegistry';
 import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
 import createDrawingRegistry from '../../drawings/createDrawingRegistry';
 import { DrawingHit } from '../../config/drawing/Drawing';
+import { LayerHit } from '../../config/layer/Layer';
 
 const EMPTY_CUSTOM_LAYERS: readonly CustomLayerDefinition[] = [];
 const EMPTY_CUSTOM_DRAWINGS: readonly CustomDrawingDefinition[] = [];
@@ -62,6 +63,8 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   customDrawings?: readonly CustomDrawingDefinition[];
   onDrawingHover?: (hit: DrawingHit | null) => void;
   onDrawingClick?: (hit: DrawingHit) => void;
+  onLayerHover?: (hit: LayerHit | null) => void;
+  onLayerClick?: (hit: LayerHit) => void;
 }
 
 interface PanelsAsPropChartProps extends ChartPropsBase {
@@ -103,6 +106,8 @@ const Chart = ({
   customDrawings = EMPTY_CUSTOM_DRAWINGS,
   onDrawingHover,
   onDrawingClick,
+  onLayerHover,
+  onLayerClick,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -291,9 +296,12 @@ const Chart = ({
           onZoom={handleZoom}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
+          layerRegistry={layerRegistry}
           drawingRegistry={drawingRegistry}
           onDrawingHover={onDrawingHover}
           onDrawingClick={onDrawingClick}
+          onLayerHover={onLayerHover}
+          onLayerClick={onLayerClick}
           minimal={isMinimal}
         />
       }

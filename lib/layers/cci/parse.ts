@@ -63,6 +63,8 @@ const parse = (partialConfig: CciLayerConfig, layersTheme: LayersTheme, panelId:
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `CCI ${length} SMA ${smoothingLength}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? cciDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

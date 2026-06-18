@@ -91,6 +91,8 @@ const chartPropTypes = {
   customDrawings: PropTypes.arrayOf(PropTypes.object.isRequired),
   onDrawingHover: PropTypes.func,
   onDrawingClick: PropTypes.func,
+  onLayerHover: PropTypes.func,
+  onLayerClick: PropTypes.func,
   panels: combinePropValidators(
     (props, propName, componentName, location, propFullName, secret) =>
       panelsArrayValidator(props, propName, componentName, location, propFullName, secret),

@@ -82,6 +82,8 @@ const parse = (partialConfig: AdxLayerConfig, layersTheme: LayersTheme, panelId:
     ),
     yAxis: parseYAxisConfig(partialConfig.yAxis, adxTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? adxDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

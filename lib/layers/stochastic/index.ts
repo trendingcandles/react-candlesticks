@@ -10,6 +10,8 @@ import calc from './calc';
 import draw from './draw';
 import parse from './parse';
 import { StochasticLayerConfig, StochasticLayerConfigComplete } from './StochasticLayerConfig';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   StochasticLayerConfig,
@@ -22,6 +24,9 @@ const stochastic = defineLayer<StochasticLayerConfig, StochasticLayerConfigCompl
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default stochastic;

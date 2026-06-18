@@ -10,6 +10,8 @@ import calc from './calc';
 import draw from './draw';
 import { MacdLayerConfig, MacdLayerConfigComplete } from './MacdLayerConfig';
 import parse from './parse';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   MacdLayerConfig,
@@ -22,6 +24,9 @@ const macd = defineLayer<MacdLayerConfig, MacdLayerConfigComplete>({
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default macd;

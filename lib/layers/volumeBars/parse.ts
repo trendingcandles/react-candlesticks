@@ -57,6 +57,8 @@ const parse = (partialConfig: VolumeBarsLayerConfig, layersTheme: LayersTheme, p
     lookback: 0,
     calculate: true,
     includeInAutoScale: true,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

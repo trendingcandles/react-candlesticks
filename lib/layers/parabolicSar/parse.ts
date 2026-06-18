@@ -67,6 +67,8 @@ const parse = (partialConfig: ParabolicSarLayerConfig, layersTheme: LayersTheme,
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `Parabolic SAR ${start} ${increment} ${maxValue}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? parabolicSarDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

@@ -11,6 +11,7 @@ import { BaseLayerConfig, BaseLayerConfigComplete, baseLayerDefaults } from '../
 import { LegendTheme } from '../../config/legend/LegendConfig';
 import { YAxisTheme } from '../../config/layer/yAxis/YAxisConfig';
 import { LayerInputField } from '../../config/layer/inputSourceShorthand';
+import { LayerHit, LayerHitTestContext } from '../../config/layer/Layer';
 
 type RequiredInputKeys = ['input'];
 export const REQUIRED_INPUT_KEYS: RequiredInputKeys = ['input'];
@@ -25,6 +26,8 @@ export interface SmaLayerConfigComplete extends BaseLayerConfigComplete {
   markers: {
     value: null | ValueMarkerConfigComplete;
   };
+  onLineHover?: (hit: LayerHit | null) => void;
+  onLineClick?: (hit: LayerHit) => void;
 }
 
 export interface SmaLayerConfig extends BaseLayerConfig {
@@ -37,7 +40,11 @@ export interface SmaLayerConfig extends BaseLayerConfig {
   markers?: {
     value?: false | ValueMarkerConfig;
   };
+  onLineHover?: (hit: LayerHit | null) => void;
+  onLineClick?: (hit: LayerHit) => void;
 }
+
+export type SmaLayerHitTestContext = LayerHitTestContext<SmaLayerConfigComplete>;
 
 export interface SmaTheme {
   series: {

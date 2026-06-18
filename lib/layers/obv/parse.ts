@@ -56,6 +56,8 @@ const parse = (partialConfig: ObvLayerConfig, layersTheme: LayersTheme, panelId:
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `OBV SMA ${smoothingLength}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? obvDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

@@ -63,6 +63,8 @@ const parse = (partialConfig: EmaLayerConfig, layersTheme: LayersTheme, panelId:
     legend: parseLegendConfig(partialConfig.legend, { ...emaTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, emaTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? emaDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };    
 };
 

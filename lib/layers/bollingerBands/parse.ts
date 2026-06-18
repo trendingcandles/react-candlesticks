@@ -88,6 +88,8 @@ const parse = (partialConfig: BollingerBandsLayerConfig, layersTheme: LayersThem
     legend: parseLegendConfig(partialConfig.legend, { ...bollingerBandsTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, bollingerBandsTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? bollingerBandsDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };    
 };
 

@@ -29,8 +29,10 @@ import ViewportData from '../../domain/types/ViewportData';
 import { DataMap } from '../../domain/types/DataMap';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import type { DrawingHit } from '../../config/drawing/Drawing';
+import { LayerRegistry } from '../../config/layer/LayerRegistry';
+import type { LayerHit } from '../../config/layer/Layer';
 import { MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
-import useDrawingInteractions from './useDrawingInteractions';
+import useChartInteractions from './useChartInteractions';
 import styles from './styles.module.scss';
 
 const LOOKBACK_PAD = 10;
@@ -54,9 +56,12 @@ export interface StatefulChartProps {
   onZoom?: (newIntervalSize: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
+  layerRegistry?: LayerRegistry;
   drawingRegistry?: DrawingRegistry;
   onDrawingHover?: (hit: DrawingHit | null) => void;
   onDrawingClick?: (hit: DrawingHit) => void;
+  onLayerHover?: (hit: LayerHit | null) => void;
+  onLayerClick?: (hit: LayerHit) => void;
   minimal?: boolean;
 }
 
@@ -79,9 +84,12 @@ const StatefulChart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  layerRegistry,
   drawingRegistry,
   onDrawingHover,
   onDrawingClick,
+  onLayerHover,
+  onLayerClick,
   minimal = false,
 }: StatefulChartProps) => {
 
@@ -108,16 +116,19 @@ const StatefulChart = ({
     handleDrawingDragStart,
     handleDrawingDragMove,
     handleDrawingDragEnd,
-  } = useDrawingInteractions({
+  } = useChartInteractions({
     chartCanvasesRef,
     viewportDataRef,
     metricsByPanelRef,
     config,
     panels,
     layout,
+    layerRegistry,
     drawingRegistry,
     onDrawingHover,
     onDrawingClick,
+    onLayerHover,
+    onLayerClick,
   });
 
   useEffect(() => {

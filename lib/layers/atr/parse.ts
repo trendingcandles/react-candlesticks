@@ -69,6 +69,8 @@ const parse = (partialConfig: AtrLayerConfig, layersTheme: LayersTheme, panelId:
     legend: parseLegendConfig(partialConfig.legend, { ...atrTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, atrTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? atrDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };    
 };
 

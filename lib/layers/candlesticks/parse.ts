@@ -72,6 +72,10 @@ const parseCandlestickLayerConfig = (partialConfig: CandlestickLayerConfig, laye
     lookback: 0,
     calculate: true,
     includeInAutoScale: true,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
+    onCandleHover: partialConfig.onCandleHover,
+    onCandleClick: partialConfig.onCandleClick,
   };
 };
 

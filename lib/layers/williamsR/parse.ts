@@ -50,6 +50,8 @@ const parse = (partialConfig: WilliamsRLayerConfig, layersTheme: LayersTheme, pa
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `Williams %R ${length}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? williamsRDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 };
 

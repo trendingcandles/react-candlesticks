@@ -9,46 +9,68 @@ import { useCallback, useRef, useState } from 'react';
 import type { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import type { DrawingDragContext, DrawingHit, DrawingHitTestContext, DrawingPointer, DrawingPointerDelta } from '../../config/drawing/Drawing';
 import type { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
+import type { LayerHit } from '../../config/layer/Layer';
+import type { LayerRegistry } from '../../config/layer/LayerRegistry';
 import type { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import type { Layout } from '../../domain/types/Layout';
 import type ViewportData from '../../domain/types/ViewportData';
 import type { ChartCanvasesHandle } from '../ChartCanvases/ChartCanvases';
 import hitTestDrawings, { DrawingHitResult, MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
 import createDrawingPointer from '../../drawing/drawing/createDrawingPointer';
+import hitTestLayers, { LayerHitResult } from '../../drawing/layer/hitTestLayers';
 
 interface CurrentRef<T> {
   current: T;
 }
 
-interface UseDrawingInteractionsParams {
+interface UseChartInteractionsParams {
   chartCanvasesRef: CurrentRef<ChartCanvasesHandle | null>;
   viewportDataRef: CurrentRef<ViewportData | null>;
   metricsByPanelRef: CurrentRef<MetricsByPanel | null>;
   config: ChartConfigComplete;
   panels: PanelConfigComplete[];
   layout: Layout;
+  layerRegistry?: LayerRegistry;
   drawingRegistry?: DrawingRegistry;
   onDrawingHover?: (hit: DrawingHit | null) => void;
   onDrawingClick?: (hit: DrawingHit) => void;
+  onLayerHover?: (hit: LayerHit | null) => void;
+  onLayerClick?: (hit: LayerHit) => void;
 }
 
-const hitKey = (hit: DrawingHit | null | undefined): string | null =>
-  hit ? `${hit.panelId}:${hit.drawingId}:${hit.target ?? ''}` : null;
+type ChartHitResult =
+  | { kind: 'drawing'; result: DrawingHitResult }
+  | { kind: 'layer'; result: LayerHitResult };
 
-const useDrawingInteractions = ({
+const hitKey = (result: ChartHitResult | null | undefined): string | null => {
+  if (!result) return null;
+
+  if (result.kind === 'drawing') {
+    const { hit } = result.result;
+    return `drawing:${hit.panelId}:${hit.drawingId}:${hit.target ?? ''}`;
+  }
+
+  const { hit } = result.result;
+  return `layer:${hit.panelId}:${hit.layerId}:${hit.target ?? ''}`;
+};
+
+const useChartInteractions = ({
   chartCanvasesRef,
   viewportDataRef,
   metricsByPanelRef,
   config,
   panels,
   layout,
+  layerRegistry,
   drawingRegistry,
   onDrawingHover,
   onDrawingClick,
-}: UseDrawingInteractionsParams) => {
+  onLayerHover,
+  onLayerClick,
+}: UseChartInteractionsParams) => {
   const [drawingCursor, setDrawingCursor] = useState<string | undefined>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const lastDrawingHoverRef = useRef<DrawingHitResult | null>(null);
+  const lastHoverRef = useRef<ChartHitResult | null>(null);
   const activeDragRef = useRef<DrawingHitResult | null>(null);
 
   const runDrawingHitTest = useCallback((clientX: number, clientY: number): DrawingHitResult | null => {
@@ -79,6 +101,41 @@ const useDrawingInteractions = ({
       chartContext.axesContext,
     );
   }, [chartCanvasesRef, config, drawingRegistry, layout, metricsByPanelRef, panels, viewportDataRef]);
+
+  const runLayerHitTest = useCallback((clientX: number, clientY: number): LayerHitResult | null => {
+    const container = containerRef.current;
+    const viewportData = viewportDataRef.current;
+    const metricsByPanel = metricsByPanelRef.current;
+
+    if (!container || !viewportData || !metricsByPanel) return null;
+
+    const { left, top } = container.getBoundingClientRect();
+    const chartX = clientX - left;
+    const chartY = clientY - top;
+
+    return hitTestLayers(
+      clientX,
+      clientY,
+      chartX,
+      chartY,
+      config,
+      panels,
+      layout,
+      viewportData,
+      metricsByPanel,
+      layerRegistry,
+    );
+  }, [config, layerRegistry, layout, metricsByPanelRef, panels, viewportDataRef]);
+
+  const runChartHitTest = useCallback((clientX: number, clientY: number): ChartHitResult | null => {
+    const drawingHit = runDrawingHitTest(clientX, clientY);
+    if (drawingHit) return { kind: 'drawing', result: drawingHit };
+
+    const layerHit = runLayerHitTest(clientX, clientY);
+    if (layerHit) return { kind: 'layer', result: layerHit };
+
+    return null;
+  }, [runDrawingHitTest, runLayerHitTest]);
 
   const createCurrentDragContext = useCallback((
     activeDrag: DrawingHitResult,
@@ -125,37 +182,59 @@ const useDrawingInteractions = ({
   });
 
   const handleDrawingHover = useCallback((clientX: number, clientY: number) => {
-    const next = runDrawingHitTest(clientX, clientY);
-    const previous = lastDrawingHoverRef.current;
+    const next = runChartHitTest(clientX, clientY);
+    const previous = lastHoverRef.current;
 
-    if (hitKey(previous?.hit) === hitKey(next?.hit)) return;
+    if (hitKey(previous) === hitKey(next)) return;
 
-    if (previous) {
-      const previousDrawing = drawingRegistry?.[previous.hit.drawingType];
-      previousDrawing?.onHover?.(null, previous.context);
+    if (previous?.kind === 'drawing') {
+      const { hit, context } = previous.result;
+      const previousDrawing = drawingRegistry?.[hit.drawingType];
+      previousDrawing?.onHover?.(null, context);
+      if (next?.kind !== 'drawing') onDrawingHover?.(null);
+    } else if (previous?.kind === 'layer') {
+      const { hit, context } = previous.result;
+      const previousLayer = context.viewportData.layersData?.layerRegistry?.[hit.layerType] ?? layerRegistry?.[hit.layerType];
+      previousLayer?.onHover?.(null, context);
+      if (next?.kind !== 'layer') onLayerHover?.(null);
     }
 
-    if (next) {
-      const nextDrawing = drawingRegistry?.[next.hit.drawingType];
-      nextDrawing?.onHover?.(next.hit, next.context);
-      onDrawingHover?.(next.hit);
-      setDrawingCursor(next.hit.cursor);
+    if (next?.kind === 'drawing') {
+      const { hit, context } = next.result;
+      const nextDrawing = drawingRegistry?.[hit.drawingType];
+      nextDrawing?.onHover?.(hit, context);
+      onDrawingHover?.(hit);
+      setDrawingCursor(hit.cursor);
+    } else if (next?.kind === 'layer') {
+      const { hit, context } = next.result;
+      const nextLayer = context.viewportData.layersData?.layerRegistry?.[hit.layerType] ?? layerRegistry?.[hit.layerType];
+      nextLayer?.onHover?.(hit, context);
+      onLayerHover?.(hit);
+      setDrawingCursor(hit.cursor);
     } else if (previous) {
-      onDrawingHover?.(null);
       setDrawingCursor(undefined);
     }
 
-    lastDrawingHoverRef.current = next;
-  }, [drawingRegistry, onDrawingHover, runDrawingHitTest]);
+    lastHoverRef.current = next;
+  }, [drawingRegistry, layerRegistry, onDrawingHover, onLayerHover, runChartHitTest]);
 
   const handleDrawingClick = useCallback((clientX: number, clientY: number) => {
-    const result = runDrawingHitTest(clientX, clientY);
+    const result = runChartHitTest(clientX, clientY);
     if (!result) return;
 
-    const drawing = drawingRegistry?.[result.hit.drawingType];
-    drawing?.onClick?.(result.hit, result.context);
-    onDrawingClick?.(result.hit);
-  }, [drawingRegistry, onDrawingClick, runDrawingHitTest]);
+    if (result.kind === 'drawing') {
+      const { hit, context } = result.result;
+      const drawing = drawingRegistry?.[hit.drawingType];
+      drawing?.onClick?.(hit, context);
+      onDrawingClick?.(hit);
+      return;
+    }
+
+    const { hit, context } = result.result;
+    const layer = context.viewportData.layersData?.layerRegistry?.[hit.layerType] ?? layerRegistry?.[hit.layerType];
+    layer?.onClick?.(hit, context);
+    onLayerClick?.(hit);
+  }, [drawingRegistry, layerRegistry, onDrawingClick, onLayerClick, runChartHitTest]);
 
   const handleDrawingDragStart = useCallback((clientX: number, clientY: number): boolean => {
     const result = runDrawingHitTest(clientX, clientY);
@@ -212,4 +291,4 @@ const useDrawingInteractions = ({
   };
 };
 
-export default useDrawingInteractions;
+export default useChartInteractions;

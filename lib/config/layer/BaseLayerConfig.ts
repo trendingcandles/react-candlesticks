@@ -8,6 +8,7 @@
 import { LegendConfig, LegendConfigComplete } from '../legend/LegendConfig';
 import defaultValueLabelFormatter from '../elements/valueLabel/defaultValueLabelFormatter';
 import { YAxisConfig, YAxisConfigComplete } from './yAxis/YAxisConfig';
+import type { LayerHit } from './Layer';
 
 export type ScaleDomain =
   | 'price'
@@ -72,6 +73,8 @@ export interface BaseLayerConfigComplete {
   lookback: number | ((period: number) => number);
   calculate: boolean;
   includeInAutoScale: boolean;
+  onElementHover?: (hit: LayerHit | null) => void;
+  onElementClick?: (hit: LayerHit) => void;
 }
 
 export interface BaseLayerConfig {
@@ -91,6 +94,8 @@ export interface BaseLayerConfig {
   lookback?: number | ((period: number) => number);
   calculate?: boolean;
   includeInAutoScale?: boolean;
+  onElementHover?: (hit: LayerHit | null) => void;
+  onElementClick?: (hit: LayerHit) => void;
 }
 
 export const baseLayerDefaults: Omit<BaseLayerConfigComplete, 'id' | 'type' | 'defaultScale' | 'scale' | 'scalePolicy' | 'requiredInputKeys' | 'period' | 'valueToY' | 'legend' | 'yAxis'> = {

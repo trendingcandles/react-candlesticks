@@ -62,6 +62,10 @@ const parse = (partialConfig: SmaLayerConfig, layersTheme: LayersTheme, panelId:
     legend: parseLegendConfig(partialConfig.legend, { ...smaTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, smaTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? smaDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
+    onLineHover: partialConfig.onLineHover,
+    onLineClick: partialConfig.onLineClick,
   };    
 };
 

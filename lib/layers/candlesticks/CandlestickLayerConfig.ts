@@ -11,6 +11,7 @@ import { DirectionalBarConfig, DirectionalBarConfigComplete, DirectionalBarTheme
 import { DirectionalLineConfig, DirectionalLineConfigComplete, DirectionalLineTheme } from '../../config/elements/line/DirectionalLineConfig';
 import { LegendTheme } from '../../config/legend/LegendConfig';
 import { YAxisTheme } from '../../config/layer/yAxis/YAxisConfig';
+import { LayerHit } from '../../config/layer/Layer';
 
 type RequiredInputKeys = ['open', 'high', 'low', 'close'];
 export const REQUIRED_INPUT_KEYS: RequiredInputKeys = ['open', 'high', 'low', 'close'];
@@ -25,6 +26,8 @@ export interface CandlestickLayerConfigComplete extends BaseLayerConfigComplete 
   markers: {
     value: null | DirectionalValueMarkerConfigComplete;
   };
+  onCandleHover?: (hit: LayerHit | null) => void;
+  onCandleClick?: (hit: LayerHit) => void;
 }
 
 export interface CandlestickLayerConfig extends BaseLayerConfig {
@@ -36,6 +39,8 @@ export interface CandlestickLayerConfig extends BaseLayerConfig {
   markers?: {
     value?: false | DirectionalValueMarkerConfig;
   };
+  onCandleHover?: (hit: LayerHit | null) => void;
+  onCandleClick?: (hit: LayerHit) => void;
 }
 
 export interface CandlesticksTheme {
