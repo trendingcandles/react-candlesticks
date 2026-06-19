@@ -105,7 +105,7 @@ function CustomLayerChart() {
     <Chart
       data={exampleData}
       theme='dark'
-      customLayers={[typicalPriceLayer]}
+      layerDefinitions={[typicalPriceLayer]}
       initialScrollToLatest
     >
       <Panel>

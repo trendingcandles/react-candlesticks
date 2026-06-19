@@ -36,8 +36,8 @@ import createDrawingRegistry from '../../drawings/createDrawingRegistry';
 import { DrawingHit } from '../../config/drawing/Drawing';
 import { LayerHit } from '../../config/layer/Layer';
 
-const EMPTY_CUSTOM_LAYERS: readonly CustomLayerDefinition[] = [];
-const EMPTY_CUSTOM_DRAWINGS: readonly CustomDrawingDefinition[] = [];
+const EMPTY_LAYER_DEFINITIONS: readonly CustomLayerDefinition[] = [];
+const EMPTY_DRAWING_DEFINITIONS: readonly CustomDrawingDefinition[] = [];
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   renderMode?: 'full' | 'minimal';
@@ -59,8 +59,8 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onZoom?: (newIntervalWidthPx: number) => void;
   enableScroll?: boolean;
   enableZoom?: boolean;
-  customLayers?: readonly CustomLayerDefinition[];
-  customDrawings?: readonly CustomDrawingDefinition[];
+  layerDefinitions?: readonly CustomLayerDefinition[];
+  drawingDefinitions?: readonly CustomDrawingDefinition[];
   onDrawingHover?: (hit: DrawingHit | null) => void;
   onDrawingClick?: (hit: DrawingHit) => void;
   onLayerHover?: (hit: LayerHit | null) => void;
@@ -102,8 +102,8 @@ const Chart = ({
   onZoom,
   enableScroll,
   enableZoom,
-  customLayers = EMPTY_CUSTOM_LAYERS,
-  customDrawings = EMPTY_CUSTOM_DRAWINGS,
+  layerDefinitions = EMPTY_LAYER_DEFINITIONS,
+  drawingDefinitions = EMPTY_DRAWING_DEFINITIONS,
   onDrawingHover,
   onDrawingClick,
   onLayerHover,
@@ -164,12 +164,12 @@ const Chart = ({
   }, [theme]);
 
   const layerRegistry = useMemo(
-    () => createLayerRegistry(customLayers),
-    [customLayers],
+    () => createLayerRegistry(layerDefinitions),
+    [layerDefinitions],
   );
   const drawingRegistry = useMemo(
-    () => createDrawingRegistry(customDrawings),
-    [customDrawings],
+    () => createDrawingRegistry(drawingDefinitions),
+    [drawingDefinitions],
   );
 
   // Parse chart config (everything that's not panels/layers)

@@ -10,17 +10,17 @@ import builtInLayers from './layers';
 import { CustomLayerDefinition } from './defineLayer';
 
 const createLayerRegistry = (
-  customLayers: readonly CustomLayerDefinition[] = [],
+  layerDefinitions: readonly CustomLayerDefinition[] = [],
 ): LayerRegistry => {
   const registry: Record<string, LayerRegistry[string]> = {
     ...builtInLayers,
   };
 
-  for (const customLayer of customLayers) {
-    if (registry[customLayer.type]) {
-      throw new Error(`Duplicate layer type: ${customLayer.type}`);
+  for (const layerDefinition of layerDefinitions) {
+    if (registry[layerDefinition.type]) {
+      throw new Error(`Duplicate layer type: ${layerDefinition.type}`);
     }
-    registry[customLayer.type] = customLayer;
+    registry[layerDefinition.type] = layerDefinition;
   }
 
   return Object.freeze(registry);

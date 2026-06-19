@@ -203,7 +203,7 @@ function CustomDrawingChart() {
       <Chart
         data={exampleData}
         theme="dark"
-        customDrawings={[priceSegmentDrawing]}
+        drawingDefinitions={[priceSegmentDrawing]}
         initialScrollToLatest
       >
         <Panel>

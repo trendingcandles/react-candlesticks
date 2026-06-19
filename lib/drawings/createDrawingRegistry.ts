@@ -9,15 +9,15 @@ import { DrawingRegistry } from '../config/drawing/DrawingRegistry';
 import { CustomDrawingDefinition } from './defineDrawing';
 
 const createDrawingRegistry = (
-  customDrawings: readonly CustomDrawingDefinition[] = [],
+  drawingDefinitions: readonly CustomDrawingDefinition[] = [],
 ): DrawingRegistry => {
   const registry: Record<string, DrawingRegistry[string]> = {};
 
-  for (const customDrawing of customDrawings) {
-    if (registry[customDrawing.type]) {
-      throw new Error(`Duplicate drawing type: ${customDrawing.type}`);
+  for (const drawingDefinition of drawingDefinitions) {
+    if (registry[drawingDefinition.type]) {
+      throw new Error(`Duplicate drawing type: ${drawingDefinition.type}`);
     }
-    registry[customDrawing.type] = customDrawing;
+    registry[drawingDefinition.type] = drawingDefinition;
   }
 
   return Object.freeze(registry);

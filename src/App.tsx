@@ -10,6 +10,7 @@ import Indcators2Chart from './examples/Indcators2Chart';
 import CustomLayerChart from './examples/CustomLayerChart';
 import CustomDrawingChart from './examples/CustomDrawingChart';
 import LayerInteractionChart from './examples/LayerInteractionChart';
+import LayerInteractionChart2 from './examples/LayerInteractionChart2';
 
 const examples = [
   'simple',
@@ -19,6 +20,7 @@ const examples = [
   'custom-layer',
   'custom-drawing',
   'layer-interaction',
+  'layer-interaction2',
   'customization',
   'full-configuration',
   'minimal',
@@ -46,6 +48,7 @@ function App() {
         {exampleChart === "custom-layer" && <CustomLayerChart />}
         {exampleChart === "custom-drawing" && <CustomDrawingChart />}
         {exampleChart === "layer-interaction" && <LayerInteractionChart />}
+        {exampleChart === "layer-interaction2" && <LayerInteractionChart2 />}
         {exampleChart === "customization" && <CustomizationChart />}
         {exampleChart === "full-configuration" && <FullConfigurationChart />}
         {exampleChart === "minimal" && <MinimalChart />}
@@ -58,20 +61,32 @@ function App() {
           padding: "16px",
           fontFamily: "sans-serif",
           display: "flex",
+          alignItems: "center",
           gap: "24px",
         }}
       >
-        {examples.map((example) => (
-          <label key={example}>
-            <input
-              type="radio"
-              value={example}
-              checked={exampleChart === example}
-              onChange={() => setExampleChart(example)}
-            />
-            {example}
-          </label>
-        ))}
+        <label htmlFor="example-select">
+          Example
+        </label>
+        <select
+          id="example-select"
+          value={exampleChart}
+          onChange={(event) => setExampleChart(event.target.value as typeof examples[number])}
+          style={{
+            backgroundColor: "#1f1f1f",
+            color: "white",
+            border: "1px solid #555",
+            borderRadius: "4px",
+            padding: "6px 8px",
+            font: "inherit",
+          }}
+        >
+          {examples.map((example) => (
+            <option key={example} value={example}>
+              {example}
+            </option>
+          ))}
+        </select>
       </div>
     </>
   );
