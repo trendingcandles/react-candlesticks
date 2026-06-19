@@ -27,3 +27,5 @@ dist-ssr
 .envrc
 
 STACKBLITZ_DEMOS.md
+
+/capture-scripts/
