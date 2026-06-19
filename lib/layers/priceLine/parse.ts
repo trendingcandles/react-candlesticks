@@ -58,6 +58,8 @@ const parse = (partialConfig: PriceLineLayerConfig, layersTheme: LayersTheme, pa
     lookback: 0,
     calculate: true,
     includeInAutoScale: true,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };    
 };
 

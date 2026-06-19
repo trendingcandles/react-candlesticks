@@ -17,6 +17,8 @@ import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import mapLayerByScale from './mapLayersByScale';
 import ViewportData from '../../domain/types/ViewportData';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
+import drawDrawings from '../drawing/drawDrawings';
 
 const drawPanel = (
   context: CanvasRenderingContext2D,
@@ -28,6 +30,7 @@ const drawPanel = (
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   panelIndex: number,
+  drawingRegistry?: DrawingRegistry,
 ): { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; } | undefined => {
 
   const {
@@ -94,6 +97,19 @@ const drawPanel = (
       panelMetrics,
     );
   }
+
+  drawDrawings(
+    context,
+    axesContext,
+    chartConfig,
+    panelConfig,
+    layout,
+    viewportData,
+    chartMetrics,
+    panelMetrics,
+    layerMetricsByScale,
+    drawingRegistry,
+  );
 
   return {
     panelMetrics,

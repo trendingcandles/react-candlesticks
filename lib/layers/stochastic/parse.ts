@@ -86,6 +86,8 @@ const parse = (partialConfig: StochasticLayerConfig, layersTheme: LayersTheme, p
     legend: parseLegendConfig(partialConfig.legend, { ...stochasticTheme.legend, label: defautLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, stochasticTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? stochasticDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };
 
 };

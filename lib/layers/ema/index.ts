@@ -10,6 +10,8 @@ import { EmaLayerConfig, EmaLayerConfigComplete } from './EmaLayerConfig';
 import defineLayer from '../defineLayer';
 import calc from './calc';
 import draw from './draw';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   EmaLayerConfig,
@@ -22,6 +24,9 @@ const ema = defineLayer<EmaLayerConfig, EmaLayerConfigComplete>({
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default ema;

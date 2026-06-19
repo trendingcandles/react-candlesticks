@@ -10,6 +10,8 @@ import { VolumeBarsLayerConfig, VolumeBarsLayerConfigComplete } from './VolumeBa
 import calc from './calc';
 import draw from './draw/draw';
 import parse from './parse';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   VolumeBarsLayerConfig,
@@ -22,6 +24,9 @@ const volumeBars = defineLayer<VolumeBarsLayerConfig, VolumeBarsLayerConfigCompl
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default volumeBars;

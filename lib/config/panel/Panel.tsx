@@ -8,7 +8,7 @@
 import { ReactNode } from 'react';
 import { PanelConfig } from './PanelConfig';
 
-export interface PanelProps extends Omit<PanelConfig, 'layers'> {
+export interface PanelProps extends Omit<PanelConfig, 'layers' | 'drawings'> {
   children?: ReactNode;
 }
 

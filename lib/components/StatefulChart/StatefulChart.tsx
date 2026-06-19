@@ -27,6 +27,12 @@ import { IndexProvider } from '../../domain/types/IndexProvider';
 import DataPointInfo from '../../domain/types/DataPointInfo';
 import ViewportData from '../../domain/types/ViewportData';
 import { DataMap } from '../../domain/types/DataMap';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
+import type { DrawingHit } from '../../config/drawing/Drawing';
+import { LayerRegistry } from '../../config/layer/LayerRegistry';
+import type { LayerHit } from '../../config/layer/Layer';
+import { MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
+import useChartInteractions from './useChartInteractions';
 import styles from './styles.module.scss';
 
 const LOOKBACK_PAD = 10;
@@ -50,6 +56,12 @@ export interface StatefulChartProps {
   onZoom?: (newIntervalSize: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
+  layerRegistry?: LayerRegistry;
+  drawingRegistry?: DrawingRegistry;
+  onDrawingHover?: (hit: DrawingHit | null) => void;
+  onDrawingClick?: (hit: DrawingHit) => void;
+  onLayerHover?: (hit: LayerHit | null) => void;
+  onLayerClick?: (hit: LayerHit) => void;
   minimal?: boolean;
 }
 
@@ -72,6 +84,12 @@ const StatefulChart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  layerRegistry,
+  drawingRegistry,
+  onDrawingHover,
+  onDrawingClick,
+  onLayerHover,
+  onLayerClick,
   minimal = false,
 }: StatefulChartProps) => {
 
@@ -84,10 +102,34 @@ const StatefulChart = ({
   const previousOffsetPxRef = useRef<number>(undefined);
   const viewportDataRef = useRef<ViewportData | null>(null);
   const layersDataRef = useRef<LayersData | null>(null);
+  const metricsByPanelRef = useRef<MetricsByPanel | null>(null);
   const crosshairsClearedRef = useRef(false);
   const isOverButtonRef = useRef(false);
   const hasUserInteractedRef = useRef(false);
   const hasAutoScrolledToLatestRef = useRef(false);
+
+  const {
+    containerRef,
+    drawingCursor,
+    handleDrawingHover,
+    handleDrawingClick,
+    handleDrawingDragStart,
+    handleDrawingDragMove,
+    handleDrawingDragEnd,
+  } = useChartInteractions({
+    chartCanvasesRef,
+    viewportDataRef,
+    metricsByPanelRef,
+    config,
+    panels,
+    layout,
+    layerRegistry,
+    drawingRegistry,
+    onDrawingHover,
+    onDrawingClick,
+    onLayerHover,
+    onLayerClick,
+  });
 
   useEffect(() => {
     layersDataRef.current = initialLayersData;
@@ -106,6 +148,11 @@ const StatefulChart = ({
     }, 16), // ~60fps
     []
   );
+
+  const updatePanelMetrics = useCallback((metricsByPanel: MetricsByPanel) => {
+    metricsByPanelRef.current = metricsByPanel;
+    uisRef.current?.updatePanelMetrics?.(metricsByPanel);
+  }, []);
 
   const handleDataConfigOrScrollChange = useCallback(
     (
@@ -189,7 +236,7 @@ const StatefulChart = ({
 
       viewportDataRef.current = viewportData;
 
-      throttledDraw(viewportDataRef.current, chartLayout, uisRef.current?.updatePanelMetrics);
+      throttledDraw(viewportDataRef.current, chartLayout, updatePanelMetrics);
 
       if (offsetPxRef.current !== previousOffsetPxRef.current) {
         if (lastDataPointIndex !== undefined) {
@@ -204,7 +251,7 @@ const StatefulChart = ({
 
       return offsetPxRef.current;
     },
-    [initialScrollToLatest, scrollToLatestMargin, throttledDraw]
+    [initialScrollToLatest, scrollToLatestMargin, throttledDraw, updatePanelMetrics]
   );
 
   // If config, panels, data (and derived), intervalSize, granularity or layout change...
@@ -269,6 +316,7 @@ const StatefulChart = ({
 
   const handleMouseMove = useCallback((clientX: number, clientY: number) => {
     crosshairsClearedRef.current = false;
+    handleDrawingHover(clientX, clientY);
     if (viewportDataRef.current) {
       throttledCrosshairsDraw(
         layout,
@@ -278,7 +326,7 @@ const StatefulChart = ({
         (_ts: number | null, dataPoint: DataPointInfo | null) => uisRef.current?.updateLegends(dataPoint, viewportDataRef.current ? viewportDataRef.current.data[viewportDataRef.current.data.length - 1] : undefined),
       );
     }
-  }, [throttledCrosshairsDraw, layout]);
+  }, [handleDrawingHover, throttledCrosshairsDraw, layout]);
 
   const handleZoom = useCallback((zoomFactor: number) => {
     if (zoomFactor !== 1) {
@@ -344,6 +392,7 @@ const StatefulChart = ({
 
   return (
     <div
+      ref={containerRef}
       className={styles.statefulChart}
       style={{
         backgroundColor: config.backgroundColor,
@@ -356,12 +405,18 @@ const StatefulChart = ({
         layout={layout}
         config={config}
         panels={panels}
+        drawingRegistry={drawingRegistry}
         showCrosshairsCanvas={minimal === false}
       />
       {!minimal &&
         <InteractiveArea
           onScroll={handleScroll}
           onMouseMove={handleMouseMove}
+          onClick={handleDrawingClick}
+          onPointerDragStart={handleDrawingDragStart}
+          onPointerDragMove={handleDrawingDragMove}
+          onPointerDragEnd={handleDrawingDragEnd}
+          cursor={drawingCursor}
           onZoom={handleZoom}
           enableScroll={enableScroll}
           enableZoom={enableZoom}

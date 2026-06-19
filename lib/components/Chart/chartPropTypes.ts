@@ -88,6 +88,12 @@ const chartPropTypes = {
   onZoom: PropTypes.func,
   enableScroll: PropTypes.bool,
   enableZoom: PropTypes.bool,
+  layerDefinitions: PropTypes.arrayOf(PropTypes.object.isRequired),
+  drawingDefinitions: PropTypes.arrayOf(PropTypes.object.isRequired),
+  onDrawingHover: PropTypes.func,
+  onDrawingClick: PropTypes.func,
+  onLayerHover: PropTypes.func,
+  onLayerClick: PropTypes.func,
   panels: combinePropValidators(
     (props, propName, componentName, location, propFullName, secret) =>
       panelsArrayValidator(props, propName, componentName, location, propFullName, secret),

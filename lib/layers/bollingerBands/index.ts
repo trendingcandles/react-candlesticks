@@ -10,6 +10,8 @@ import parse from './parse';
 import defineLayer from '../defineLayer';
 import calc from './calc';
 import draw from './draw';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   BollingerBandsLayerConfig,
@@ -22,6 +24,9 @@ const bollingerBands = defineLayer<BollingerBandsLayerConfig, BollingerBandsLaye
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default bollingerBands;

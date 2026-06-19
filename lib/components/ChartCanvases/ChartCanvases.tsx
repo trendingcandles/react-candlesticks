@@ -18,10 +18,15 @@ import styles from './styles.module.scss';
 import { LayerScale } from '../../config/layer/BaseLayerConfig';
 import DataPointInfo from '../../domain/types/DataPointInfo';
 import ViewportData from '../../domain/types/ViewportData';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 
 export type ChartCanvasesHandle = {
   requestDraw: (viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => void;
   requestDrawCrosshairs: (layout: Layout, viewportData: ViewportData, clientX: number, clientY: number, onCrosshairsMove?: (ts: number | null, dataPoint: DataPointInfo | null) => void) => void;
+  getDrawingContexts: () => {
+    context: CanvasRenderingContext2D;
+    axesContext: CanvasRenderingContext2D;
+  } | null;
   updateCrosshairsCanvas: (layout: Layout) => void;
   hideCrosshairs: (layout: Layout) => void;
 };
@@ -32,6 +37,7 @@ export interface ChartCanvasesProps {
   layout: Layout;
   config: ChartConfigComplete;
   panels: PanelConfigComplete[];
+  drawingRegistry?: DrawingRegistry;
   showCrosshairsCanvas?: boolean;
 }
 
@@ -39,6 +45,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
   config,
   panels,
   layout,
+  drawingRegistry,
   showCrosshairsCanvas = true,
 }, ref) {
   
@@ -54,6 +61,8 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
   const crosshairsAnimationFrameRef = useRef<number | null>(null);
 
   const metricsByPanelRef = useRef<Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> | null>(null);
+  const drawingsContextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const axesContextRef = useRef<CanvasRenderingContext2D | null>(null);
 
   const prevDrawingAreaSizeRef = useRef<{
     width: number;
@@ -75,7 +84,9 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
     const drawingsContext = getCanvasContext(drawingsChartCanvasRef, layout.drawingAreaWidth, layout.chartHeight, layout.dpr, prevDrawingAreaSizeRef.current);
     const axesContext = getCanvasContext(axesChartCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevAxesSizeRef.current);
     if (drawingsContext && axesContext) {
-      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout)!;
+      drawingsContextRef.current = drawingsContext;
+      axesContextRef.current = axesContext;
+      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout, drawingRegistry)!;
       if (updatePanelMetrics) {
         updatePanelMetrics(metricsByPanelRef.current);
       }
@@ -90,7 +101,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
       height: layout.chartHeight,
       dpr: layout.dpr,
     };
-  }, [config, panels]);
+  }, [config, drawingRegistry, panels]);
 
   const requestDraw = useCallback((viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => {
     if (drawAnimationFrameRef.current !== null) {
@@ -148,15 +159,25 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
     // }
   }, []);
 
+  const getDrawingContexts = useCallback(() => {
+    if (!drawingsContextRef.current || !axesContextRef.current) return null;
+
+    return {
+      context: drawingsContextRef.current,
+      axesContext: axesContextRef.current,
+    };
+  }, []);
+
   useImperativeHandle(
     ref,
     () => ({
       requestDraw,
       requestDrawCrosshairs,
+      getDrawingContexts,
       updateCrosshairsCanvas,
       hideCrosshairs,
     }),
-    [requestDraw, requestDrawCrosshairs, hideCrosshairs, updateCrosshairsCanvas]
+    [requestDraw, requestDrawCrosshairs, getDrawingContexts, hideCrosshairs, updateCrosshairsCanvas]
   );
 
   return (

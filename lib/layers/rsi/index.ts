@@ -10,6 +10,8 @@ import calc from './calc';
 import draw from './draw';
 import parse from './parse';
 import { RsiLayerConfig, RsiLayerConfigComplete } from './RsiLayerConfig';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   RsiLayerConfig,
@@ -22,6 +24,9 @@ const rsi = defineLayer<RsiLayerConfig, RsiLayerConfigComplete>({
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default rsi;

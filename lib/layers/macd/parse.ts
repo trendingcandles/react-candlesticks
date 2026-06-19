@@ -84,6 +84,8 @@ const parse = (partialConfig: MacdLayerConfig, layersTheme: LayersTheme, panelId
     legend: parseLegendConfig(partialConfig.legend, { ...macdTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, macdTheme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? macdDefaults.valueLabelFormatter,
+    onElementHover: partialConfig.onElementHover,
+    onElementClick: partialConfig.onElementClick,
   };    
 };
 

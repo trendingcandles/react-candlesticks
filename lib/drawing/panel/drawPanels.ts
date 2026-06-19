@@ -15,6 +15,7 @@ import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { TimeScale } from '../../domain/types/TimeScale';
 import ViewportData from '../../domain/types/ViewportData';
 import { LayerScale } from '../../config/layer/BaseLayerConfig';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 
 const drawPanels = (
   context: CanvasRenderingContext2D,
@@ -25,6 +26,7 @@ const drawPanels = (
   timeScale: TimeScale,
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
+  drawingRegistry?: DrawingRegistry,
 ): Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> => {
 
   const metricsByPanel: Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> = {};
@@ -42,6 +44,7 @@ const drawPanels = (
       viewportData,
       chartMetrics,
       index,
+      drawingRegistry,
     );
 
     if (metrics) {

@@ -10,6 +10,7 @@ import { LayerConfig } from '../../config/layer/LayerConfig';
 import { BaseLayerConfigComplete } from '../layer/BaseLayerConfig';
 import { LineConfig, LineConfigComplete } from '../elements/line/LineConfig';
 import { PanelControlsConfig, PanelControlsConfigComplete, PanelControlsTheme } from './controls/PanelControlsConfig';
+import { DrawingConfig, DrawingConfigComplete } from '../drawing/DrawingConfig';
 
 export interface PanelConfigComplete {
   id: string;
@@ -18,6 +19,7 @@ export interface PanelConfigComplete {
   paddingBottom: number;
   borderTop: null | LineConfigComplete;
   layers: BaseLayerConfigComplete[];
+  drawings: DrawingConfigComplete[];
   controls: PanelControlsConfigComplete;
   yAxes: PanelYAxes;
 }
@@ -29,6 +31,7 @@ export interface PanelConfig {
   paddingBottom?: number;
   borderTop?: LineConfig;
   layers: LayerConfig[];
+  drawings?: DrawingConfig[];
   controls?: PanelControlsConfig;
 }
 

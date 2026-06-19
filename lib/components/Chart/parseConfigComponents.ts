@@ -16,6 +16,8 @@ import React, {
 import { PanelConfig } from '../../config/panel/PanelConfig';
 import { LayerConfig } from '../../config/layer/LayerConfig';
 import LAYER_COMPONENT_TYPE_KEY from '../../config/layer/layerComponentTypeKey';
+import DRAWING_COMPONENT_TYPE_KEY from '../../config/drawing/drawingComponentTypeKey';
+import { DrawingConfig } from '../../config/drawing/DrawingConfig';
 
 export interface ConfigNode {
   type: string;
@@ -32,11 +34,13 @@ export interface PanelConfigNode {
   layers?: LayerConfigNode[];
 }
 
-interface LayerComponentMeta {
+interface ConfigComponentMeta {
   displayName?: string;
   name?: string;
   layerType?: string;
+  drawingType?: string;
   [LAYER_COMPONENT_TYPE_KEY]?: string;
+  [DRAWING_COMPONENT_TYPE_KEY]?: string;
 }
 
 export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null {
@@ -55,7 +59,7 @@ export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null 
   if (typeof type === 'string') {
     layerComponentName = type;
   } else {
-    const maybeComponent = type as LayerComponentMeta;
+    const maybeComponent = type as ConfigComponentMeta;
     layerComponentName = maybeComponent.displayName || maybeComponent.name || 'Anonymous';
     layerType = maybeComponent[LAYER_COMPONENT_TYPE_KEY] ?? maybeComponent.layerType;
   }
@@ -74,6 +78,53 @@ export function mapLayerElementToConfig(element: ReactNode): LayerConfig | null 
   return layerConfig;
 }
 
+export function mapDrawingElementToConfig(element: ReactNode): DrawingConfig | null {
+  if (!React.isValidElement(element)) return null;
+
+  const drawingElement = element as ReactElement<
+    any,
+    string | JSXElementConstructor<any>
+  >;
+
+  const { type, props } = drawingElement;
+
+  let drawingComponentName: string;
+  let drawingType: string | undefined;
+
+  if (typeof type === 'string') {
+    drawingComponentName = type;
+  } else {
+    const maybeComponent = type as ConfigComponentMeta;
+    drawingComponentName = maybeComponent.displayName || maybeComponent.name || 'Anonymous';
+    drawingType = maybeComponent[DRAWING_COMPONENT_TYPE_KEY] ?? maybeComponent.drawingType;
+  }
+
+  if (drawingType === undefined) {
+    throw new Error(`Invalid drawing: ${drawingComponentName}`);
+  }
+
+  const { children: _, ...cleanProps } = props;
+
+  return {
+    ...cleanProps,
+    type: drawingType,
+  };
+}
+
+const isDrawingElement = (element: ReactNode): boolean => {
+  if (!React.isValidElement(element)) return false;
+
+  const { type } = element as ReactElement<
+    any,
+    string | JSXElementConstructor<any>
+  >;
+
+  if (typeof type === 'string') return false;
+
+  const maybeComponent = type as ConfigComponentMeta;
+  return Boolean(maybeComponent[DRAWING_COMPONENT_TYPE_KEY] ?? maybeComponent.drawingType);
+};
+
 export function mapPanelElementsToConfig(element: ReactNode): PanelConfig | null {
   if (!React.isValidElement(element)) return null;
 
@@ -84,9 +135,15 @@ export function mapPanelElementsToConfig(element: ReactNode): PanelConfig | null
 
   const { type, props } = layerElement;
 
-  const layerConfigs = React.Children.toArray(props.children)
+  const children = React.Children.toArray(props.children);
+  const layerConfigs = children
+    .filter(child => !isDrawingElement(child))
     .map(mapLayerElementToConfig)
     .filter((child): child is LayerConfig => child !== null);
+  const drawingConfigs = children
+    .filter(isDrawingElement)
+    .map(mapDrawingElementToConfig)
+    .filter((child): child is DrawingConfig => child !== null);
 
   let typeName: string;
 
@@ -102,6 +159,7 @@ export function mapPanelElementsToConfig(element: ReactNode): PanelConfig | null
   const panelConfig: PanelConfig = {
     ...cleanProps,
     layers: layerConfigs,
+    drawings: drawingConfigs,
   };
 
   return panelConfig;

@@ -10,6 +10,8 @@ import parse from './parse';
 import calc from './calc';
 import draw from './draw';
 import defineLayer from '../defineLayer';
+import hitTest from './hitTest';
+import { onLayerElementClick, onLayerElementHover } from '../interactionHandlers';
 
 export type {
   AtrLayerConfig,
@@ -22,6 +24,9 @@ const atr = defineLayer<AtrLayerConfig, AtrLayerConfigComplete>({
   parseConfig: parse,
   calculate: calc,
   draw,
+  hitTest,
+  onHover: onLayerElementHover,
+  onClick: onLayerElementClick,
 });
 
 export default atr;

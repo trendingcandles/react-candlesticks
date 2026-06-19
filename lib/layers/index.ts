@@ -46,6 +46,13 @@ export type {
 export type {
   LayerCalculate,
   LayerDraw,
+  LayerClickHandler,
+  LayerHit,
+  LayerHitTest,
+  LayerHitTestContext,
+  LayerHitTestResult,
+  LayerHoverHandler,
+  LayerPointer,
 } from '../config/layer/Layer';
 export type {
   BaseLayerConfig,

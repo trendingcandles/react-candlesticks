@@ -31,8 +31,13 @@ import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
 import { CustomLayerDefinition } from '../../layers/defineLayer';
 import createLayerRegistry from '../../layers/createLayerRegistry';
+import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
+import createDrawingRegistry from '../../drawings/createDrawingRegistry';
+import { DrawingHit } from '../../config/drawing/Drawing';
+import { LayerHit } from '../../config/layer/Layer';
 
-const EMPTY_CUSTOM_LAYERS: readonly CustomLayerDefinition[] = [];
+const EMPTY_LAYER_DEFINITIONS: readonly CustomLayerDefinition[] = [];
+const EMPTY_DRAWING_DEFINITIONS: readonly CustomDrawingDefinition[] = [];
 
 interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   renderMode?: 'full' | 'minimal';
@@ -54,7 +59,12 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onZoom?: (newIntervalWidthPx: number) => void;
   enableScroll?: boolean;
   enableZoom?: boolean;
-  customLayers?: readonly CustomLayerDefinition[];
+  layerDefinitions?: readonly CustomLayerDefinition[];
+  drawingDefinitions?: readonly CustomDrawingDefinition[];
+  onDrawingHover?: (hit: DrawingHit | null) => void;
+  onDrawingClick?: (hit: DrawingHit) => void;
+  onLayerHover?: (hit: LayerHit | null) => void;
+  onLayerClick?: (hit: LayerHit) => void;
 }
 
 interface PanelsAsPropChartProps extends ChartPropsBase {
@@ -92,7 +102,12 @@ const Chart = ({
   onZoom,
   enableScroll,
   enableZoom,
-  customLayers = EMPTY_CUSTOM_LAYERS,
+  layerDefinitions = EMPTY_LAYER_DEFINITIONS,
+  drawingDefinitions = EMPTY_DRAWING_DEFINITIONS,
+  onDrawingHover,
+  onDrawingClick,
+  onLayerHover,
+  onLayerClick,
   children,
   ...props
 }: ChartProps): JSX.Element => {
@@ -149,8 +164,12 @@ const Chart = ({
   }, [theme]);
 
   const layerRegistry = useMemo(
-    () => createLayerRegistry(customLayers),
-    [customLayers],
+    () => createLayerRegistry(layerDefinitions),
+    [layerDefinitions],
+  );
+  const drawingRegistry = useMemo(
+    () => createDrawingRegistry(drawingDefinitions),
+    [drawingDefinitions],
   );
 
   // Parse chart config (everything that's not panels/layers)
@@ -171,6 +190,7 @@ const Chart = ({
       effectivePanels as readonly [PanelConfig, ...PanelConfig[]],
       effectiveTheme,
       layerRegistry,
+      drawingRegistry,
     );
     const layersTopology = createLayerTopology(panelConfigsWithoutYAxis);
     const panelConfigs = setPanelYAxes(panelConfigsWithoutYAxis, layersTopology);
@@ -178,7 +198,7 @@ const Chart = ({
       panelConfigs,
       layersTopology,
     };
-  }, [effectivePanels, effectiveTheme, layerRegistry]);
+  }, [effectivePanels, effectiveTheme, layerRegistry, drawingRegistry]);
 
   // Create layout object
   const layout = useMemo(() =>
@@ -276,6 +296,12 @@ const Chart = ({
           onZoom={handleZoom}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
+          layerRegistry={layerRegistry}
+          drawingRegistry={drawingRegistry}
+          onDrawingHover={onDrawingHover}
+          onDrawingClick={onDrawingClick}
+          onLayerHover={onLayerHover}
+          onLayerClick={onLayerClick}
           minimal={isMinimal}
         />
       }

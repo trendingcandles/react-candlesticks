@@ -14,6 +14,7 @@ import drawTimeGridLines from './grid/time/drawTimeGridLines';
 import drawTimeGridLabels from './grid/time/drawTimeGridLabels';
 import drawBorders from './borders/drawBorders';
 import ViewportData from '../../domain/types/ViewportData';
+import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 
 const drawChart = (
   drawingsContext: CanvasRenderingContext2D,
@@ -22,6 +23,7 @@ const drawChart = (
   panels: PanelConfigComplete[],
   viewportData: ViewportData,
   layout: Layout,
+  drawingRegistry?: DrawingRegistry,
 ) => {
 
   const { timeScale } = viewportData;
@@ -69,6 +71,7 @@ const drawChart = (
     timeScale,
     viewportData,
     chartMetrics,
+    drawingRegistry,
   );
 
   return metricsByPanel;
