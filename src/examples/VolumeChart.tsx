@@ -7,7 +7,6 @@ function VolumeChart() {
       data={exampleData}
       theme='dark'
       initialScrollToLatest
-      scaleSmoothing
     >
       <Panel heightRatio={3}>
         <Candlesticks/>
