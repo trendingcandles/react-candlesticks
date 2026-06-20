@@ -8,7 +8,15 @@
 import { themeDefaultLabel } from '../config/elements/label/LabelConfig';
 import { themeDefaultLegend } from '../config/legend/LegendConfig';
 import { themeDefaultYAxis } from '../config/layer/yAxis/YAxisConfig';
-import { Theme } from '../domain/types/Theme';
+import { ThemeComplete } from '../domain/types/Theme';
+import {
+  createIndicatorBar,
+  createIndicatorLine,
+  createIndicatorMarker,
+  createSingleLineIndicatorTheme,
+  createTwoLineIndicatorTheme,
+  IndicatorThemeDefaults,
+} from './indicatorThemeHelpers';
 
 const themeDefaultDarkLegend: typeof themeDefaultLegend = {
   ...themeDefaultLegend,
@@ -25,7 +33,22 @@ const themeDefaultDarkYAxis: typeof themeDefaultYAxis ={
   },
 };
 
-const defaultDarkTheme: Theme = {
+const darkIndicatorDefaults: IndicatorThemeDefaults = {
+  lineColor: '#ddd',
+  secondaryLineColor: '#ef4444',
+  positiveColor: '#10b981',
+  negativeColor: '#ef4444',
+  neutralColor: '#777',
+  markerLineColor: '#888',
+  markerLabelBackgroundColor: '#333',
+  markerLabelBorderColor: '#333',
+  markerLabelColor: '#ddd',
+  markerLabelContrastColor: 'white',
+  legend: themeDefaultDarkLegend,
+  yAxis: themeDefaultDarkYAxis,
+};
+
+const defaultDarkTheme: ThemeComplete = {
   chart: {
     backgroundColor: '#1a1a1a',
     borders: {
@@ -173,94 +196,13 @@ const defaultDarkTheme: Theme = {
         ...themeDefaultDarkYAxis,
       }
     },
-    adx: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [{ output: 'value', color: '#ddd' }],
-      },
-      yAxis: {
-        ...themeDefaultDarkYAxis,
-      }
-    },
-    atr: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line:  { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 8 },
-        },
-      },
-      legend: {
-                ...themeDefaultLegend,
-
-        fields: [{ output: 'value', color: '#ddd' }],
-      },
-       yAxis: {
-        ...themeDefaultYAxis,
-      }
-    },
-    cci: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-        smoothing: { color: '#ef4444', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-        smoothing: {
-          line: { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [
-          { output: 'value', color: '#ddd' },
-          { output: 'smoothing', color: '#ef4444' },
-        ],
-      },
-      yAxis: { ...themeDefaultDarkYAxis },
-    },
-    obv: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-        smoothing: { color: '#ef4444', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-        smoothing: {
-          line: { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [
-          { output: 'value', color: '#ddd' },
-          { output: 'smoothing', color: '#ef4444' },
-        ],
-      },
-      yAxis: { ...themeDefaultDarkYAxis },
-    },
+    adx: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value'),
+    atr: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value', { markerVPadding: 8 }),
+    cci: createTwoLineIndicatorTheme(darkIndicatorDefaults, 'value', 'smoothing'),
+    obv: createTwoLineIndicatorTheme(darkIndicatorDefaults, 'value', 'smoothing'),
     parabolicSar: {
       series: {
-        value: { color: 'dodgerblue', width: 1, style: 'solid' },
+        value: createIndicatorLine('dodgerblue'),
       },
       legend: {
         ...themeDefaultDarkLegend,
@@ -268,158 +210,83 @@ const defaultDarkTheme: Theme = {
       },
       yAxis: { ...themeDefaultDarkYAxis },
     },
-    williamsR: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line: { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [{ output: 'value', color: '#ddd' }],
-      },
-      yAxis: { ...themeDefaultDarkYAxis },
-    },
+    williamsR: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value'),
     bollingerBands: {
       series: {
-        upper: { color: '#777', width: 1, style: 'solid' },
-        middle: { color: '#777', width: 1, style: 'solid' },
-        lower: { color: '#777', width: 1, style: 'solid' },
+        upper: createIndicatorLine('#777'),
+        middle: createIndicatorLine('#777'),
+        lower: createIndicatorLine('#777'),
       },
       bands: {
         channel: { fillColor: '#ffffff0a' },
       },
       markers: {
-        value: {
-          line:  { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
+        value: createIndicatorMarker({
+          color: darkIndicatorDefaults.lineColor,
+          lineColor: darkIndicatorDefaults.markerLineColor,
+          backgroundColor: darkIndicatorDefaults.markerLabelBackgroundColor,
+          borderColor: darkIndicatorDefaults.markerLabelBorderColor,
+          labelColor: darkIndicatorDefaults.markerLabelColor,
+        }),
       },
       legend: {
-        ...themeDefaultLegend,
+        ...themeDefaultDarkLegend,
         fields: [
-          { output: 'upper',  color: '#ddd' },
+          { output: 'upper', color: '#ddd' },
           { output: 'middle', color: '#ddd' },
-          { output: 'lower',  color: '#ddd' },
+          { output: 'lower', color: '#ddd' },
         ],
       },
-       yAxis: {
-        ...themeDefaultYAxis,
+      yAxis: {
+        ...themeDefaultDarkYAxis,
       }
     },
-    ema: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line:  { color: '#ddd', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ddd', borderColor: '#ddd', color: '#1a1a1a', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultLegend,
-        fields: [{ output: 'value', color: '#ddd' }],
-      },
-       yAxis: {
-        ...themeDefaultYAxis,
-      }
-    },
+    ema: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value', {
+      markerLineColor: '#ddd',
+      markerBackgroundColor: '#ddd',
+      markerBorderColor: '#ddd',
+      markerLabelColor: '#1a1a1a',
+    }),
     macd: {
       series: {
-        macd: { color: '#ddd', width: 1, style: 'solid' },
-        signal: { color: '#ef4444', width: 1, style: 'solid' },
-        histogramUp: { width: 0.4, backgroundColor: '#10b981', borderColor: '#10b981', borderWidth: 0 },
-        histogramDown: { width: 0.4, backgroundColor: '#ef4444', borderColor: '#ef4444', borderWidth: 0 },
+        macd: createIndicatorLine(darkIndicatorDefaults.lineColor),
+        signal: createIndicatorLine(darkIndicatorDefaults.secondaryLineColor),
+        histogramUp: createIndicatorBar(darkIndicatorDefaults.positiveColor),
+        histogramDown: createIndicatorBar(darkIndicatorDefaults.negativeColor),
       },
       markers: {
-        macd: {
-          line:  { color: '#ddd', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ddd', borderColor: '#ddd', color: '#1a1a1a', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-        signal: {
-          line:  { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
+        macd: createIndicatorMarker({
+          color: darkIndicatorDefaults.lineColor,
+          backgroundColor: darkIndicatorDefaults.lineColor,
+          labelColor: '#1a1a1a',
+        }),
+        signal: createIndicatorMarker({
+          color: darkIndicatorDefaults.secondaryLineColor,
+          backgroundColor: darkIndicatorDefaults.secondaryLineColor,
+          labelColor: darkIndicatorDefaults.markerLabelContrastColor,
+        }),
       },
       legend: {
-        ...themeDefaultLegend,
+        ...themeDefaultDarkLegend,
         fields: [
-          { output: 'macd',      color: '#ddd' },
-          { output: 'signal',    color: '#ef4444' },
+          { output: 'macd', color: '#ddd' },
+          { output: 'signal', color: '#ef4444' },
           { output: 'histogram', color: '#777' },
         ],
       },
-       yAxis: {
-        ...themeDefaultYAxis,
-      }
-    },
-    rsi: {
-      series: {
-        value: { color: '#ddd', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line:  { color: '#888', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#333', borderColor: '#333', color: '#ddd', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultLegend,
-        fields: [{ output: 'value', color: '#ddd' }],
-      },
-       yAxis: {
-        ...themeDefaultYAxis,
-      }
-    },
-    sma: {
-      series: {
-        value: { color: 'orange', width: 1, style: 'solid' },
-      },
-      markers: {
-        value: {
-          line:  { color: 'orange', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: 'orange', borderColor: 'orange', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [{ output: 'value', color: 'orange' }],
-      },
-       yAxis: {
+      yAxis: {
         ...themeDefaultDarkYAxis,
       }
     },
-    stochastic: {
-      series: {
-        k: { color: '#ddd',    width: 1, style: 'solid' },
-        d: { color: '#ef4444', width: 1, style: 'solid' },
-      },
-      markers: {
-        k: {
-          line:  { color: '#ddd', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ddd', borderColor: '#ddd', color: '#1a1a1a', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-        d: {
-          line:  { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
-          label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#ef4444', borderColor: '#ef4444', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
-        },
-      },
-      legend: {
-        ...themeDefaultDarkLegend,
-        fields: [
-          { output: 'k', color: '#ddd' },
-          { output: 'd', color: '#ef4444' },
-        ],
-      },
-       yAxis: {
-        ...themeDefaultDarkYAxis,
-      }
-    },
+    rsi: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value'),
+    sma: createSingleLineIndicatorTheme(darkIndicatorDefaults, 'value', {
+      color: 'orange',
+      markerLineColor: 'orange',
+      markerBackgroundColor: 'orange',
+      markerBorderColor: 'orange',
+      markerLabelColor: 'white',
+    }),
+    stochastic: createTwoLineIndicatorTheme(darkIndicatorDefaults, 'k', 'd'),
   },
 };
 

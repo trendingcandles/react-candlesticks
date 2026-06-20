@@ -15,6 +15,7 @@ import { PanelConfig } from '../../config/panel/PanelConfig';
 import parsePanelConfigs from '../../config/panel/parsePanelConfigs';
 import { Theme } from '../../domain/types/Theme';
 import themes, { ThemeName } from '../../themes/themes';
+import resolveTheme from '../../themes/resolveTheme';
 import { Granularity } from '../../domain/types/Granularity';
 import { GridConfig } from '../../config/chart/grid/GridConfig';
 import { CrosshairsConfig } from '../../config/chart/crosshairs/CrosshairsConfig';
@@ -93,7 +94,7 @@ const Chart = ({
   grid,
   crosshairs,
   borders,
-  theme = themes.light,
+  theme = 'light',
   panels,
   data,
   scrollToLatestMargin = 5,
@@ -160,7 +161,7 @@ const Chart = ({
 
   // The `theme` prop value is either an object provided by user or the name of a predefined theme
   const effectiveTheme = useMemo(() => {
-    return typeof theme === 'string' ? themes[theme as ThemeName] : theme; // todo: validate theme
+    return typeof theme === 'string' ? themes[theme as ThemeName] : resolveTheme(theme); // todo: validate theme
   }, [theme]);
 
   const layerRegistry = useMemo(

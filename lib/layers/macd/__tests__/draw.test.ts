@@ -91,5 +91,7 @@ describe('macd draw', () => {
     expect(drawLineSeriesMock).toHaveBeenCalledTimes(2);
     expect(drawBarMock).toHaveBeenCalledTimes(3);
     expect(markerMock).toHaveBeenCalledTimes(2);
+    expect(markerMock.mock.calls[0].at(-1)).toBe(3.5);
+    expect(markerMock.mock.calls[1].at(-1)).toBe(3);
   });
 });

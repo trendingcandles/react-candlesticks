@@ -6,7 +6,7 @@
  */
 
 import parseLayerConfigs from '../../config/layer/parseLayerConfigs';
-import { Theme } from '../../domain/types/Theme';
+import { ThemeComplete } from '../../domain/types/Theme';
 import parseLineConfig from '../elements/line/parseLineConfig';
 import { assertNonNegativeNumber, assertPositiveNumber } from '../utils/validateNumber';
 import parsePanelControlsConfig from './controls/parsePanelControlsConfig';
@@ -18,7 +18,7 @@ import { DrawingRegistry } from '../drawing/DrawingRegistry';
 
 const parsePanelConfig = (
   partialConfig: PanelConfig,
-  theme: Theme,
+  theme: ThemeComplete,
   panelIndex: number,
   layerRegistry: LayerRegistry = layers,
   drawingRegistry: DrawingRegistry = {},

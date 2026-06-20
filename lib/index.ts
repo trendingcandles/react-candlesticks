@@ -11,5 +11,6 @@ export * from './layers';
 export * from './drawings';
 export * from './domain/types/DataPoint';
 export * from './exampleData';
-export type { Theme } from './domain/types/Theme';
+export type { IndicatorThemeInput, Theme, ThemeBase, ThemeComplete } from './domain/types/Theme';
 export type { ThemeName } from './themes/themes';
+export { default as resolveTheme } from './themes/resolveTheme';

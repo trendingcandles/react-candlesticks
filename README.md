@@ -239,14 +239,32 @@ This mode defaults to a lighter configuration by disabling interaction and non-e
 
 ### Theming
 
-Use the built-in `'light'` or `'dark'` theme, or provide a custom `Theme` object.
+Use the built-in `'light'` or `'dark'` theme, or provide a partial `Theme` object.
 ```tsx
 import type { Theme } from 'react-candlesticks';
 
 // Named theme
 <Chart theme="dark" ... />
 
-// Custom theme
+const myCustomTheme: Theme = {
+  base: 'dark',
+  chart: {
+    backgroundColor: '#101820',
+  },
+  indicators: {
+    line: { width: 2 },
+    linePalette: ['#ffd166', '#5dd9c1', '#c77dff'],
+  },
+  layers: {
+    sma: {
+      series: {
+        value: { color: '#ffd166', width: 3 },
+      },
+    },
+  },
+};
+
+// Custom partial theme
 <Chart theme={myCustomTheme} ... />
 ```
 

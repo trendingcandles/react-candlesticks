@@ -5,14 +5,14 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { Theme } from '../../domain/types/Theme';
+import { ThemeComplete } from '../../domain/types/Theme';
 import { ChartConfigComplete, ChartConfig, chartDefaults } from './ChartConfig';
 import parseCrosshairsConfig from './crosshairs/parseCrosshairsConfig';
 import parseGridConfig from './grid/parseGridConfig';
 import parseBordersConfig from './borders/parseBordersConfig';
 import parseXAxisConfig from './xAxis/parseXAxisConfig';
 
-const parseChartConfig = (partialConfig: ChartConfig, theme: Theme, defaultTimeZoneId: string): ChartConfigComplete => {
+const parseChartConfig = (partialConfig: ChartConfig, theme: ThemeComplete, defaultTimeZoneId: string): ChartConfigComplete => {
   return {
     backgroundColor: partialConfig?.backgroundColor ?? theme.chart.backgroundColor ?? chartDefaults.backgroundColor,
     borders: parseBordersConfig(partialConfig.borders, theme.chart.borders),
