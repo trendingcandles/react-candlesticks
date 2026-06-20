@@ -8,11 +8,11 @@
 import defaultLightTheme from './defaultLightTheme';
 import defaultDarkTheme from './defaultDarkTheme';
 
-import { Theme } from '../domain/types/Theme';
+import { ThemeComplete } from '../domain/types/Theme';
 
 export type ThemeName = 'light' | 'dark';
 
-const themes: Record<ThemeName, Theme> = {
+const themes: Record<ThemeName, ThemeComplete> = {
   light: defaultLightTheme,
   dark: defaultDarkTheme,
 };

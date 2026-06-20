@@ -159,7 +159,7 @@ const draw = (
       layerMetrics,
       viewportData,
       signalValueMarkerConfig,
-      macdValues[valueMarkerBarIndex],
+      signalValues[valueMarkerBarIndex],
     );
   }
   // display MACD active value label on top

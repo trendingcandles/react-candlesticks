@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import defaultLightTheme from '../defaultLightTheme';
 import defaultDarkTheme from '../defaultDarkTheme';
+import resolveTheme from '../resolveTheme';
 import themes from '../themes';
 
 describe('themes exports', () => {
@@ -52,5 +53,63 @@ describe('defaultDarkTheme', () => {
     expect(defaultDarkTheme.layers.candlesticks.markers.value.up.label.borderColor).toBe('#10b981');
     expect(defaultDarkTheme.layers.candlesticks.markers.value.down.line.color).toBe('#ef4444');
     expect(defaultDarkTheme.layers.priceLine.markers.value.line.color).toBe('dodgerblue');
+  });
+});
+
+describe('resolveTheme', () => {
+  it('resolves partial chart themes against the selected base theme', () => {
+    const theme = resolveTheme({
+      base: 'dark',
+      chart: {
+        backgroundColor: '#101010',
+      },
+    });
+
+    expect(theme.chart.backgroundColor).toBe('#101010');
+    expect(theme.chart.grid.value.color).toBe(defaultDarkTheme.chart.grid.value.color);
+    expect(theme.layers.rsi.series.value.color).toBe(defaultDarkTheme.layers.rsi.series.value.color);
+  });
+
+  it('applies common indicator defaults without requiring every layer', () => {
+    const theme = resolveTheme({
+      indicators: {
+        line: { width: 2 },
+        linePalette: ['#f59e0b', '#38bdf8'],
+        marker: {
+          label: {
+            hPadding: 12,
+          },
+        },
+      },
+    });
+
+    expect(theme.layers.rsi.series.value.width).toBe(2);
+    expect(theme.layers.rsi.series.value.color).toBe('#f59e0b');
+    expect(theme.layers.cci.series.value.color).toBe('#f59e0b');
+    expect(theme.layers.cci.series.smoothing.color).toBe('#38bdf8');
+    expect(theme.layers.bollingerBands.series.middle.color).toBe('#38bdf8');
+    expect(theme.layers.bollingerBands.markers.value.label.backgroundColor).toBe('#38bdf8');
+    expect(theme.layers.rsi.markers.value?.label?.hPadding).toBe(12);
+  });
+
+  it('lets layer-specific theme overrides win over common indicator defaults', () => {
+    const theme = resolveTheme({
+      indicators: {
+        line: { width: 2 },
+        linePalette: ['#f59e0b'],
+      },
+      layers: {
+        sma: {
+          series: {
+            value: { color: '#111827', width: 4 },
+          },
+        },
+      },
+    });
+
+    expect(theme.layers.sma.series.value.color).toBe('#111827');
+    expect(theme.layers.sma.series.value.width).toBe(4);
+    expect(theme.layers.rsi.series.value.color).toBe('#f59e0b');
+    expect(theme.layers.rsi.series.value.width).toBe(2);
   });
 });

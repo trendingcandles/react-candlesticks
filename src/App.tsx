@@ -11,10 +11,12 @@ import CustomLayerChart from './examples/CustomLayerChart';
 import CustomDrawingChart from './examples/CustomDrawingChart';
 import LayerInteractionChart from './examples/LayerInteractionChart';
 import LayerInteractionChart2 from './examples/LayerInteractionChart2';
+import ThemedChart from './examples/ThemedChart';
 
 const examples = [
   'simple',
   'volume',
+  'themed',
   'indicators',
   'indcators2',
   'custom-layer',
@@ -43,6 +45,7 @@ function App() {
       >
         {exampleChart === "simple" && <SimpleChart />}
         {exampleChart === "volume" && <VolumeChart />}
+        {exampleChart === "themed" && <ThemedChart />}
         {exampleChart === "indicators" && <IndicatorsChart />}
         {exampleChart === "indcators2" && <Indcators2Chart />}
         {exampleChart === "custom-layer" && <CustomLayerChart />}

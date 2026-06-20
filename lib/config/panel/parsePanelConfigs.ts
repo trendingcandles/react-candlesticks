@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { Theme } from '../../domain/types/Theme';
+import { ThemeComplete } from '../../domain/types/Theme';
 import { PanelConfig, PanelConfigComplete } from './PanelConfig';
 import parsePanelConfig from './parsePanelConfig';
 import layers from '../../layers/layers';
@@ -14,7 +14,7 @@ import { DrawingRegistry } from '../drawing/DrawingRegistry';
 
 const parsePanelConfigs = (
   partialPanelConfigs: readonly [PanelConfig, ...PanelConfig[]],
-  theme: Theme,
+  theme: ThemeComplete,
   layerRegistry: LayerRegistry = layers,
   drawingRegistry: DrawingRegistry = {},
 ): Omit<PanelConfigComplete, 'yAxes'>[] => {
