@@ -88,6 +88,7 @@ const chartPropTypes = {
   onZoom: PropTypes.func,
   enableScroll: PropTypes.bool,
   enableZoom: PropTypes.bool,
+  scaleSmoothing: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   layerDefinitions: PropTypes.arrayOf(PropTypes.object.isRequired),
   drawingDefinitions: PropTypes.arrayOf(PropTypes.object.isRequired),
   onDrawingHover: PropTypes.func,

@@ -237,6 +237,19 @@ This mode defaults to a lighter configuration by disabling interaction and non-e
 - You can still override any of these explicitly.
 - `pixelRatio` defaults to `'device'`; set `pixelRatio={1}` for cheaper rendering in dense lists.
 
+### Scale smoothing
+
+Enable y-scale smoothing to reduce abrupt vertical rescaling while panning.
+
+```tsx
+<Chart data={data} scaleSmoothing />
+
+<Chart
+  data={data}
+  scaleSmoothing={{ durationMs: 240, expandImmediate: true }}
+/>
+```
+
 ### Theming
 
 Use the built-in `'light'` or `'dark'` theme, or provide a partial `Theme` object.

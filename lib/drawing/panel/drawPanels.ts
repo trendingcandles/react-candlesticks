@@ -16,6 +16,7 @@ import { TimeScale } from '../../domain/types/TimeScale';
 import ViewportData from '../../domain/types/ViewportData';
 import { LayerScale } from '../../config/layer/BaseLayerConfig';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
+import { ScaleSmoothingRuntime } from './drawLayersForScale';
 
 const drawPanels = (
   context: CanvasRenderingContext2D,
@@ -27,6 +28,7 @@ const drawPanels = (
   viewportData: ViewportData,
   chartMetrics: ChartMetrics | null,
   drawingRegistry?: DrawingRegistry,
+  scaleSmoothingRuntime?: ScaleSmoothingRuntime,
 ): Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> => {
 
   const metricsByPanel: Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> = {};
@@ -45,6 +47,7 @@ const drawPanels = (
       chartMetrics,
       index,
       drawingRegistry,
+      scaleSmoothingRuntime,
     );
 
     if (metrics) {

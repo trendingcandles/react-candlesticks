@@ -19,6 +19,7 @@ import mapLayerByScale from './mapLayersByScale';
 import ViewportData from '../../domain/types/ViewportData';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import drawDrawings from '../drawing/drawDrawings';
+import { ScaleSmoothingRuntime } from './drawLayersForScale';
 
 const drawPanel = (
   context: CanvasRenderingContext2D,
@@ -31,6 +32,7 @@ const drawPanel = (
   chartMetrics: ChartMetrics | null,
   panelIndex: number,
   drawingRegistry?: DrawingRegistry,
+  scaleSmoothingRuntime?: ScaleSmoothingRuntime,
 ): { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; } | undefined => {
 
   const {
@@ -77,6 +79,7 @@ const drawPanel = (
         panelIndex,
         decudedLayerScale,
         layers,
+        scaleSmoothingRuntime,
       );
       if (layerMetrics) {
         layerMetricsByScale[scaleKey] = layerMetrics;

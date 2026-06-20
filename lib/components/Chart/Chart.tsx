@@ -30,6 +30,8 @@ import deduceGranularity from '../../data/utils/deduceGranulairty';
 import createLayerTopology from '../../config/layer/createLayerTopology';
 import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
+import { ScaleSmoothingInput } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
+import parseScaleSmoothingConfig from '../../config/chart/scaleSmoothing/parseScaleSmoothingConfig';
 import { CustomLayerDefinition } from '../../layers/defineLayer';
 import createLayerRegistry from '../../layers/createLayerRegistry';
 import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
@@ -60,6 +62,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onZoom?: (newIntervalWidthPx: number) => void;
   enableScroll?: boolean;
   enableZoom?: boolean;
+  scaleSmoothing?: ScaleSmoothingInput;
   layerDefinitions?: readonly CustomLayerDefinition[];
   drawingDefinitions?: readonly CustomDrawingDefinition[];
   onDrawingHover?: (hit: DrawingHit | null) => void;
@@ -103,6 +106,7 @@ const Chart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  scaleSmoothing,
   layerDefinitions = EMPTY_LAYER_DEFINITIONS,
   drawingDefinitions = EMPTY_DRAWING_DEFINITIONS,
   onDrawingHover,
@@ -171,6 +175,11 @@ const Chart = ({
   const drawingRegistry = useMemo(
     () => createDrawingRegistry(drawingDefinitions),
     [drawingDefinitions],
+  );
+
+  const scaleSmoothingConfig = useMemo(
+    () => parseScaleSmoothingConfig(scaleSmoothing),
+    [scaleSmoothing],
   );
 
   // Parse chart config (everything that's not panels/layers)
@@ -297,6 +306,7 @@ const Chart = ({
           onZoom={handleZoom}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
+          scaleSmoothing={scaleSmoothingConfig}
           layerRegistry={layerRegistry}
           drawingRegistry={drawingRegistry}
           onDrawingHover={onDrawingHover}

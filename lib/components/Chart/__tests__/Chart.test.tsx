@@ -143,6 +143,22 @@ describe('Chart', () => {
     expect(capturedProps?.enableZoom).toBe(false);
   });
 
+  it('parses scale smoothing config for StatefulChart', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        scaleSmoothing={{ durationMs: 240, expandImmediate: false }}
+      />,
+    );
+
+    expect(capturedProps?.scaleSmoothing).toEqual({
+      enabled: true,
+      durationMs: 240,
+      expandImmediate: false,
+    });
+  });
+
   it('uses non-interactive defaults in minimal render mode', () => {
     render(
       <Chart
