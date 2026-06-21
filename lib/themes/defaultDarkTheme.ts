@@ -156,9 +156,67 @@ const defaultDarkTheme: ThemeComplete = {
         ...themeDefaultDarkYAxis,
       }
     },
+    ohlcBars: {
+      series: {
+        bars: {
+          up:   { width: 0.6, backgroundColor: '#10b981', borderColor: '#10b981', borderWidth: 1 },
+          down: { width: 0.6, backgroundColor: '#ef4444', borderColor: '#ef4444', borderWidth: 1 },
+          flat: { width: 0.6, backgroundColor: '#aaa',    borderColor: '#aaa',    borderWidth: 1 },
+        },
+      },
+      markers: {
+        value: {
+          up: {
+            line:  { color: '#10b981', width: 1, style: 'dashed', dashes: [5, 5] },
+            label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#1a1a1a', borderWidth: 1, borderColor: '#10b981', color: '#10b981', fontWeight: 'bold', hPadding: 8, vPadding: 6 },
+          },
+          down: {
+            line:  { color: '#ef4444', width: 1, style: 'dashed', dashes: [5, 5] },
+            label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#1a1a1a', borderWidth: 1, borderColor: '#ef4444', color: '#ef4444', hPadding: 8, vPadding: 6 },
+          },
+          flat: {
+            line:  { color: '#aaa', width: 1, style: 'dashed', dashes: [5, 5] },
+            label: { ...themeDefaultLabel, padding: -3, backgroundColor: '#1a1a1a', borderWidth: 1, borderColor: '#aaa', color: '#aaa', hPadding: 8, vPadding: 6 },
+          },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [
+          { output: 'open',  color: '#ddd' },
+          { output: 'high',  color: '#ddd' },
+          { output: 'low',   color: '#ddd' },
+          { output: 'close', color: '#ddd' },
+        ],
+      },
+       yAxis: {
+        ...themeDefaultDarkYAxis,
+      }
+    },
     priceLine: {
       series: {
         value: { color: 'dodgerblue', width: 2, style: 'solid', endDotSize: 5 },
+      },
+      markers: {
+        value: {
+          line:  { color: 'dodgerblue', width: 1, style: 'dashed', dashes: [5, 5] },
+          label: { ...themeDefaultLabel, padding: 8, backgroundColor: 'dodgerblue', borderColor: 'dodgerblue', color: 'white', borderWidth: 0, hPadding: 8, vPadding: 6 },
+        },
+      },
+      legend: {
+        ...themeDefaultDarkLegend,
+        fields: [{ output: 'price', color: 'dodgerblue', label: '' }],
+      },
+       yAxis: {
+        ...themeDefaultDarkYAxis,
+      }
+    },
+    area: {
+      series: {
+        value: {
+          line: { color: 'dodgerblue', width: 2, style: 'solid', endDotSize: 5 },
+          fill: { topColor: '#1e90ff44', bottomColor: '#1e90ff00' },
+        },
       },
       markers: {
         value: {

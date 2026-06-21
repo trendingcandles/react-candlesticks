@@ -13,7 +13,7 @@ export default tseslint.config([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
+      reactHooks.configs.flat['recommended-latest'],
       reactRefresh.configs.vite,
     ],
     plugins: {
@@ -26,6 +26,8 @@ export default tseslint.config([
     },
     rules: {
       "import/no-unresolved": "error",
+      "react-hooks/refs": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
     languageOptions: {
       ecmaVersion: 2020,

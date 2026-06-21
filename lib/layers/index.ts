@@ -6,6 +6,7 @@
  */
 
 import adx from './adx';
+import area from './area';
 import atr from './atr';
 import bollingerBands from './bollingerBands';
 import candlesticks from './candlesticks';
@@ -13,6 +14,7 @@ import cci from './cci';
 import ema from './ema';
 import macd from './macd';
 import obv from './obv';
+import ohlcBars from './ohlcBars';
 import parabolicSar from './parabolicSar';
 import priceLine from './priceLine';
 import rsi from './rsi';
@@ -64,6 +66,16 @@ export type {
   ScaleRange,
   ValueToYFunction,
 } from '../config/layer/BaseLayerConfig';
+export type {
+  AreaFillConfig,
+  AreaFillConfigComplete,
+  AreaLayerConfig,
+  AreaLayerConfigComplete,
+} from './area/AreaLayerConfig';
+export type {
+  OhlcBarsLayerConfig,
+  OhlcBarsLayerConfigComplete,
+} from './ohlcBars/OhlcBarsLayerConfig';
 export { default as drawLineIndicator } from '../drawing/layer/drawLineIndicator';
 export type { LineIndicatorSeries } from '../drawing/layer/drawLineIndicator';
 export { default as drawLineSeries } from '../drawing/series/drawLineSeries';
@@ -81,7 +93,9 @@ export { default as parseLegendConfig } from '../config/legend/parseLegendConfig
 export { default as parseYAxisConfig } from '../config/layer/yAxis/parseYAxisConfig';
 
 const Candlesticks = candlesticks.Component;
+const OhlcBars = ohlcBars.Component;
 const PriceLine = priceLine.Component;
+const Area = area.Component;
 const VolumeBars = volumeBars.Component;
 const ADX = adx.Component;
 const ATR = atr.Component;
@@ -97,7 +111,9 @@ const Stochastic = stochastic.Component;
 const WilliamsR = williamsR.Component;
 
 export {
+  Area,
   Candlesticks,
+  OhlcBars,
   PriceLine,
   VolumeBars,
   ADX,
