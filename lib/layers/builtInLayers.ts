@@ -6,6 +6,7 @@
  */
 
 import adx from './adx';
+import area from './area';
 import atr from './atr';
 import bollingerBands from './bollingerBands';
 import candlesticks from './candlesticks';
@@ -13,6 +14,7 @@ import cci from './cci';
 import ema from './ema';
 import macd from './macd';
 import obv from './obv';
+import ohlcBars from './ohlcBars';
 import parabolicSar from './parabolicSar';
 import priceLine from './priceLine';
 import rsi from './rsi';
@@ -23,7 +25,9 @@ import williamsR from './williamsR';
 
 const builtInLayerDefinitions = [
   candlesticks,
+  ohlcBars,
   priceLine,
+  area,
   volumeBars,
   adx,
   atr,

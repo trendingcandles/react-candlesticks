@@ -6,6 +6,7 @@
  */
 
 import { AdxTheme } from '../../layers/adx/AdxLayerConfig';
+import { AreaTheme } from '../../layers/area/AreaLayerConfig';
 import { AtrTheme } from '../../layers/atr/AtrLayerConfig';
 import { BollingerBandsTheme } from '../../layers/bollingerBands/BollingerBandsLayerConfig';
 import { CandlesticksTheme } from '../../layers/candlesticks/CandlestickLayerConfig';
@@ -13,6 +14,7 @@ import { CciTheme } from '../../layers/cci/CciLayerConfig';
 import { EmaTheme } from '../../layers/ema/EmaLayerConfig';
 import { MacdTheme } from '../../layers/macd/MacdLayerConfig';
 import { ObvTheme } from '../../layers/obv/ObvLayerConfig';
+import { OhlcBarsTheme } from '../../layers/ohlcBars/OhlcBarsLayerConfig';
 import { ParabolicSarTheme } from '../../layers/parabolicSar/ParabolicSarLayerConfig';
 import { PriceLineTheme } from '../../layers/priceLine/PriceLineLayerConfig';
 import { RsiTheme } from '../../layers/rsi/RsiLayerConfig';
@@ -23,7 +25,9 @@ import { WilliamsRTheme } from '../../layers/williamsR/WilliamsRLayerConfig';
 
 export interface LayersTheme {
   candlesticks: CandlesticksTheme;
+  ohlcBars: OhlcBarsTheme;
   priceLine: PriceLineTheme;
+  area: AreaTheme;
   volumeBars: VolumeBarsTheme;
   adx: AdxTheme;
   atr: AtrTheme;

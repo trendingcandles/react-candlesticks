@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import AreaChart from './examples/AreaChart';
 import SimpleChart from './examples/SimpleChart';
 import VolumeChart from './examples/VolumeChart';
 import IndicatorsChart from './examples/IndicatorsChart';
@@ -13,9 +14,12 @@ import LayerInteractionChart from './examples/LayerInteractionChart';
 import LayerInteractionChart2 from './examples/LayerInteractionChart2';
 import ThemedChart from './examples/ThemedChart';
 import ScaleSmoothingChart from './examples/ScaleSmoothingChart';
+import OhlcBarsChart from './examples/OhlcBarsChart';
 
 const examples = [
   'simple',
+  'ohlc-bars',
+  'area',
   'volume',
   'themed',
   'scale-smoothing',
@@ -46,6 +50,8 @@ function App() {
         }}
       >
         {exampleChart === "simple" && <SimpleChart />}
+        {exampleChart === "ohlc-bars" && <OhlcBarsChart />}
+        {exampleChart === "area" && <AreaChart />}
         {exampleChart === "volume" && <VolumeChart />}
         {exampleChart === "themed" && <ThemedChart />}
         {exampleChart === "scale-smoothing" && <ScaleSmoothingChart />}

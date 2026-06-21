@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import defaultLightTheme from '../../themes/defaultLightTheme';
+import parseArea from '../area/parse';
 import parseCandlesticks from '../candlesticks/parse';
 import parseAtr from '../atr/parse';
 import parseBollingerBands from '../bollingerBands/parse';
 import parseMacd from '../macd/parse';
+import parseOhlcBars from '../ohlcBars/parse';
 import parsePriceLine from '../priceLine/parse';
 import parseSma from '../sma/parse';
 import parseStochastic from '../stochastic/parse';
@@ -25,11 +27,50 @@ describe('layer config parsers', () => {
     expect(cfg.requiredInputKeys).toEqual(['open', 'high', 'low', 'close']);
   });
 
+  it('parses ohlc bars config with directional colours', () => {
+    const cfg = parseOhlcBars({
+      type: 'price:ohlc-bars',
+      series: {
+        bars: {
+          up: { backgroundColor: '#0f0', borderColor: '#0f0' },
+          down: { backgroundColor: '#f00', borderColor: '#f00' },
+        },
+      },
+    }, layersTheme as never, 'p1b');
+
+    expect(cfg.id).toBe('ohlc-bars-layer_p1b');
+    expect(cfg.type).toBe('price:ohlc-bars');
+    expect(cfg.requiredInputKeys).toEqual(['open', 'high', 'low', 'close']);
+    expect(cfg.series.bars?.up.backgroundColor).toBe('#0f0');
+    expect(cfg.series.bars?.down.backgroundColor).toBe('#f00');
+    expect(cfg.outputs).toEqual(['open', 'high', 'low', 'close']);
+  });
+
   it('parses price line config and builds default legend label', () => {
     const cfg = parsePriceLine({ type: 'price:line' }, layersTheme as never, 'p2');
     expect(cfg.id).toBe('price-line_p2');
     expect(cfg.type).toBe('price:line');
     expect(cfg.legend?.label).toBe('Price');
+    expect(cfg.outputs).toEqual(['price']);
+  });
+
+  it('parses area config with line and gradient fill colours', () => {
+    const cfg = parseArea({
+      type: 'price:area',
+      series: {
+        value: {
+          line: { color: '#123' },
+          fill: { topColor: '#1234', bottomColor: 'transparent' },
+        },
+      },
+    }, layersTheme as never, 'p2a');
+
+    expect(cfg.id).toBe('area-layer_p2a');
+    expect(cfg.type).toBe('price:area');
+    expect(cfg.legend?.label).toBe('Price');
+    expect(cfg.series.value.line?.color).toBe('#123');
+    expect(cfg.series.value.fill?.topColor).toBe('#1234');
+    expect(cfg.series.value.fill?.bottomColor).toBe('transparent');
     expect(cfg.outputs).toEqual(['price']);
   });
 
