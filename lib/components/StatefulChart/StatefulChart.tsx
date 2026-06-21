@@ -34,6 +34,7 @@ import type { LayerHit } from '../../config/layer/Layer';
 import { MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
 import useChartInteractions from './useChartInteractions';
 import styles from './styles.module.scss';
+import { ScaleSmoothingConfigComplete, scaleSmoothingDefaults } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
 
 const LOOKBACK_PAD = 10;
 
@@ -56,6 +57,7 @@ export interface StatefulChartProps {
   onZoom?: (newIntervalSize: number) => void;
   enableScroll: boolean;
   enableZoom: boolean;
+  scaleSmoothing?: ScaleSmoothingConfigComplete;
   layerRegistry?: LayerRegistry;
   drawingRegistry?: DrawingRegistry;
   onDrawingHover?: (hit: DrawingHit | null) => void;
@@ -84,6 +86,7 @@ const StatefulChart = ({
   onZoom,
   enableScroll,
   enableZoom,
+  scaleSmoothing = scaleSmoothingDefaults,
   layerRegistry,
   drawingRegistry,
   onDrawingHover,
@@ -407,6 +410,7 @@ const StatefulChart = ({
         panels={panels}
         drawingRegistry={drawingRegistry}
         showCrosshairsCanvas={minimal === false}
+        scaleSmoothing={scaleSmoothing}
       />
       {!minimal &&
         <InteractiveArea

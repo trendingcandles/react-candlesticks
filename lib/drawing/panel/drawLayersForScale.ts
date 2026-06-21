@@ -19,6 +19,15 @@ import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import drawValueGridLabels from '../elements/labels/valueLabel/drawValueGridLabels';
 import ViewportData from '../../domain/types/ViewportData';
+import smoothLayerMetrics, { ScaleSmoothingState } from '../../metrics/layer/smoothLayerMetrics';
+import { ScaleSmoothingConfigComplete } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
+
+export interface ScaleSmoothingRuntime {
+  config: ScaleSmoothingConfigComplete;
+  state: ScaleSmoothingState;
+  now: number;
+  shouldContinue: boolean;
+}
 
 const drawLayersForScale = (
   context: CanvasRenderingContext2D,
@@ -33,6 +42,7 @@ const drawLayersForScale = (
   panelIndex: number,
   scale: LayerScale,
   layerConfigs: BaseLayerConfigComplete[],
+  scaleSmoothingRuntime?: ScaleSmoothingRuntime,
 ): LayerMetrics | undefined => {
 
   const {
@@ -57,7 +67,7 @@ const drawLayersForScale = (
 
   const { dataMap, layersData, timeScale: { startBarIndex, endBarIndex } } = viewportData;
 
-  const layerMetrics = calculateLayerMetrics(
+  const targetLayerMetrics = calculateLayerMetrics(
     dataMap,
     layersData,
     startBarIndex,
@@ -68,10 +78,32 @@ const drawLayersForScale = (
     scale,
   );
 
-  if (!layerMetrics) {
+  if (!targetLayerMetrics) {
     console.warn(`Layer metrics could not be calculated for panel ${panelId}. Check data length and that value range is greater than zero.`);
     return;
   }
+
+  const { paddedHeightPx, paddedTopPx } = panelMetrics;
+  const { valueToY: getValueToY } = layerConfig0;
+
+  const smoothingResult = scaleSmoothingRuntime
+    ? smoothLayerMetrics({
+        state: scaleSmoothingRuntime.state,
+        stateKey: `${panelId}:${scale.key}`,
+        targetMetrics: targetLayerMetrics,
+        config: scaleSmoothingRuntime.config,
+        valueToY: getValueToY,
+        top: paddedTopPx,
+        height: paddedHeightPx,
+        now: scaleSmoothingRuntime.now,
+      })
+    : { metrics: targetLayerMetrics, settled: true };
+
+  if (!smoothingResult.settled && scaleSmoothingRuntime) {
+    scaleSmoothingRuntime.shouldContinue = true;
+  }
+
+  const layerMetrics = smoothingResult.metrics;
 
   const {
     min,

@@ -12,11 +12,13 @@ import CustomDrawingChart from './examples/CustomDrawingChart';
 import LayerInteractionChart from './examples/LayerInteractionChart';
 import LayerInteractionChart2 from './examples/LayerInteractionChart2';
 import ThemedChart from './examples/ThemedChart';
+import ScaleSmoothingChart from './examples/ScaleSmoothingChart';
 
 const examples = [
   'simple',
   'volume',
   'themed',
+  'scale-smoothing',
   'indicators',
   'indcators2',
   'custom-layer',
@@ -46,6 +48,7 @@ function App() {
         {exampleChart === "simple" && <SimpleChart />}
         {exampleChart === "volume" && <VolumeChart />}
         {exampleChart === "themed" && <ThemedChart />}
+        {exampleChart === "scale-smoothing" && <ScaleSmoothingChart />}
         {exampleChart === "indicators" && <IndicatorsChart />}
         {exampleChart === "indcators2" && <Indcators2Chart />}
         {exampleChart === "custom-layer" && <CustomLayerChart />}

@@ -14,3 +14,8 @@ export * from './exampleData';
 export type { IndicatorThemeInput, Theme, ThemeBase, ThemeComplete } from './domain/types/Theme';
 export type { ThemeName } from './themes/themes';
 export { default as resolveTheme } from './themes/resolveTheme';
+export type {
+  ScaleSmoothingConfig,
+  ScaleSmoothingConfigComplete,
+  ScaleSmoothingInput,
+} from './config/chart/scaleSmoothing/ScaleSmoothingConfig';

@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import getCanvasContext from '../../drawing/getCanvasContext';
 import drawChart from '../../drawing/chart/drawChart';
 import { ChartConfigComplete } from '../../config/chart/ChartConfig';
@@ -19,6 +19,8 @@ import { LayerScale } from '../../config/layer/BaseLayerConfig';
 import DataPointInfo from '../../domain/types/DataPointInfo';
 import ViewportData from '../../domain/types/ViewportData';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
+import { ScaleSmoothingConfigComplete, scaleSmoothingDefaults } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
+import { ScaleSmoothingState } from '../../metrics/layer/smoothLayerMetrics';
 
 export type ChartCanvasesHandle = {
   requestDraw: (viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => void;
@@ -39,6 +41,7 @@ export interface ChartCanvasesProps {
   panels: PanelConfigComplete[];
   drawingRegistry?: DrawingRegistry;
   showCrosshairsCanvas?: boolean;
+  scaleSmoothing?: ScaleSmoothingConfigComplete;
 }
 
 const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(function ChartCanvases({
@@ -47,6 +50,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
   layout,
   drawingRegistry,
   showCrosshairsCanvas = true,
+  scaleSmoothing = scaleSmoothingDefaults,
 }, ref) {
   
   const {
@@ -59,6 +63,7 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
 
   const drawAnimationFrameRef = useRef<number | null>(null);
   const crosshairsAnimationFrameRef = useRef<number | null>(null);
+  const scaleSmoothingStateRef = useRef<ScaleSmoothingState>({});
 
   const metricsByPanelRef = useRef<Record<string, { panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>; }> | null>(null);
   const drawingsContextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -80,15 +85,42 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
     dpr: number;
   } | null>(null);
 
+  useEffect(() => {
+    scaleSmoothingStateRef.current = {};
+  }, [
+    config,
+    panels,
+    scaleSmoothing.enabled,
+    scaleSmoothing.durationMs,
+    scaleSmoothing.expandImmediate,
+  ]);
+
   const draw = useCallback((viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => {
     const drawingsContext = getCanvasContext(drawingsChartCanvasRef, layout.drawingAreaWidth, layout.chartHeight, layout.dpr, prevDrawingAreaSizeRef.current);
     const axesContext = getCanvasContext(axesChartCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevAxesSizeRef.current);
     if (drawingsContext && axesContext) {
       drawingsContextRef.current = drawingsContext;
       axesContextRef.current = axesContext;
-      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout, drawingRegistry)!;
+      if (!scaleSmoothing.enabled) {
+        scaleSmoothingStateRef.current = {};
+      }
+      const scaleSmoothingRuntime = scaleSmoothing.enabled
+        ? {
+            config: scaleSmoothing,
+            state: scaleSmoothingStateRef.current,
+            now: performance.now(),
+            shouldContinue: false,
+          }
+        : undefined;
+      metricsByPanelRef.current = drawChart(drawingsContext, axesContext, config, panels, viewportData, layout, drawingRegistry, scaleSmoothingRuntime)!;
       if (updatePanelMetrics) {
         updatePanelMetrics(metricsByPanelRef.current);
+      }
+      if (scaleSmoothingRuntime?.shouldContinue) {
+        drawAnimationFrameRef.current = requestAnimationFrame(() => {
+          drawAnimationFrameRef.current = null;
+          draw(viewportData, layout, updatePanelMetrics);
+        });
       }
     }
     prevDrawingAreaSizeRef.current = {
@@ -101,13 +133,14 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
       height: layout.chartHeight,
       dpr: layout.dpr,
     };
-  }, [config, drawingRegistry, panels]);
+  }, [config, drawingRegistry, panels, scaleSmoothing]);
 
   const requestDraw = useCallback((viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => {
     if (drawAnimationFrameRef.current !== null) {
       cancelAnimationFrame(drawAnimationFrameRef.current);
     }
     drawAnimationFrameRef.current = requestAnimationFrame(() => {
+      drawAnimationFrameRef.current = null;
       draw(viewportData, layout, updatePanelMetrics);
     });
   }, [draw]);
