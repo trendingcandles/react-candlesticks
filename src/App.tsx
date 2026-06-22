@@ -15,6 +15,7 @@ import LayerInteractionChart2 from './examples/LayerInteractionChart2';
 import ThemedChart from './examples/ThemedChart';
 import ScaleSmoothingChart from './examples/ScaleSmoothingChart';
 import OhlcBarsChart from './examples/OhlcBarsChart';
+import ImperativeApiChart from './examples/ImperativeApiChart';
 
 const examples = [
   'simple',
@@ -23,6 +24,7 @@ const examples = [
   'volume',
   'themed',
   'scale-smoothing',
+  'imperative-api',
   'indicators',
   'indcators2',
   'custom-layer',
@@ -55,6 +57,7 @@ function App() {
         {exampleChart === "volume" && <VolumeChart />}
         {exampleChart === "themed" && <ThemedChart />}
         {exampleChart === "scale-smoothing" && <ScaleSmoothingChart />}
+        {exampleChart === "imperative-api" && <ImperativeApiChart />}
         {exampleChart === "indicators" && <IndicatorsChart />}
         {exampleChart === "indcators2" && <Indcators2Chart />}
         {exampleChart === "custom-layer" && <CustomLayerChart />}

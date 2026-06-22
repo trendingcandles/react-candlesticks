@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import type { DataPoint } from '../../domain/types/DataPoint';
 import type { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import InteractiveArea from '../InteractiveArea';
@@ -35,6 +35,18 @@ import { MetricsByPanel } from '../../drawing/drawing/hitTestDrawings';
 import useChartInteractions from './useChartInteractions';
 import styles from './styles.module.scss';
 import { ScaleSmoothingConfigComplete, scaleSmoothingDefaults } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
+import isoTimestampToMs from '../../utils/time/isoTimestampToMs';
+import {
+  ChartCallbackInfo,
+  ChartCrosshairOptions,
+  ChartCrosshairPosition,
+  ChartHandle,
+  ChartMarginOptions,
+  ChartRangeValue,
+  ChartViewport,
+  ChartViewportChangeSource,
+  ChartVisibleRange,
+} from '../Chart/ChartHandle';
 
 const LOOKBACK_PAD = 10;
 
@@ -53,8 +65,9 @@ export interface StatefulChartProps {
   maxLookForward: number;
   scrollToLatestMargin: number;
   initialScrollToLatest: boolean;
-  onScroll?: (newScrollOffset: number) => void;
-  onZoom?: (newIntervalSize: number) => void;
+  onScroll?: (newScrollOffset: number, info?: ChartCallbackInfo) => void;
+  onZoom?: (newIntervalSize: number, info?: ChartCallbackInfo) => void;
+  onViewportChange?: (viewport: ChartViewport) => void;
   enableScroll: boolean;
   enableZoom: boolean;
   scaleSmoothing?: ScaleSmoothingConfigComplete;
@@ -67,7 +80,7 @@ export interface StatefulChartProps {
   minimal?: boolean;
 }
 
-const StatefulChart = ({
+const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function StatefulChart({
   chartWidth,
   chartHeight,
   intervalSize,
@@ -84,6 +97,7 @@ const StatefulChart = ({
   initialScrollToLatest,
   onScroll,
   onZoom,
+  onViewportChange,
   enableScroll,
   enableZoom,
   scaleSmoothing = scaleSmoothingDefaults,
@@ -94,7 +108,7 @@ const StatefulChart = ({
   onLayerHover,
   onLayerClick,
   minimal = false,
-}: StatefulChartProps) => {
+}: StatefulChartProps, ref) {
 
   const chartCanvasesRef = useRef<ChartCanvasesHandle | null>(null);
   const uisRef = useRef<UisHandle | null>(null);
@@ -110,6 +124,12 @@ const StatefulChart = ({
   const isOverButtonRef = useRef(false);
   const hasUserInteractedRef = useRef(false);
   const hasAutoScrolledToLatestRef = useRef(false);
+  const viewportRef = useRef<ChartViewport | null>(null);
+  const onViewportChangeRef = useRef(onViewportChange);
+  const viewportChangeAnimationFrameRef = useRef<number | null>(null);
+  const pendingViewportChangeRef = useRef<ChartViewport | null>(null);
+  const crosshairModeRef = useRef<'pointer' | 'programmatic'>('pointer');
+  const programmaticCrosshairLockedRef = useRef(false);
 
   const {
     containerRef,
@@ -138,6 +158,19 @@ const StatefulChart = ({
     layersDataRef.current = initialLayersData;
   }, [initialLayersData]);
 
+  useEffect(() => {
+    onViewportChangeRef.current = onViewportChange;
+  }, [onViewportChange]);
+
+  useEffect(() => {
+    return () => {
+      if (viewportChangeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(viewportChangeAnimationFrameRef.current);
+        viewportChangeAnimationFrameRef.current = null;
+      }
+    };
+  }, []);
+
   const throttledDraw = useMemo(
     () => throttle((viewportData: ViewportData, layout: Layout, updatePanelMetrics?: (metricsByPanel: Record<string, {panelMetrics: PanelMetrics; layerMetricsByScale: Record<LayerScale['key'], LayerMetrics>;}>) => void) => {
       chartCanvasesRef.current?.requestDraw(viewportData, layout, updatePanelMetrics);
@@ -157,6 +190,148 @@ const StatefulChart = ({
     uisRef.current?.updatePanelMetrics?.(metricsByPanel);
   }, []);
 
+  const getScrollBounds = useCallback((
+    chartIndexProvider: IndexProvider,
+    chartIntervalSize: number,
+    chartLayout: Layout,
+  ) => {
+    const { firstDataPointIndex, lastDataPointIndex } = chartIndexProvider;
+    return {
+      minScrollOffset: firstDataPointIndex !== undefined
+        ? firstDataPointIndex * chartIntervalSize - chartLayout.drawingAreaWidth + 1
+        : 0,
+      maxScrollOffset: lastDataPointIndex !== undefined
+        ? (lastDataPointIndex + 1) * chartIntervalSize - chartIntervalSize
+        : 0,
+    };
+  }, []);
+
+  const clampScrollOffset = useCallback((
+    chartIndexProvider: IndexProvider,
+    chartIntervalSize: number,
+    chartLayout: Layout,
+    scrollOffset: number,
+  ) => {
+    const { minScrollOffset, maxScrollOffset } = getScrollBounds(chartIndexProvider, chartIntervalSize, chartLayout);
+    return Math.round(Math.max(minScrollOffset, Math.min(scrollOffset, maxScrollOffset)));
+  }, [getScrollBounds]);
+
+  const notifyViewportChange = useCallback((
+    viewportData: ViewportData,
+    scrollOffset: number,
+    chartIntervalSize: number,
+    source: ChartViewportChangeSource,
+  ) => {
+    const previousViewport = viewportRef.current;
+    if (
+      previousViewport &&
+      previousViewport.scrollOffset === scrollOffset &&
+      previousViewport.intervalWidthPx === chartIntervalSize &&
+      previousViewport.startBarIndex === viewportData.startBarIndex &&
+      previousViewport.endBarIndex === viewportData.endBarIndex
+    ) {
+      return;
+    }
+
+    const viewport: ChartViewport = {
+      scrollOffset,
+      intervalWidthPx: chartIntervalSize,
+      startBarIndex: viewportData.startBarIndex,
+      endBarIndex: viewportData.endBarIndex,
+      source,
+    };
+    viewportRef.current = viewport;
+
+    if (source !== 'user') {
+      onViewportChangeRef.current?.(viewport);
+      return;
+    }
+
+    pendingViewportChangeRef.current = viewport;
+    if (viewportChangeAnimationFrameRef.current !== null) return;
+
+    viewportChangeAnimationFrameRef.current = requestAnimationFrame(() => {
+      viewportChangeAnimationFrameRef.current = null;
+      const nextViewport = pendingViewportChangeRef.current;
+      pendingViewportChangeRef.current = null;
+      if (nextViewport) {
+        onViewportChangeRef.current?.(nextViewport);
+      }
+    });
+  }, []);
+
+  const updateGoToLatestButton = useCallback((
+    chartIndexProvider: IndexProvider,
+    chartIntervalSize: number,
+    chartLayout: Layout,
+    scrollOffset: number,
+  ) => {
+    const { lastDataPointIndex } = chartIndexProvider;
+    if (lastDataPointIndex === undefined) return;
+
+    const spaceAtEnd = scrollOffset - ((lastDataPointIndex - 1) * chartIntervalSize) + chartLayout.drawingAreaWidth;
+    uisRef.current?.updateGoToLatestButton(spaceAtEnd < 0 || spaceAtEnd > chartLayout.drawingAreaWidth / 2);
+  }, []);
+
+  const renderViewport = useCallback((
+    chartDataMap: DataMap,
+    chartIndexProvider: IndexProvider,
+    chartIntervalSize: number,
+    chartLayout: Layout,
+    chartMaxLookback: number,
+    chartMaxLookForward: number,
+    scrollOffset: number,
+    source: ChartViewportChangeSource,
+  ) => {
+    const clampedScrollOffset = clampScrollOffset(
+      chartIndexProvider,
+      chartIntervalSize,
+      chartLayout,
+      scrollOffset,
+    );
+    const timeScale = chartIndexProvider.getTimescale(chartIntervalSize, clampedScrollOffset, chartLayout.drawingAreaWidth);
+
+    if (layersDataRef.current) {
+      updateLayersData(
+        layersDataRef.current,
+        chartDataMap,
+        timeScale.startBarIndex - (chartMaxLookback + LOOKBACK_PAD),
+        timeScale.endBarIndex + chartMaxLookForward,
+      );
+    }
+
+    const viewportData = getViewportData(
+      chartIndexProvider,
+      timeScale,
+      layersDataRef.current!,
+      clampedScrollOffset,
+      chartLayout.drawingAreaWidth,
+      chartIntervalSize,
+    );
+
+    offsetPxRef.current = clampedScrollOffset;
+    intervalSizeRef.current = chartIntervalSize;
+    viewportDataRef.current = viewportData;
+
+    throttledDraw(viewportDataRef.current, chartLayout, updatePanelMetrics);
+    updateGoToLatestButton(chartIndexProvider, chartIntervalSize, chartLayout, clampedScrollOffset);
+
+    previousIntervalSizeRef.current = chartIntervalSize;
+    previousGranularityRef.current = granularity;
+    previousOffsetPxRef.current = clampedScrollOffset;
+
+    notifyViewportChange(viewportData, clampedScrollOffset, chartIntervalSize, source);
+
+    return clampedScrollOffset;
+  }, [
+    clampScrollOffset,
+    granularity,
+    notifyViewportChange,
+    throttledDraw,
+    updateGoToLatestButton,
+    updatePanelMetrics,
+  ]);
+
   const handleDataConfigOrScrollChange = useCallback(
     (
       chartDataMap: DataMap,
@@ -167,16 +342,15 @@ const StatefulChart = ({
       chartMaxLookback: number,
       chartMaxLookForward: number,
       offsetDelta: number = 0,
+      source: ChartViewportChangeSource = 'data',
     ) => {
 
       intervalSizeRef.current = chartIntervalSize;
 
       const {
-        firstDataPointIndex,
         lastDataPointIndex,
         indexToTimestamp,
         findClosestIndex,
-        getTimescale,
       } = chartIndexProvider;
 
       const shouldAutoScrollToLatest = (
@@ -194,12 +368,11 @@ const StatefulChart = ({
         chartIntervalSize !== previousIntervalSizeRef.current ||
         chartGranularity !== previousGranularityRef.current
       ) {
-        const minScrollOffset = firstDataPointIndex !== undefined
-          ? firstDataPointIndex * chartIntervalSize - chartLayout.drawingAreaWidth + 1
-          : 0;
-        const maxScrollOffset = lastDataPointIndex !== undefined
-          ? (lastDataPointIndex + 1) * chartIntervalSize - chartIntervalSize
-          : 0;
+        const { minScrollOffset, maxScrollOffset } = getScrollBounds(
+          chartIndexProvider,
+          chartIntervalSize,
+          chartLayout,
+        );
 
         if (shouldAutoScrollToLatest) {
           offsetPxRef.current = lastDataPointIndex * chartIntervalSize -
@@ -222,39 +395,257 @@ const StatefulChart = ({
         }
       }
 
-      const timeScale = getTimescale(chartIntervalSize, offsetPxRef.current, chartLayout.drawingAreaWidth);
-
-      if (layersDataRef.current) {
-        updateLayersData(layersDataRef.current, chartDataMap, timeScale.startBarIndex - (chartMaxLookback + LOOKBACK_PAD), timeScale.endBarIndex + chartMaxLookForward);
-      }
-
-      const viewportData = getViewportData(
-        chartIndexProvider,
-        timeScale,
-        layersDataRef.current!,
-        offsetPxRef.current,
-        chartLayout.drawingAreaWidth,
-        chartIntervalSize,
-      );
-
-      viewportDataRef.current = viewportData;
-
-      throttledDraw(viewportDataRef.current, chartLayout, updatePanelMetrics);
-
-      if (offsetPxRef.current !== previousOffsetPxRef.current) {
-        if (lastDataPointIndex !== undefined) {
-          const spaceAtEnd = (offsetPxRef.current - ((lastDataPointIndex - 1) * chartIntervalSize) + chartLayout.drawingAreaWidth);
-          uisRef.current?.updateGoToLatestButton(spaceAtEnd < 0 || spaceAtEnd > chartLayout.drawingAreaWidth / 2);
-        }
-      }
-
-      previousIntervalSizeRef.current = chartIntervalSize;
       previousGranularityRef.current = chartGranularity;
-      previousOffsetPxRef.current = offsetPxRef.current;
 
-      return offsetPxRef.current;
+      return renderViewport(
+        chartDataMap,
+        chartIndexProvider,
+        chartIntervalSize,
+        chartLayout,
+        chartMaxLookback,
+        chartMaxLookForward,
+        offsetPxRef.current,
+        source,
+      );
     },
-    [initialScrollToLatest, scrollToLatestMargin, throttledDraw, updatePanelMetrics]
+    [getScrollBounds, initialScrollToLatest, renderViewport, scrollToLatestMargin]
+  );
+
+  const toTimestampMs = useCallback((value: number | string | Date): number => {
+    if (value instanceof Date) return value.getTime();
+    if (typeof value === 'string') return isoTimestampToMs(value);
+    return value;
+  }, []);
+
+  const resolveRangeIndex = useCallback((value: ChartRangeValue, type?: ChartVisibleRange['type']): number => {
+    if (type === 'barIndex') return Math.round(Number(value));
+    if (type === 'timestamp' || value instanceof Date || typeof value === 'string') {
+      return indexProvider.findClosestIndex(toTimestampMs(value));
+    }
+    return Math.round(value);
+  }, [indexProvider, toTimestampMs]);
+
+  const applyViewport = useCallback((
+    nextIntervalSize: number,
+    nextScrollOffset: number,
+    source: ChartViewportChangeSource,
+  ) => {
+    const previousScrollOffset = previousOffsetPxRef.current;
+    const previousIntervalSize = intervalSizeRef.current;
+    const clampedIntervalSize = Math.max(1, nextIntervalSize);
+
+    hasUserInteractedRef.current = source === 'user' || source === 'api' || hasUserInteractedRef.current;
+
+    const renderedScrollOffset = renderViewport(
+      dataMap,
+      indexProvider,
+      clampedIntervalSize,
+      layout,
+      maxLookback,
+      maxLookForward,
+      nextScrollOffset,
+      source,
+    );
+
+    if (renderedScrollOffset !== previousScrollOffset) {
+      onScroll?.(renderedScrollOffset, { source });
+    }
+    if (clampedIntervalSize !== previousIntervalSize) {
+      onZoom?.(clampedIntervalSize, { source });
+    }
+
+    return renderedScrollOffset;
+  }, [
+    dataMap,
+    indexProvider,
+    layout,
+    maxLookback,
+    maxLookForward,
+    onScroll,
+    onZoom,
+    renderViewport,
+  ]);
+
+  const setScrollPosition = useCallback((scrollOffset: number) => {
+    applyViewport(intervalSizeRef.current, scrollOffset, 'api');
+  }, [applyViewport]);
+
+  const scrollToLatest = useCallback((options?: ChartMarginOptions) => {
+    const { lastDataPointIndex } = indexProvider;
+    const marginBars = options?.marginBars ?? scrollToLatestMargin;
+    const chartIntervalSize = intervalSizeRef.current;
+    const newScrollOffset = lastDataPointIndex !== undefined
+      ? lastDataPointIndex * chartIntervalSize -
+        (layout.drawingAreaWidth - chartIntervalSize * marginBars)
+      : 0;
+
+    applyViewport(chartIntervalSize, newScrollOffset, 'api');
+  }, [applyViewport, indexProvider, layout.drawingAreaWidth, scrollToLatestMargin]);
+
+  const fitContent = useCallback((options?: ChartMarginOptions) => {
+    const { firstDataPointIndex, lastDataPointIndex } = indexProvider;
+    if (firstDataPointIndex === undefined || lastDataPointIndex === undefined) {
+      applyViewport(intervalSizeRef.current, 0, 'api');
+      return;
+    }
+
+    const marginBars = options?.marginBars ?? 0;
+    const bars = Math.max(1, lastDataPointIndex - firstDataPointIndex + 1);
+    const nextIntervalSize = Math.max(1, layout.drawingAreaWidth / Math.max(1, bars + marginBars * 2));
+    const nextScrollOffset = (firstDataPointIndex - marginBars) * nextIntervalSize;
+
+    applyViewport(nextIntervalSize, nextScrollOffset, 'api');
+  }, [applyViewport, indexProvider, layout.drawingAreaWidth]);
+
+  const setVisibleRange = useCallback((range: ChartVisibleRange) => {
+    const fromIndex = resolveRangeIndex(range.from, range.type);
+    const toIndex = resolveRangeIndex(range.to, range.type);
+    const startIndex = Math.min(fromIndex, toIndex);
+    const endIndex = Math.max(fromIndex, toIndex);
+    const marginBars = range.marginBars ?? 0;
+    const spanBars = Math.max(1, endIndex - startIndex + 1);
+    const nextIntervalSize = fromIndex === toIndex
+      ? intervalSizeRef.current
+      : Math.max(1, layout.drawingAreaWidth / Math.max(1, spanBars + marginBars * 2));
+    const nextScrollOffset = (startIndex - marginBars) * nextIntervalSize;
+
+    applyViewport(nextIntervalSize, nextScrollOffset, 'api');
+  }, [applyViewport, layout.drawingAreaWidth, resolveRangeIndex]);
+
+  const updateLegendsForCrosshair = useCallback((dataPoint: DataPointInfo | null) => {
+    uisRef.current?.updateLegends(
+      dataPoint,
+      viewportDataRef.current ? viewportDataRef.current.data[viewportDataRef.current.data.length - 1] : undefined,
+    );
+  }, []);
+
+  const resolveCrosshairBarIndex = useCallback((position: ChartCrosshairPosition): number | undefined => {
+    if (position.barIndex !== undefined) return position.barIndex;
+    if (position.timestamp !== undefined) return indexProvider.findClosestIndex(toTimestampMs(position.timestamp));
+    return undefined;
+  }, [indexProvider, toTimestampMs]);
+
+  const resolveCrosshairY = useCallback((position: ChartCrosshairPosition): number | undefined => {
+    if (position.y !== undefined) return position.y;
+    if (position.value === undefined) return undefined;
+
+    const metricsByPanel = metricsByPanelRef.current;
+    if (!metricsByPanel) return undefined;
+
+    const panel = position.panelId !== undefined
+      ? panels.find(({ id }) => id === position.panelId)
+      : panels[0];
+    if (!panel) return undefined;
+
+    const panelMetrics = metricsByPanel[panel.id];
+    if (!panelMetrics) return undefined;
+
+    const scaleKey = position.scaleKey ?? Object.keys(panelMetrics.layerMetricsByScale)[0];
+    const layerMetrics = scaleKey ? panelMetrics.layerMetricsByScale[scaleKey] : undefined;
+
+    return layerMetrics?.valueToY(position.value);
+  }, [panels]);
+
+  const resolveCrosshairDefaultY = useCallback((position: ChartCrosshairPosition): number => {
+    const metricsByPanel = metricsByPanelRef.current;
+    const panel = position.panelId !== undefined
+      ? panels.find(({ id }) => id === position.panelId)
+      : panels[0];
+    const panelMetrics = panel && metricsByPanel?.[panel.id]?.panelMetrics;
+
+    if (panelMetrics) {
+      return panelMetrics.topPx + panelMetrics.heightPx / 2;
+    }
+
+    return layout.drawingAreaY + layout.drawingAreaHeight / 2;
+  }, [layout.drawingAreaHeight, layout.drawingAreaY, panels]);
+
+  const drawCrosshairAtPosition = useCallback((position: ChartCrosshairPosition) => {
+    const viewportData = viewportDataRef.current;
+    const container = containerRef.current;
+    if (!viewportData || !container) return;
+
+    const {
+      metadata: {
+        intervalSize: chartIntervalSize,
+        scrollOffset,
+      },
+    } = viewportData.timeScale;
+
+    const barIndex = resolveCrosshairBarIndex(position);
+    const chartX = position.x ?? (
+      barIndex === undefined
+        ? undefined
+        : layout.drawingAreaX + barIndex * chartIntervalSize - scrollOffset
+    );
+    if (chartX === undefined) return;
+
+    const chartY = resolveCrosshairY(position) ?? resolveCrosshairDefaultY(position);
+    if (
+      chartX < layout.drawingAreaX ||
+      chartX > layout.drawingAreaX1 ||
+      chartY < layout.drawingAreaY ||
+      chartY > layout.drawingAreaY1
+    ) {
+      return;
+    }
+
+    const { left, top } = container.getBoundingClientRect();
+
+    throttledCrosshairsDraw(
+      layout,
+      viewportData,
+      left + chartX,
+      top + chartY,
+      (_ts: number | null, dataPoint: DataPointInfo | null) => updateLegendsForCrosshair(dataPoint),
+    );
+  }, [
+    containerRef,
+    layout,
+    resolveCrosshairBarIndex,
+    resolveCrosshairDefaultY,
+    resolveCrosshairY,
+    throttledCrosshairsDraw,
+    updateLegendsForCrosshair,
+  ]);
+
+  const setCrosshairPosition = useCallback((
+    position: ChartCrosshairPosition,
+    options?: ChartCrosshairOptions,
+  ) => {
+    crosshairModeRef.current = 'programmatic';
+    programmaticCrosshairLockedRef.current = options?.lock ?? false;
+    crosshairsClearedRef.current = false;
+    drawCrosshairAtPosition(position);
+  }, [drawCrosshairAtPosition]);
+
+  const clearCrosshairPosition = useCallback(() => {
+    crosshairModeRef.current = 'pointer';
+    programmaticCrosshairLockedRef.current = false;
+    crosshairsClearedRef.current = true;
+    chartCanvasesRef.current?.hideCrosshairs(layout);
+    updateLegendsForCrosshair(null);
+  }, [layout, updateLegendsForCrosshair]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      setVisibleRange,
+      setScrollPosition,
+      fitContent,
+      scrollToLatest,
+      setCrosshairPosition,
+      clearCrosshairPosition,
+      getViewport: () => viewportRef.current,
+    }),
+    [
+      clearCrosshairPosition,
+      fitContent,
+      scrollToLatest,
+      setCrosshairPosition,
+      setScrollPosition,
+      setVisibleRange,
+    ],
   );
 
   // If config, panels, data (and derived), intervalSize, granularity or layout change...
@@ -284,6 +675,7 @@ const StatefulChart = ({
   const handleScroll = useCallback(
     (deltaX: number /*, deltaY: number, wheel?: boolean*/) => {
       if (deltaX !== 0) {
+        const currentIntervalSize = intervalSizeRef.current;
         hasUserInteractedRef.current = true;
         if (crosshairsClearedRef.current === false) {
           chartCanvasesRef.current?.hideCrosshairs(layout);
@@ -292,15 +684,16 @@ const StatefulChart = ({
         const newScrollOffset = handleDataConfigOrScrollChange(
           dataMap,
           indexProvider,
-          intervalSize,
+          currentIntervalSize,
           granularity,
           layout,
           maxLookback,
           maxLookForward,
           deltaX,
+          'user',
         );
         if (onScroll) {
-          onScroll(newScrollOffset);
+          onScroll(newScrollOffset, { source: 'user' });
         }
       }
     },
@@ -308,7 +701,6 @@ const StatefulChart = ({
       handleDataConfigOrScrollChange,
       dataMap,
       indexProvider,
-      intervalSize,
       granularity,
       layout,
       maxLookback,
@@ -318,6 +710,12 @@ const StatefulChart = ({
   );
 
   const handleMouseMove = useCallback((clientX: number, clientY: number) => {
+    if (crosshairModeRef.current === 'programmatic') {
+      if (programmaticCrosshairLockedRef.current) return;
+      crosshairModeRef.current = 'pointer';
+      programmaticCrosshairLockedRef.current = false;
+    }
+
     crosshairsClearedRef.current = false;
     handleDrawingHover(clientX, clientY);
     if (viewportDataRef.current) {
@@ -326,10 +724,10 @@ const StatefulChart = ({
         viewportDataRef.current,
         clientX, 
         clientY,
-        (_ts: number | null, dataPoint: DataPointInfo | null) => uisRef.current?.updateLegends(dataPoint, viewportDataRef.current ? viewportDataRef.current.data[viewportDataRef.current.data.length - 1] : undefined),
+        (_ts: number | null, dataPoint: DataPointInfo | null) => updateLegendsForCrosshair(dataPoint),
       );
     }
-  }, [handleDrawingHover, throttledCrosshairsDraw, layout]);
+  }, [handleDrawingHover, throttledCrosshairsDraw, layout, updateLegendsForCrosshair]);
 
   const handleZoom = useCallback((zoomFactor: number) => {
     if (zoomFactor !== 1) {
@@ -344,7 +742,7 @@ const StatefulChart = ({
         newIntervalSize = 1;
       }
       if (onZoom && newIntervalSize !== currentIntervalSize) {
-        onZoom(newIntervalSize);
+        onZoom(newIntervalSize, { source: 'user' });
       }
     }
   }, [onZoom, layout]);
@@ -355,32 +753,10 @@ const StatefulChart = ({
       chartCanvasesRef.current?.hideCrosshairs(layout);
       crosshairsClearedRef.current = true;
     }
-    const { lastDataPointIndex } = indexProvider;
-    const newScrollOffset = lastDataPointIndex !== undefined
-      ? lastDataPointIndex * intervalSize -
-        (layout.drawingAreaWidth - intervalSize * scrollToLatestMargin)
-      : 0;
-    const deltaX = (previousOffsetPxRef.current ?? 0) - newScrollOffset;
-    handleDataConfigOrScrollChange(
-      dataMap,
-      indexProvider,
-      intervalSize,
-      granularity,
-      layout,
-      maxLookback,
-      maxLookForward,
-      deltaX,
-    );
+    scrollToLatest();
   }, [
-    handleDataConfigOrScrollChange,
-    dataMap,
-    indexProvider,
-    intervalSize,
-    granularity,
     layout,
-    maxLookback,
-    maxLookForward,
-    scrollToLatestMargin,
+    scrollToLatest,
   ]);
 
   const handleButtonMouseEnterLeave = useCallback((enter: boolean) => {
@@ -438,6 +814,8 @@ const StatefulChart = ({
     </div>
   );
 
-};
+});
+
+StatefulChart.displayName = 'StatefulChart';
 
 export default memo(StatefulChart);

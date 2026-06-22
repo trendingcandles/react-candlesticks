@@ -273,7 +273,7 @@ describe('Chart', () => {
     });
 
     expect(onZoom).toHaveBeenCalledTimes(1);
-    expect(onZoom).toHaveBeenCalledWith(13);
+    expect(onZoom).toHaveBeenCalledWith(13, { source: 'user' });
 
     act(() => {
       capturedProps?.onZoom?.(13.2);

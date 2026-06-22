@@ -49,8 +49,28 @@ const InteractiveArea = ({
   } | null>(null);
   const suppressNextClickRef = useRef(false);
   const pinchDistance = useRef<number | null>(null);
+  const onScrollRef = useRef(onScroll);
+  const onZoomRef = useRef(onZoom);
+  const enableScrollRef = useRef(enableScroll);
+  const enableZoomRef = useRef(enableZoom);
   const resetCursor = cursor ?? 'crosshair';
   const resetCursorRef = useRef(resetCursor);
+
+  useEffect(() => {
+    onScrollRef.current = onScroll;
+  }, [onScroll]);
+
+  useEffect(() => {
+    onZoomRef.current = onZoom;
+  }, [onZoom]);
+
+  useEffect(() => {
+    enableScrollRef.current = enableScroll;
+  }, [enableScroll]);
+
+  useEffect(() => {
+    enableZoomRef.current = enableZoom;
+  }, [enableZoom]);
 
   useEffect(() => {
     resetCursorRef.current = resetCursor;
@@ -67,22 +87,22 @@ const InteractiveArea = ({
   const scheduleScroll = useCallback(() => {
     if (scrollAnimationFrame.current === null) {
       scrollAnimationFrame.current = requestAnimationFrame(() => {
-        onScroll(pendingDelta.current.x, pendingDelta.current.y);
+        onScrollRef.current(pendingDelta.current.x, pendingDelta.current.y);
         pendingDelta.current = { x: 0, y: 0 };
         scrollAnimationFrame.current = null;
       });
     }
-  }, [onScroll]);
+  }, []);
 
   const scheduleZoom = useCallback(() => {
     if (zoomAnimationFrame.current === null) {
       zoomAnimationFrame.current = requestAnimationFrame(() => {
-        onZoom(pendingZoom.current);
+        onZoomRef.current(pendingZoom.current);
         pendingZoom.current = 1;
         zoomAnimationFrame.current = null;
       });
     }
-  }, [onZoom]);
+  }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
@@ -106,9 +126,9 @@ const InteractiveArea = ({
 
     activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
-    // Capture touch/pen pointers so gestures remain stable if the finger/stylus
-    // leaves the element bounds. Keep desktop mouse hover semantics unchanged.
-    if (e.pointerType !== 'mouse' && dragRef.current?.setPointerCapture) {
+    // Capture active drag pointers so gestures remain stable if the pointer
+    // leaves the element bounds or React re-renders surrounding UI.
+    if (dragRef.current?.setPointerCapture) {
       dragRef.current.setPointerCapture(e.pointerId);
     }
 
@@ -227,44 +247,38 @@ const InteractiveArea = ({
     const absY = Math.abs(e.deltaY);
 
     if (absX > absY) {
-      if (!enableScroll) return;
+      if (!enableScrollRef.current) return;
       pendingDelta.current.x -= e.deltaX;
       if (scrollAnimationFrame.current === null) {
         scrollAnimationFrame.current = requestAnimationFrame(() => {
-          onScroll(pendingDelta.current.x, pendingDelta.current.y, true);
+          onScrollRef.current(pendingDelta.current.x, pendingDelta.current.y, true);
           pendingDelta.current = { x: 0, y: 0 };
           scrollAnimationFrame.current = null;
         });
       }
     } else {
-      if (!enableZoom) return;
+      if (!enableZoomRef.current) return;
       const zoomFactor = e.deltaY > 0 ? 0.975 : 1.025;
       pendingZoom.current *= zoomFactor;
       scheduleZoom();
     }
-  }, [enableScroll, enableZoom, onScroll, scheduleZoom]);
+  }, [scheduleZoom]);
 
   useEffect(() => {
     const element = dragRef.current;
     if (!element) return;
-    const pointers = activePointers.current;
 
     element.addEventListener('wheel', handleWheel, { passive: false });
 
     return () => {
       element.removeEventListener('wheel', handleWheel);
-      pointers.clear();
-      lastPosition.current = null;
-      pinchDistance.current = null;
-      pendingDelta.current = { x: 0, y: 0 };
-      pendingZoom.current = 1;
-      element.style.cursor = resetCursorRef.current;
     };
   }, [handleWheel]);
 
   useEffect(() => {
     const element = dragRef.current;
     if (!element) return;
+    const pointers = activePointers.current;
 
     const handleWindowPointerUp = (event: PointerEvent) => {
       if (claimedPointerRef.current?.pointerId === event.pointerId) {
@@ -302,6 +316,12 @@ const InteractiveArea = ({
     return () => {
       window.removeEventListener('pointerup', handleWindowPointerUp);
       window.removeEventListener('pointercancel', handleWindowPointerUp);
+      pointers.clear();
+      lastPosition.current = null;
+      pinchDistance.current = null;
+      pendingDelta.current = { x: 0, y: 0 };
+      pendingZoom.current = 1;
+      element.style.cursor = resetCursorRef.current;
       if (scrollAnimationFrame.current !== null) {
         cancelAnimationFrame(scrollAnimationFrame.current);
         scrollAnimationFrame.current = null;

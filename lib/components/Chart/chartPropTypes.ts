@@ -86,6 +86,7 @@ const chartPropTypes = {
   initialScrollToLatest: PropTypes.bool,
   onScroll: PropTypes.func,
   onZoom: PropTypes.func,
+  onViewportChange: PropTypes.func,
   enableScroll: PropTypes.bool,
   enableZoom: PropTypes.bool,
   scaleSmoothing: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
