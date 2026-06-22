@@ -8,6 +8,7 @@
 import { ValueCrosshairLabelConfigComplete } from '../../../config/chart/crosshairs/valueCrosshair/valueCrosshairLabel/ValueCrosshairLabelConfig';
 import { Layout } from '../../../domain/types/Layout';
 import { PanelYAxis } from '../../panel/getPanelYAxes';
+import drawRoundedRect from '../../elements/drawRoundedRect';
 
 const drawChartValueCrosshairLabel = (
   crosshairsContext: CanvasRenderingContext2D,
@@ -32,6 +33,7 @@ const drawChartValueCrosshairLabel = (
     fontStyle,
     hPadding,
     vPadding,
+    borderRadius = 0,
   } = crosshairLabelConfig;
 
   const {
@@ -48,7 +50,7 @@ const drawChartValueCrosshairLabel = (
   const bgHeight = fontSize + vPadding * 2;
 
   crosshairsContext.fillStyle = backgroundColor;
-  crosshairsContext.fillRect(x, y - bgHeight / 2, bgWidth, bgHeight);
+  drawRoundedRect(crosshairsContext, x, y - bgHeight / 2, bgWidth, bgHeight, borderRadius);
 
   crosshairsContext.fillStyle = color;
   crosshairsContext.font = `${fontWeight} ${fontStyle} ${fontSize}px ${fontFamily}`;

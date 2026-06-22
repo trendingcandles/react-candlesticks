@@ -16,6 +16,9 @@ import ViewportData from '../../domain/types/ViewportData';
 import { YAxisConfigComplete } from '../../config/layer/yAxis/YAxisConfig';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import { BaseLayerConfigComplete } from '../../config/layer/BaseLayerConfig';
+import drawRoundedRect from '../elements/drawRoundedRect';
+
+const isTransparentFill = (color: string) => color.trim().toLowerCase() === 'transparent';
 
 const drawValueMarkerLabel = (
   axesContext: CanvasRenderingContext2D,
@@ -53,6 +56,7 @@ const drawValueMarkerLabel = (
     fontStyle,
     hPadding,
     vPadding,
+    borderRadius = 0,
   } = valueMarkerLabelConfig;
   
   const value = valueMarker;
@@ -106,17 +110,25 @@ const drawValueMarkerLabel = (
   const labelHalfHeight = Math.round(labelHeight / 2);
   const yLabelTopLeft = y - labelHalfHeight;
 
+  if (!isTransparentFill(backgroundColor)) {
+    // Draw rectangle bg
+    axesContext.fillStyle = backgroundColor;
+    drawRoundedRect(axesContext, labelX, yLabelTopLeft, labelWidth, labelHeight, borderRadius);
+  }
+
   if (borderWidth > 0) {
     // Draw border
-    axesContext.fillStyle = borderColor;
-    axesContext.fillRect(labelX, yLabelTopLeft, labelWidth, labelHeight);
-    // Draw rectangle bg
-    axesContext.fillStyle = backgroundColor;
-    axesContext.fillRect(labelX + borderWidth, yLabelTopLeft + borderWidth, labelWidth - borderWidth * 2, labelHeight - borderWidth * 2);
-  } else {
-    // Draw rectangle bg
-    axesContext.fillStyle = backgroundColor;
-    axesContext.fillRect(labelX, yLabelTopLeft, labelWidth, labelHeight);
+    axesContext.lineWidth = borderWidth;
+    axesContext.strokeStyle = borderColor;
+    drawRoundedRect(
+      axesContext,
+      labelX + borderWidth / 2,
+      yLabelTopLeft + borderWidth / 2,
+      labelWidth - borderWidth,
+      labelHeight - borderWidth,
+      Math.max(0, borderRadius - borderWidth / 2),
+      'stroke',
+    );
   }
 
   // Draw the price label text

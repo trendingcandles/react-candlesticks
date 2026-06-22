@@ -28,6 +28,7 @@ const parseBoxedValueLabelConfig = (
     borderColor: partialConfig.borderColor ?? boxedValueLabelTheme.borderColor ?? boxedValueLabelDefaults.borderColor,
     hPadding: partialConfig.hPadding ?? boxedValueLabelTheme.hPadding ?? boxedValueLabelDefaults.hPadding,
     vPadding: partialConfig.vPadding ?? boxedValueLabelTheme.vPadding ?? boxedValueLabelDefaults.vPadding,
+    borderRadius: partialConfig.borderRadius ?? boxedValueLabelTheme.borderRadius ?? boxedValueLabelDefaults.borderRadius,
   };
 
   return boxedValueLabelConfigComplete;

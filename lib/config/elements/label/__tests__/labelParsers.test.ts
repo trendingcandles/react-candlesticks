@@ -22,8 +22,9 @@ describe('label and boxed parsers', () => {
 
   it('parses boxed value labels and buttons', () => {
     expect(parseBoxedValueLabelConfig(false, boxedValueLabelDefaults)).toBeNull();
-    const boxed = parseBoxedValueLabelConfig({}, boxedValueLabelDefaults, 'rebeccapurple');
+    const boxed = parseBoxedValueLabelConfig({ borderRadius: 3 }, boxedValueLabelDefaults, 'rebeccapurple');
     expect(boxed?.backgroundColor).toBe('rebeccapurple');
+    expect(boxed?.borderRadius).toBe(3);
 
     expect(parseButtonConfig(false, buttonDefaults)).toBeNull();
     expect(parseButtonConfig({}, buttonDefaults)?.backgroundColor).toBe(buttonDefaults.backgroundColor);
