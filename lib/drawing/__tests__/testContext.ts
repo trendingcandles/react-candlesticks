@@ -13,6 +13,7 @@ export const createMockContext = () => {
     beginPath: vi.fn(),
     moveTo: vi.fn(),
     lineTo: vi.fn(),
+    quadraticCurveTo: vi.fn(),
     stroke: vi.fn(),
     fill: vi.fn(),
     ellipse: vi.fn(),

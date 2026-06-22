@@ -13,6 +13,7 @@ export interface BoxedValueLabelConfigComplete extends ValueLabelConfigComplete 
   borderColor: string;
   hPadding: number;
   vPadding: number;
+  borderRadius: number;
 }
 
 export interface BoxedValueLabelConfig extends ValueLabelConfig {
@@ -21,6 +22,7 @@ export interface BoxedValueLabelConfig extends ValueLabelConfig {
   borderColor?: string;
   hPadding?: number;
   vPadding?: number;
+  borderRadius?: number;
 }
 
 export interface BoxedValueLabelTheme extends ValueLabelTheme {
@@ -29,6 +31,7 @@ export interface BoxedValueLabelTheme extends ValueLabelTheme {
   borderColor: string;
   hPadding: number;
   vPadding: number;
+  borderRadius?: number;
 }
 
 export const boxedValueLabelDefaults: BoxedValueLabelConfigComplete = {
@@ -38,4 +41,5 @@ export const boxedValueLabelDefaults: BoxedValueLabelConfigComplete = {
   borderColor: '#1a1a1a',
   hPadding: 8,
   vPadding: 6,
+  borderRadius: 0,
 };

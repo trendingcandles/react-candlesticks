@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { BoxedValueLabelConfig, BoxedValueLabelConfigComplete, boxedValueLabelDefaults } from '../elements/boxedValueLabel/BoxedValueLabelConfig';
+import { BoxedValueLabelConfig, BoxedValueLabelConfigComplete, boxedValueLabelDefaults, BoxedValueLabelTheme } from '../elements/boxedValueLabel/BoxedValueLabelConfig';
 import { LineConfig, LineConfigComplete, lineDefaults } from '../elements/line/LineConfig';
 import { ValueMarkerMode } from './ValueMarkerMode';
 
@@ -23,7 +23,7 @@ export interface ValueMarkerConfig {
 
 export interface ValueMarkerTheme {
   line: LineConfigComplete;
-  label: BoxedValueLabelConfigComplete;
+  label: BoxedValueLabelTheme;
 }
 
 export const valueMarkerDefaults: Pick<ValueMarkerConfigComplete, 'mode' | 'line'> = {

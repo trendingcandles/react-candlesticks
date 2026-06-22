@@ -62,6 +62,7 @@ describe('value marker drawing', () => {
         fontStyle: 'normal',
         hPadding: 4,
         vPadding: 2,
+        borderRadius: 0,
       } as never,
       'last-visible',
       {} as never,
@@ -72,6 +73,81 @@ describe('value marker drawing', () => {
     );
 
     expect(ctx.fillRect).toHaveBeenCalled();
+    expect(ctx.fillText).toHaveBeenCalledWith('P:42', 309, 20);
+  });
+
+  it('draws rounded marker label backgrounds when configured', () => {
+    const ctx = createMockContext();
+    drawValueMarkerLabel(
+      ctx,
+      { drawingAreaX: 100, drawingAreaX1: 300 } as never,
+      {} as never,
+      { yAxes: { axesByScale: { price: { offsetPx: 5 } } } } as never,
+      { id: 'l1' } as never,
+      { side: 'right', width: 50 } as never,
+      (v) => `P:${v}`,
+      {
+        backgroundColor: '#000',
+        borderColor: '#fff',
+        color: '#fff',
+        borderWidth: 0,
+        fontFamily: 'sans',
+        fontSize: 10,
+        fontWeight: '400',
+        fontVariant: 'normal',
+        fontStyle: 'normal',
+        hPadding: 4,
+        vPadding: 2,
+        borderRadius: 4,
+      } as never,
+      'last-visible',
+      {} as never,
+      { paddedTopPx: 10, paddedBottomPx: 60 } as never,
+      { valueToY: () => 20 } as never,
+      { layersData: { layersTopology: { deducedLayerScales: { l1: { key: 'price' } } } } } as never,
+      42,
+    );
+
+    expect(ctx.fillRect).not.toHaveBeenCalled();
+    expect(ctx.quadraticCurveTo).toHaveBeenCalled();
+    expect(ctx.fillText).toHaveBeenCalledWith('P:42', 309, 20);
+  });
+
+  it('draws marker label borders without filling transparent backgrounds', () => {
+    const ctx = createMockContext();
+    drawValueMarkerLabel(
+      ctx,
+      { drawingAreaX: 100, drawingAreaX1: 300 } as never,
+      {} as never,
+      { yAxes: { axesByScale: { price: { offsetPx: 5 } } } } as never,
+      { id: 'l1' } as never,
+      { side: 'right', width: 50 } as never,
+      (v) => `P:${v}`,
+      {
+        backgroundColor: 'transparent',
+        borderColor: '#fff',
+        color: '#fff',
+        borderWidth: 1,
+        fontFamily: 'sans',
+        fontSize: 10,
+        fontWeight: '400',
+        fontVariant: 'normal',
+        fontStyle: 'normal',
+        hPadding: 4,
+        vPadding: 2,
+        borderRadius: 4,
+      } as never,
+      'last-visible',
+      {} as never,
+      { paddedTopPx: 10, paddedBottomPx: 60 } as never,
+      { valueToY: () => 20 } as never,
+      { layersData: { layersTopology: { deducedLayerScales: { l1: { key: 'price' } } } } } as never,
+      42,
+    );
+
+    expect(ctx.fillRect).not.toHaveBeenCalled();
+    expect(ctx.fill).not.toHaveBeenCalled();
+    expect(ctx.stroke).toHaveBeenCalled();
     expect(ctx.fillText).toHaveBeenCalledWith('P:42', 309, 20);
   });
 });
