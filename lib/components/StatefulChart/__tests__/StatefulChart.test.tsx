@@ -1,6 +1,6 @@
 import { act, render } from '@testing-library/react';
 import { createRef, forwardRef, useImperativeHandle } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ChartHandle } from '../../Chart';
 import type { StatefulChartProps } from '../StatefulChart';
 
@@ -92,6 +92,10 @@ describe('StatefulChart', () => {
     canvasesProps = null;
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   const makeProps = (): StatefulChartProps => ({
     chartWidth: 600,
     chartHeight: 400,
@@ -154,6 +158,63 @@ describe('StatefulChart', () => {
     expect(hideCrosshairsMock).toHaveBeenCalled();
     expect(requestDrawCrosshairsMock).toHaveBeenCalled();
     expect(updateLayersDataMock).toHaveBeenCalled();
+  });
+
+  it('renders interactive zoom immediately through the chart pipeline', () => {
+    const props = makeProps();
+    render(<StatefulChart {...props} />);
+
+    requestDrawMock.mockClear();
+    getViewportDataMock.mockClear();
+
+    interactiveProps?.onZoom(1.1);
+
+    expect(getViewportDataMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      expect.any(Number),
+      500,
+      11,
+    );
+    expect(requestDrawMock).toHaveBeenCalled();
+    expect(props.onZoom).toHaveBeenCalledWith(11, { source: 'user' });
+  });
+
+  it('debounces user viewport callbacks when configured', () => {
+    vi.useFakeTimers();
+
+    const onViewportChange = vi.fn();
+    render(
+      <StatefulChart
+        {...makeProps()}
+        onViewportChange={onViewportChange}
+        userViewportCallbackMode="debounce"
+        userViewportCallbackDebounceMs={50}
+      />,
+    );
+
+    onViewportChange.mockClear();
+    calcOffsetMock.mockReturnValue(45);
+
+    interactiveProps?.onScroll(20, 0);
+
+    expect(onViewportChange).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(49);
+    });
+    expect(onViewportChange).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+
+    expect(onViewportChange).toHaveBeenCalledTimes(1);
+    expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({
+      scrollOffset: 45,
+      source: 'user',
+    }));
   });
 
   it('exposes imperative viewport controls', () => {

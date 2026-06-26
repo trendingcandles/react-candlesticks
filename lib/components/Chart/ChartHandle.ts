@@ -6,6 +6,7 @@
  */
 
 export type ChartViewportChangeSource = 'user' | 'api' | 'data' | 'layout';
+export type ChartViewportCallbackMode = 'animationFrame' | 'debounce' | 'none' | 'sync';
 
 export interface ChartCallbackInfo {
   source: ChartViewportChangeSource;

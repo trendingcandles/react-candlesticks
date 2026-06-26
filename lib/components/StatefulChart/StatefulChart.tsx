@@ -44,6 +44,7 @@ import {
   ChartMarginOptions,
   ChartRangeValue,
   ChartViewport,
+  ChartViewportCallbackMode,
   ChartViewportChangeSource,
   ChartVisibleRange,
 } from '../Chart/ChartHandle';
@@ -68,6 +69,8 @@ export interface StatefulChartProps {
   onScroll?: (newScrollOffset: number, info?: ChartCallbackInfo) => void;
   onZoom?: (newIntervalSize: number, info?: ChartCallbackInfo) => void;
   onViewportChange?: (viewport: ChartViewport) => void;
+  userViewportCallbackMode?: ChartViewportCallbackMode;
+  userViewportCallbackDebounceMs?: number;
   enableScroll: boolean;
   enableZoom: boolean;
   scaleSmoothing?: ScaleSmoothingConfigComplete;
@@ -98,6 +101,8 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   onScroll,
   onZoom,
   onViewportChange,
+  userViewportCallbackMode = 'animationFrame',
+  userViewportCallbackDebounceMs = 120,
   enableScroll,
   enableZoom,
   scaleSmoothing = scaleSmoothingDefaults,
@@ -113,6 +118,7 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   const chartCanvasesRef = useRef<ChartCanvasesHandle | null>(null);
   const uisRef = useRef<UisHandle | null>(null);
   const intervalSizeRef = useRef(intervalSize);
+  const intervalSizePropRef = useRef(intervalSize);
   const previousIntervalSizeRef = useRef(intervalSize);
   const previousGranularityRef = useRef(granularity);
   const offsetPxRef = useRef<number>(undefined);
@@ -126,7 +132,10 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   const hasAutoScrolledToLatestRef = useRef(false);
   const viewportRef = useRef<ChartViewport | null>(null);
   const onViewportChangeRef = useRef(onViewportChange);
+  const userViewportCallbackModeRef = useRef(userViewportCallbackMode);
+  const userViewportCallbackDebounceMsRef = useRef(userViewportCallbackDebounceMs);
   const viewportChangeAnimationFrameRef = useRef<number | null>(null);
+  const viewportChangeTimeoutRef = useRef<number | null>(null);
   const pendingViewportChangeRef = useRef<ChartViewport | null>(null);
   const crosshairModeRef = useRef<'pointer' | 'programmatic'>('pointer');
   const programmaticCrosshairLockedRef = useRef(false);
@@ -163,10 +172,22 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   }, [onViewportChange]);
 
   useEffect(() => {
+    userViewportCallbackModeRef.current = userViewportCallbackMode;
+  }, [userViewportCallbackMode]);
+
+  useEffect(() => {
+    userViewportCallbackDebounceMsRef.current = userViewportCallbackDebounceMs;
+  }, [userViewportCallbackDebounceMs]);
+
+  useEffect(() => {
     return () => {
       if (viewportChangeAnimationFrameRef.current !== null) {
         cancelAnimationFrame(viewportChangeAnimationFrameRef.current);
         viewportChangeAnimationFrameRef.current = null;
+      }
+      if (viewportChangeTimeoutRef.current !== null) {
+        clearTimeout(viewportChangeTimeoutRef.current);
+        viewportChangeTimeoutRef.current = null;
       }
     };
   }, []);
@@ -247,7 +268,60 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
       return;
     }
 
+    const callbackMode = userViewportCallbackModeRef.current;
+    if (callbackMode === 'none') {
+      if (viewportChangeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(viewportChangeAnimationFrameRef.current);
+        viewportChangeAnimationFrameRef.current = null;
+      }
+      if (viewportChangeTimeoutRef.current !== null) {
+        clearTimeout(viewportChangeTimeoutRef.current);
+        viewportChangeTimeoutRef.current = null;
+      }
+      pendingViewportChangeRef.current = null;
+      return;
+    }
+
+    if (callbackMode === 'sync') {
+      if (viewportChangeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(viewportChangeAnimationFrameRef.current);
+        viewportChangeAnimationFrameRef.current = null;
+      }
+      if (viewportChangeTimeoutRef.current !== null) {
+        clearTimeout(viewportChangeTimeoutRef.current);
+        viewportChangeTimeoutRef.current = null;
+      }
+      pendingViewportChangeRef.current = null;
+      onViewportChangeRef.current?.(viewport);
+      return;
+    }
+
     pendingViewportChangeRef.current = viewport;
+
+    if (callbackMode === 'debounce') {
+      if (viewportChangeAnimationFrameRef.current !== null) {
+        cancelAnimationFrame(viewportChangeAnimationFrameRef.current);
+        viewportChangeAnimationFrameRef.current = null;
+      }
+      if (viewportChangeTimeoutRef.current !== null) {
+        clearTimeout(viewportChangeTimeoutRef.current);
+      }
+
+      viewportChangeTimeoutRef.current = window.setTimeout(() => {
+        viewportChangeTimeoutRef.current = null;
+        const nextViewport = pendingViewportChangeRef.current;
+        pendingViewportChangeRef.current = null;
+        if (nextViewport) {
+          onViewportChangeRef.current?.(nextViewport);
+        }
+      }, userViewportCallbackDebounceMsRef.current);
+      return;
+    }
+
+    if (viewportChangeTimeoutRef.current !== null) {
+      clearTimeout(viewportChangeTimeoutRef.current);
+      viewportChangeTimeoutRef.current = null;
+    }
     if (viewportChangeAnimationFrameRef.current !== null) return;
 
     viewportChangeAnimationFrameRef.current = requestAnimationFrame(() => {
@@ -650,10 +724,16 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
 
   // If config, panels, data (and derived), intervalSize, granularity or layout change...
   useEffect(() => {
+    const nextIntervalSize = intervalSize !== intervalSizePropRef.current
+      ? intervalSize
+      : intervalSizeRef.current;
+
+    intervalSizePropRef.current = intervalSize;
+
     handleDataConfigOrScrollChange(
       dataMap,
       indexProvider,
-      intervalSize,
+      nextIntervalSize,
       granularity,
       layout,
       maxLookback,
@@ -741,11 +821,31 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
       if (newIntervalSize < 1) {
         newIntervalSize = 1;
       }
-      if (onZoom && newIntervalSize !== currentIntervalSize) {
-        onZoom(newIntervalSize, { source: 'user' });
+      if (newIntervalSize !== currentIntervalSize) {
+        handleDataConfigOrScrollChange(
+          dataMap,
+          indexProvider,
+          newIntervalSize,
+          granularity,
+          layout,
+          maxLookback,
+          maxLookForward,
+          0,
+          'user',
+        );
+        onZoom?.(newIntervalSize, { source: 'user' });
       }
     }
-  }, [onZoom, layout]);
+  }, [
+    dataMap,
+    granularity,
+    handleDataConfigOrScrollChange,
+    indexProvider,
+    layout,
+    maxLookback,
+    maxLookForward,
+    onZoom,
+  ]);
 
   const handleGoToLatestButtonClick = useCallback(() => {
     hasUserInteractedRef.current = true;

@@ -6,4 +6,4 @@
  */
 
 export { default } from './Chart';
-export type { ChartCallbackInfo, ChartHandle, ChartProps, ChartViewport } from './Chart';
+export type { ChartCallbackInfo, ChartHandle, ChartProps, ChartViewport, ChartViewportCallbackMode } from './Chart';

@@ -297,6 +297,8 @@ function ControlledChart({ data }) {
         ref={chartRef}
         data={data}
         onViewportChange={setViewport}
+        userViewportCallbackMode="debounce"
+        userViewportCallbackDebounceMs={120}
       >
         <Panel id="price" heightRatio={3}>
           <Candlesticks />
@@ -317,6 +319,8 @@ function ControlledChart({ data }) {
 ```
 
 `setCrosshairPosition()` gives pointer movement control again as soon as the user moves over the chart. Pass `{ lock: true }` as the second argument to keep the programmatic crosshair fixed until `clearCrosshairPosition()` is called.
+
+User-driven viewport callbacks default to one notification per animation frame. Use `userViewportCallbackMode="debounce"` for heavier React state updates, `"sync"` for every internal viewport update, or `"none"` when you only need imperative reads through `getViewport()`.
 
 ### Theming
 

@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { forwardRef, HTMLAttributes, JSX, memo, ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, HTMLAttributes, JSX, memo, ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import parseChartConfig from '../../config/chart/parseChartConfig';
 import type { DataPoint } from '../../domain/types/DataPoint';
 import useResizeObserver from '../../hooks/useResizeObserver';
@@ -38,7 +38,7 @@ import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
 import createDrawingRegistry from '../../drawings/createDrawingRegistry';
 import { DrawingHit } from '../../config/drawing/Drawing';
 import { LayerHit } from '../../config/layer/Layer';
-import { ChartCallbackInfo, ChartHandle, ChartViewport } from './ChartHandle';
+import { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMode } from './ChartHandle';
 
 const EMPTY_LAYER_DEFINITIONS: readonly CustomLayerDefinition[] = [];
 const EMPTY_DRAWING_DEFINITIONS: readonly CustomDrawingDefinition[] = [];
@@ -62,6 +62,8 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onScroll?: (newScrollOffset: number, info?: ChartCallbackInfo) => void;
   onZoom?: (newIntervalWidthPx: number, info?: ChartCallbackInfo) => void;
   onViewportChange?: (viewport: ChartViewport) => void;
+  userViewportCallbackMode?: ChartViewportCallbackMode;
+  userViewportCallbackDebounceMs?: number;
   enableScroll?: boolean;
   enableZoom?: boolean;
   scaleSmoothing?: ScaleSmoothingInput;
@@ -107,6 +109,8 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
   onScroll,
   onZoom,
   onViewportChange,
+  userViewportCallbackMode = 'animationFrame',
+  userViewportCallbackDebounceMs = 120,
   enableScroll,
   enableZoom,
   scaleSmoothing,
@@ -146,7 +150,6 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
 
   const zoomTimeoutRef = useRef<number | null>(null);
   const lastNotifiedZoom = useRef<number>(intervalWidthPx);
-  const [ internalIntervalSize, setInternalIntervalSize ] = useState(intervalWidthPx);
   const statefulChartRef = useRef<ChartHandle | null>(null);
 
   useImperativeHandle(
@@ -261,13 +264,7 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
   }, [panelConfigsComplete, layersTopology, indexProvider.barsLength, layerRegistry]);
 
 
-  useEffect(() => {
-    setInternalIntervalSize(intervalWidthPx);
-  }, [intervalWidthPx]);
-
   const handleZoom = useCallback((newIntervalSize: number, info: ChartCallbackInfo = { source: 'user' }) => {
-    setInternalIntervalSize(newIntervalSize);
-    
     if (onZoom) {
       if (zoomTimeoutRef.current !== null) {
         clearTimeout(zoomTimeoutRef.current);
@@ -284,6 +281,10 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
       }, 150);
     }
   }, [onZoom]);
+
+  useEffect(() => {
+    lastNotifiedZoom.current = Math.round(intervalWidthPx);
+  }, [intervalWidthPx]);
 
   useEffect(() => {
     return () => {
@@ -309,7 +310,7 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
           ref={statefulChartRef}
           chartWidth={effectiveWidth}
           chartHeight={effectiveHeight}
-          intervalSize={internalIntervalSize}
+          intervalSize={intervalWidthPx}
           granularity={deducedGranularity}
           config={chartConfigComplete}
           panels={panelConfigsComplete}
@@ -324,6 +325,8 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
           onScroll={onScroll}
           onZoom={handleZoom}
           onViewportChange={onViewportChange}
+          userViewportCallbackMode={userViewportCallbackMode}
+          userViewportCallbackDebounceMs={userViewportCallbackDebounceMs}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
           scaleSmoothing={scaleSmoothingConfig}
@@ -342,4 +345,4 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
 });
 
 export default memo(Chart);
-export type { ChartHandle, ChartViewport, ChartCallbackInfo } from './ChartHandle';
+export type { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMode } from './ChartHandle';

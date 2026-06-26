@@ -87,6 +87,8 @@ const chartPropTypes = {
   onScroll: PropTypes.func,
   onZoom: PropTypes.func,
   onViewportChange: PropTypes.func,
+  userViewportCallbackMode: PropTypes.oneOf(['animationFrame', 'debounce', 'none', 'sync']),
+  userViewportCallbackDebounceMs: PropTypes.number,
   enableScroll: PropTypes.bool,
   enableZoom: PropTypes.bool,
   scaleSmoothing: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),

@@ -143,6 +143,20 @@ describe('Chart', () => {
     expect(capturedProps?.enableZoom).toBe(false);
   });
 
+  it('forwards user viewport callback cadence props to StatefulChart', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        userViewportCallbackMode="debounce"
+        userViewportCallbackDebounceMs={80}
+      />,
+    );
+
+    expect(capturedProps?.userViewportCallbackMode).toBe('debounce');
+    expect(capturedProps?.userViewportCallbackDebounceMs).toBe(80);
+  });
+
   it('parses scale smoothing config for StatefulChart', () => {
     render(
       <Chart

@@ -12,7 +12,6 @@ import {
 
 function ImperativeApiChart() {
   const chartRef = useRef<ChartHandle>(null);
-  const viewportUpdateTimeoutRef = useRef<number | null>(null);
   const [viewport, setViewport] = useState<ChartViewport | null>(null);
 
   const highlightedIndex = Math.floor(exampleData.length * 0.72);
@@ -30,32 +29,6 @@ function ImperativeApiChart() {
       marginBars: 6,
     });
   }, [rangeEnd, rangeStart]);
-
-  useEffect(() => {
-    return () => {
-      if (viewportUpdateTimeoutRef.current !== null) {
-        window.clearTimeout(viewportUpdateTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleViewportChange = (nextViewport: ChartViewport) => {
-    if (nextViewport.source !== 'user') {
-      if (viewportUpdateTimeoutRef.current !== null) {
-        window.clearTimeout(viewportUpdateTimeoutRef.current);
-        viewportUpdateTimeoutRef.current = null;
-      }
-      setViewport(nextViewport);
-      return;
-    }
-
-    if (viewportUpdateTimeoutRef.current !== null) return;
-
-    viewportUpdateTimeoutRef.current = window.setTimeout(() => {
-      viewportUpdateTimeoutRef.current = null;
-      setViewport(chartRef.current?.getViewport() ?? nextViewport);
-    }, 120);
-  };
 
   const showTargetCrosshair = (lock = false) => {
     chartRef.current?.setVisibleRange({
@@ -184,7 +157,9 @@ function ImperativeApiChart() {
           ref={chartRef}
           data={exampleData}
           theme="dark"
-          onViewportChange={handleViewportChange}
+          onViewportChange={setViewport}
+          userViewportCallbackMode="debounce"
+          userViewportCallbackDebounceMs={120}
         >
           <Panel id="price" heightRatio={3}>
             <Candlesticks />
