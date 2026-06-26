@@ -21,7 +21,7 @@ describe('ChartCanvases', () => {
   it('exposes imperative draw APIs and calls draw modules', () => {
     const ref = createRef<ChartCanvasesHandle>();
 
-    const ctx = { canvas: { width: 10, height: 10 } } as never;
+    const ctx = { canvas: { width: 10, height: 10 }, clearRect: vi.fn() } as never;
     getCanvasContextMock.mockReturnValue(ctx);
     drawChartMock.mockReturnValue({ p1: { panelMetrics: {}, layerMetricsByScale: {} } });
 

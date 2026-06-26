@@ -1,6 +1,7 @@
-import { render } from '@testing-library/react';
-import { forwardRef, useImperativeHandle } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, render } from '@testing-library/react';
+import { createRef, forwardRef, useImperativeHandle } from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { ChartHandle } from '../../Chart';
 import type { StatefulChartProps } from '../StatefulChart';
 
 const requestDrawMock = vi.hoisted(() => vi.fn());
@@ -13,7 +14,27 @@ let interactiveProps: { onScroll: (dx: number, dy: number) => void; onMouseMove:
 let uiProps: { onGoToLatest: () => void; onButtonMouseEnterLeave: (enter: boolean) => void } | null = null;
 let canvasesProps: { showCrosshairsCanvas?: boolean } | null = null;
 
-const getViewportDataMock = vi.hoisted(() => vi.fn(() => ({ data: [], timeScale: { startBarIndex: 0, endBarIndex: 1 }, xToDataPoint: () => null })));
+const getViewportDataMock = vi.hoisted(() => vi.fn((
+  _indexProvider: unknown,
+  timeScale: { startBarIndex: number; endBarIndex: number },
+  _layersData: unknown,
+  scrollOffset: number,
+  _viewportWidth: number,
+  intervalSize: number,
+) => ({
+  data: [],
+  timeScale: {
+    ...timeScale,
+    metadata: {
+      intervalSize,
+      scrollOffset,
+    },
+  },
+  scrollOffset,
+  startBarIndex: timeScale.startBarIndex,
+  endBarIndex: timeScale.endBarIndex,
+  xToDataPoint: () => null,
+})));
 const updateLayersDataMock = vi.hoisted(() => vi.fn());
 const calcOffsetMock = vi.hoisted(() => vi.fn(() => 15));
 
@@ -69,6 +90,10 @@ describe('StatefulChart', () => {
     interactiveProps = null;
     uiProps = null;
     canvasesProps = null;
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   const makeProps = (): StatefulChartProps => ({
@@ -135,6 +160,140 @@ describe('StatefulChart', () => {
     expect(updateLayersDataMock).toHaveBeenCalled();
   });
 
+  it('renders interactive zoom immediately through the chart pipeline', () => {
+    const props = makeProps();
+    render(<StatefulChart {...props} />);
+
+    requestDrawMock.mockClear();
+    getViewportDataMock.mockClear();
+
+    interactiveProps?.onZoom(1.1);
+
+    expect(getViewportDataMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      expect.anything(),
+      expect.any(Number),
+      500,
+      11,
+    );
+    expect(requestDrawMock).toHaveBeenCalled();
+    expect(props.onZoom).toHaveBeenCalledWith(11, { source: 'user' });
+  });
+
+  it('debounces user viewport callbacks when configured', () => {
+    vi.useFakeTimers();
+
+    const onViewportChange = vi.fn();
+    render(
+      <StatefulChart
+        {...makeProps()}
+        onViewportChange={onViewportChange}
+        userViewportCallbackMode="debounce"
+        userViewportCallbackDebounceMs={50}
+      />,
+    );
+
+    onViewportChange.mockClear();
+    calcOffsetMock.mockReturnValue(45);
+
+    interactiveProps?.onScroll(20, 0);
+
+    expect(onViewportChange).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(49);
+    });
+    expect(onViewportChange).not.toHaveBeenCalled();
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+
+    expect(onViewportChange).toHaveBeenCalledTimes(1);
+    expect(onViewportChange).toHaveBeenCalledWith(expect.objectContaining({
+      scrollOffset: 45,
+      source: 'user',
+    }));
+  });
+
+  it('exposes imperative viewport controls', () => {
+    const ref = createRef<ChartHandle>();
+    const onViewportChange = vi.fn();
+    const props = {
+      ...makeProps(),
+      onViewportChange,
+    };
+
+    render(<StatefulChart ref={ref} {...props} />);
+
+    act(() => {
+      ref.current?.setScrollPosition(25);
+    });
+
+    expect(props.onScroll).toHaveBeenCalledWith(25, { source: 'api' });
+    expect(onViewportChange).toHaveBeenLastCalledWith(expect.objectContaining({
+      scrollOffset: 25,
+      intervalWidthPx: 10,
+      source: 'api',
+    }));
+    expect(ref.current?.getViewport()).toEqual(expect.objectContaining({
+      scrollOffset: 25,
+      source: 'api',
+    }));
+
+    act(() => {
+      ref.current?.fitContent();
+    });
+
+    expect(props.onZoom).toHaveBeenCalledWith(expect.any(Number), { source: 'api' });
+  });
+
+  it('uses the current imperative interval for the first user scroll', () => {
+    const ref = createRef<ChartHandle>();
+    render(<StatefulChart ref={ref} {...makeProps()} />);
+
+    act(() => {
+      ref.current?.setVisibleRange({ from: 10, to: 19 });
+    });
+
+    interactiveProps?.onScroll(20, 0);
+
+    expect(calcOffsetMock).toHaveBeenLastCalledWith(
+      expect.any(Number),
+      -20,
+      expect.any(Function),
+      expect.any(Function),
+      50,
+      500,
+      50,
+      false,
+      expect.any(Number),
+      expect.any(Number),
+    );
+  });
+
+  it('supports locked programmatic crosshair control', () => {
+    const ref = createRef<ChartHandle>();
+    render(<StatefulChart ref={ref} {...makeProps()} />);
+
+    act(() => {
+      ref.current?.setCrosshairPosition({ x: 100, y: 120 }, { lock: true });
+    });
+
+    expect(requestDrawCrosshairsMock).toHaveBeenCalledTimes(1);
+
+    interactiveProps?.onMouseMove(130, 140);
+
+    expect(requestDrawCrosshairsMock).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      ref.current?.clearCrosshairPosition();
+    });
+
+    expect(hideCrosshairsMock).toHaveBeenCalled();
+  });
+
   it('updates latest-button visibility for a single-bar dataset', () => {
     render(
       <StatefulChart
@@ -158,7 +317,7 @@ describe('StatefulChart', () => {
 
     interactiveProps?.onZoom(0.1);
 
-    expect(props.onZoom).toHaveBeenCalledWith(1);
+    expect(props.onZoom).toHaveBeenCalledWith(1, { source: 'user' });
   });
 
   it('hides crosshairs when the go-to-latest button is used after hovering', () => {
@@ -227,6 +386,8 @@ describe('StatefulChart', () => {
   });
 
   it('goes to origin when no latest data point is available', () => {
+    const getTimescale = vi.fn(() => ({ startBarIndex: 0, endBarIndex: 1 }));
+
     render(
       <StatefulChart
         {...makeProps()}
@@ -235,25 +396,14 @@ describe('StatefulChart', () => {
           lastDataPointIndex: undefined,
           indexToTimestamp: () => 1,
           findClosestIndex: () => 1,
-          getTimescale: () => ({ startBarIndex: 0, endBarIndex: 1 }),
+          getTimescale,
         } as never}
       />,
     );
 
     uiProps?.onGoToLatest();
 
-    expect(calcOffsetMock).toHaveBeenLastCalledWith(
-      expect.anything(),
-      -15,
-      expect.any(Function),
-      expect.any(Function),
-      expect.any(Number),
-      expect.any(Number),
-      expect.any(Number),
-      false,
-      0,
-      0,
-    );
+    expect(getTimescale).toHaveBeenLastCalledWith(10, 0, 500);
   });
 
   it('can initialize scrolled to latest when requested', () => {
@@ -345,6 +495,6 @@ describe('StatefulChart', () => {
       />,
     );
 
-    expect(latestGetTimescale).toHaveBeenCalledWith(10, 15, 500);
+    expect(latestGetTimescale).toHaveBeenCalledWith(10, 0, 500);
   });
 });

@@ -5,17 +5,17 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { JSX, memo, NamedExoticComponent } from 'react';
-import Chart, { ChartProps } from './Chart';
+import { forwardRef, JSX, memo, RefAttributes, ForwardRefExoticComponent } from 'react';
+import Chart, { ChartHandle, ChartProps } from './Chart';
 import chartPropTypes from './chartPropTypes';
 
-type ChartWithPropTypesComponent = NamedExoticComponent<ChartProps> & {
+type ChartWithPropTypesComponent = ForwardRefExoticComponent<ChartProps & RefAttributes<ChartHandle>> & {
   propTypes?: Record<string, unknown>;
 };
 
-const ChartWithPropTypes = memo(function ChartWithPropTypes(props: ChartProps): JSX.Element {
-  return <Chart {...props} />;
-}) as ChartWithPropTypesComponent;
+const ChartWithPropTypes = memo(forwardRef<ChartHandle, ChartProps>(function ChartWithPropTypes(props, ref): JSX.Element {
+  return <Chart ref={ref} {...props} />;
+})) as ChartWithPropTypesComponent;
 
 ChartWithPropTypes.displayName = 'Chart';
 ChartWithPropTypes.propTypes = chartPropTypes;

@@ -12,6 +12,7 @@ import { ChartConfigComplete } from '../../config/chart/ChartConfig';
 import { Layout } from '../../domain/types/Layout';
 import { PanelConfigComplete } from '../../config/panel/PanelConfig';
 import drawChartCrosshairs from '../../drawing/chart/crosshairs/drawChartCrosshairs';
+import clearChartCrosshairs from '../../drawing/chart/crosshairs/clearChartCrosshairs';
 import { LayerMetrics } from '../../domain/types/metrics/LayerMetrics';
 import { PanelMetrics } from '../../domain/types/metrics/PanelMetrics';
 import styles from './styles.module.scss';
@@ -174,22 +175,28 @@ const ChartCanvases = forwardRef<ChartCanvasesHandle, ChartCanvasesProps>(functi
       cancelAnimationFrame(crosshairsAnimationFrameRef.current);
     }
     crosshairsAnimationFrameRef.current = requestAnimationFrame(() => {
+      crosshairsAnimationFrameRef.current = null;
       drawCrosshairs(layout, viewportData, clientX, clientY, onCrosshairsMove);
     });
   }, [drawCrosshairs, showCrosshairsCanvas]);
 
-  const updateCrosshairsCanvas = useCallback((/*layout: Layout*/) => {
-    // const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current);
-    // if (crosshairsContext) {
-    //   clearChartCrosshairs(crosshairsContext);
-    // }
+  const updateCrosshairsCanvas = useCallback((layout: Layout) => {
+    const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current, true);
+    if (crosshairsContext) {
+      clearChartCrosshairs(crosshairsContext);
+    }
   }, []);
 
-  const hideCrosshairs = useCallback((/*layout: Layout*/) => {
-    // const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current, true);
-    // if (crosshairsContext) {
-    //   clearChartCrosshairs(crosshairsContext);
-    // }
+  const hideCrosshairs = useCallback((layout: Layout) => {
+    if (crosshairsAnimationFrameRef.current !== null) {
+      cancelAnimationFrame(crosshairsAnimationFrameRef.current);
+      crosshairsAnimationFrameRef.current = null;
+    }
+
+    const crosshairsContext = getCanvasContext(crosshairsCanvasRef, layout.chartWidth, layout.chartHeight, layout.dpr, prevCrosshairsSizeRef.current, true);
+    if (crosshairsContext) {
+      clearChartCrosshairs(crosshairsContext);
+    }
   }, []);
 
   const getDrawingContexts = useCallback(() => {

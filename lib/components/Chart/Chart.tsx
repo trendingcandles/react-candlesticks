@@ -5,7 +5,7 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { HTMLAttributes, JSX, memo, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { forwardRef, HTMLAttributes, JSX, memo, ReactNode, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import parseChartConfig from '../../config/chart/parseChartConfig';
 import type { DataPoint } from '../../domain/types/DataPoint';
 import useResizeObserver from '../../hooks/useResizeObserver';
@@ -38,6 +38,7 @@ import { CustomDrawingDefinition } from '../../drawings/defineDrawing';
 import createDrawingRegistry from '../../drawings/createDrawingRegistry';
 import { DrawingHit } from '../../config/drawing/Drawing';
 import { LayerHit } from '../../config/layer/Layer';
+import { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMode } from './ChartHandle';
 
 const EMPTY_LAYER_DEFINITIONS: readonly CustomLayerDefinition[] = [];
 const EMPTY_DRAWING_DEFINITIONS: readonly CustomDrawingDefinition[] = [];
@@ -58,8 +59,11 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   data: DataPoint[];
   scrollToLatestMargin?: number;
   initialScrollToLatest?: boolean;
-  onScroll?: (newScrollOffset: number) => void; // todo: add source arg: 'mouse' | 'touch' | 'trackpad';
-  onZoom?: (newIntervalWidthPx: number) => void;
+  onScroll?: (newScrollOffset: number, info?: ChartCallbackInfo) => void;
+  onZoom?: (newIntervalWidthPx: number, info?: ChartCallbackInfo) => void;
+  onViewportChange?: (viewport: ChartViewport) => void;
+  userViewportCallbackMode?: ChartViewportCallbackMode;
+  userViewportCallbackDebounceMs?: number;
   enableScroll?: boolean;
   enableZoom?: boolean;
   scaleSmoothing?: ScaleSmoothingInput;
@@ -85,7 +89,7 @@ type PanelsProps = PanelsAsPropChartProps | PanelsAsChildrenChartProps;
 
 export type ChartProps = ChartPropsBase & PanelsProps;
 
-const Chart = ({
+const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
   width = 'auto',
   height = 'auto',
   renderMode = 'full',
@@ -104,6 +108,9 @@ const Chart = ({
   initialScrollToLatest = false,
   onScroll,
   onZoom,
+  onViewportChange,
+  userViewportCallbackMode = 'animationFrame',
+  userViewportCallbackDebounceMs = 120,
   enableScroll,
   enableZoom,
   scaleSmoothing,
@@ -115,7 +122,7 @@ const Chart = ({
   onLayerClick,
   children,
   ...props
-}: ChartProps): JSX.Element => {
+}: ChartProps, ref): JSX.Element {
 
   const defaultTimeZoneId = 'UTC';
 
@@ -134,7 +141,7 @@ const Chart = ({
   }, [granularity, data]);
 
   // The `size` variable changes if the Chart element's dimensions change
-  const [size, ref] = useResizeObserver<HTMLDivElement>(width === 'auto' || height === 'auto');
+  const [size, resizeRef] = useResizeObserver<HTMLDivElement>(width === 'auto' || height === 'auto');
   const devicePixelRatio = useDevicePixelRatio();
   const dpr = pixelRatio === 'device' ? devicePixelRatio : pixelRatio;
   const isMinimal = renderMode === 'minimal';
@@ -143,7 +150,21 @@ const Chart = ({
 
   const zoomTimeoutRef = useRef<number | null>(null);
   const lastNotifiedZoom = useRef<number>(intervalWidthPx);
-  const [ internalIntervalSize, setInternalIntervalSize ] = useState(intervalWidthPx);
+  const statefulChartRef = useRef<ChartHandle | null>(null);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      setVisibleRange: (range) => statefulChartRef.current?.setVisibleRange(range),
+      setScrollPosition: (scrollOffset) => statefulChartRef.current?.setScrollPosition(scrollOffset),
+      fitContent: (options) => statefulChartRef.current?.fitContent(options),
+      scrollToLatest: (options) => statefulChartRef.current?.scrollToLatest(options),
+      setCrosshairPosition: (position, options) => statefulChartRef.current?.setCrosshairPosition(position, options),
+      clearCrosshairPosition: () => statefulChartRef.current?.clearCrosshairPosition(),
+      getViewport: () => statefulChartRef.current?.getViewport() ?? null,
+    }),
+    [],
+  );
 
   const [effectiveWidth, effectiveHeight] = useMemo(() => {
     return [width === 'auto' ? size.width : width, height === 'auto' ? size.height : height];
@@ -243,13 +264,7 @@ const Chart = ({
   }, [panelConfigsComplete, layersTopology, indexProvider.barsLength, layerRegistry]);
 
 
-  useEffect(() => {
-    setInternalIntervalSize(intervalWidthPx);
-  }, [intervalWidthPx]);
-
-  const handleZoom = useCallback((newIntervalSize: number) => {
-    setInternalIntervalSize(newIntervalSize);
-    
+  const handleZoom = useCallback((newIntervalSize: number, info: ChartCallbackInfo = { source: 'user' }) => {
     if (onZoom) {
       if (zoomTimeoutRef.current !== null) {
         clearTimeout(zoomTimeoutRef.current);
@@ -259,13 +274,17 @@ const Chart = ({
         const roundedSize = Math.round(newIntervalSize);
         // Only call if it actually changed
         if (roundedSize !== lastNotifiedZoom.current) {
-          onZoom(roundedSize);
+          onZoom(roundedSize, info);
           lastNotifiedZoom.current = roundedSize;
         }
         zoomTimeoutRef.current = null;
       }, 150);
     }
   }, [onZoom]);
+
+  useEffect(() => {
+    lastNotifiedZoom.current = Math.round(intervalWidthPx);
+  }, [intervalWidthPx]);
 
   useEffect(() => {
     return () => {
@@ -277,7 +296,7 @@ const Chart = ({
 
   return (
     <div
-      ref={ref}
+      ref={resizeRef}
       className={styles.chart}
       {...props}
       style={{
@@ -288,9 +307,10 @@ const Chart = ({
     >
       {(effectiveWidth > 0 && effectiveHeight > 0) &&
         <StatefulChart
+          ref={statefulChartRef}
           chartWidth={effectiveWidth}
           chartHeight={effectiveHeight}
-          intervalSize={internalIntervalSize}
+          intervalSize={intervalWidthPx}
           granularity={deducedGranularity}
           config={chartConfigComplete}
           panels={panelConfigsComplete}
@@ -304,6 +324,9 @@ const Chart = ({
           initialScrollToLatest={initialScrollToLatest}
           onScroll={onScroll}
           onZoom={handleZoom}
+          onViewportChange={onViewportChange}
+          userViewportCallbackMode={userViewportCallbackMode}
+          userViewportCallbackDebounceMs={userViewportCallbackDebounceMs}
           enableScroll={effectiveEnableScroll}
           enableZoom={effectiveEnableZoom}
           scaleSmoothing={scaleSmoothingConfig}
@@ -319,6 +342,7 @@ const Chart = ({
     </div>
   );
 
-};
+});
 
 export default memo(Chart);
+export type { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMode } from './ChartHandle';

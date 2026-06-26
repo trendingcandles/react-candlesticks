@@ -250,6 +250,78 @@ Enable y-scale smoothing to reduce abrupt vertical rescaling while panning.
 />
 ```
 
+### Imperative chart controls
+
+Use a `ChartHandle` ref when external UI needs to drive the viewport or crosshair.
+
+```tsx
+import { useRef, useState } from 'react';
+import type { ChartHandle, ChartViewport } from 'react-candlesticks';
+import { Candlesticks, Chart, Panel, VolumeBars } from 'react-candlesticks';
+
+function ControlledChart({ data }) {
+  const chartRef = useRef<ChartHandle>(null);
+  const [viewport, setViewport] = useState<ChartViewport | null>(null);
+  const highlighted = data[Math.floor(data.length * 0.7)];
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => chartRef.current?.setVisibleRange({
+          from: data.length - 120,
+          to: data.length - 40,
+          marginBars: 6,
+        })}
+      >
+        Show range
+      </button>
+      <button type="button" onClick={() => chartRef.current?.fitContent({ marginBars: 8 })}>
+        Fit
+      </button>
+      <button type="button" onClick={() => chartRef.current?.scrollToLatest({ marginBars: 8 })}>
+        Latest
+      </button>
+      <button
+        type="button"
+        onClick={() => chartRef.current?.setCrosshairPosition({
+          timestamp: highlighted.time,
+          value: highlighted.close,
+          panelId: 'price',
+        })}
+      >
+        Crosshair
+      </button>
+
+      <Chart
+        ref={chartRef}
+        data={data}
+        onViewportChange={setViewport}
+        userViewportCallbackMode="debounce"
+        userViewportCallbackDebounceMs={120}
+      >
+        <Panel id="price" heightRatio={3}>
+          <Candlesticks />
+        </Panel>
+        <Panel id="volume">
+          <VolumeBars />
+        </Panel>
+      </Chart>
+
+      {viewport && (
+        <output>
+          {viewport.startBarIndex}-{viewport.endBarIndex}
+        </output>
+      )}
+    </>
+  );
+}
+```
+
+`setCrosshairPosition()` gives pointer movement control again as soon as the user moves over the chart. Pass `{ lock: true }` as the second argument to keep the programmatic crosshair fixed until `clearCrosshairPosition()` is called.
+
+User-driven viewport callbacks default to one notification per animation frame. Use `userViewportCallbackMode="debounce"` for heavier React state updates, `"sync"` for every internal viewport update, or `"none"` when you only need imperative reads through `getViewport()`.
+
 ### Theming
 
 Use the built-in `'light'` or `'dark'` theme, or provide a partial `Theme` object.
