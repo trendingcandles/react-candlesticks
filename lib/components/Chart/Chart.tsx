@@ -344,5 +344,7 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
 
 });
 
-export default memo(Chart);
+const MemoizedChart = memo(Chart) as typeof Chart;
+
+export default MemoizedChart;
 export type { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMode } from './ChartHandle';
