@@ -14,12 +14,9 @@ Build responsive trading charts in React with candlesticks, indicators, crosshai
 
 `react-candlesticks` is in an early public release / soft launch phase. Feedback, bug reports, and edge-case reproductions are especially helpful right now.
 
-<!-- [![demo](./demo/demo-v3.gif)](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx) -->
-[![demo](./demo/screenshot.png)](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
+[![demo](./demo/screenshot.png)](https://reactcandlesticks.com/demo/)
 
-[![StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
-
-[Website](https://reactcandlesticks.com/) • [Documentation](https://docs.reactcandlesticks.com/docs/) • [npm](https://www.npmjs.com/package/react-candlesticks) • [Live Demo](https://stackblitz.com/edit/react-candlesticks?file=src%2FApp.tsx)
+[Website](https://reactcandlesticks.com/) • [Documentation](https://docs.reactcandlesticks.com/docs/) • [npm](https://www.npmjs.com/package/react-candlesticks) • [Live Demo](https://reactcandlesticks.com/demo/)
 
 For bugs and feature requests, [open an issue](https://github.com/trendingcandles/react-candlesticks/issues). For usage questions, [start a discussion](https://github.com/trendingcandles/react-candlesticks/discussions/new?category=q-a).
 
