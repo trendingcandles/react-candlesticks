@@ -43,7 +43,7 @@ import { ChartCallbackInfo, ChartHandle, ChartViewport, ChartViewportCallbackMod
 const EMPTY_LAYER_DEFINITIONS: readonly CustomLayerDefinition[] = [];
 const EMPTY_DRAWING_DEFINITIONS: readonly CustomDrawingDefinition[] = [];
 
-interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
+export interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'> {
   renderMode?: 'full' | 'minimal';
   pixelRatio?: number | 'device';
   width?: number | 'auto';
@@ -75,19 +75,17 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   onLayerClick?: (hit: LayerHit) => void;
 }
 
-interface PanelsAsPropChartProps extends ChartPropsBase {
+export interface PanelsAsPropChartProps extends ChartPropsBase {
   panels?: readonly [PanelConfig, ...PanelConfig[]]; // optional because panels can be configured as child elements
   children?: never;
 }
 
-interface PanelsAsChildrenChartProps extends ChartPropsBase {
+export interface PanelsAsChildrenChartProps extends ChartPropsBase {
   panels?: never;
   children?: ReactNode;
 }
 
-type PanelsProps = PanelsAsPropChartProps | PanelsAsChildrenChartProps;
-
-export type ChartProps = ChartPropsBase & PanelsProps;
+export type ChartProps = PanelsAsPropChartProps | PanelsAsChildrenChartProps;
 
 const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
   width = 'auto',

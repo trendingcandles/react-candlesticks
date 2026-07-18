@@ -34,20 +34,31 @@ const virtualConsumerPath = resolve(repoRoot, '__react_candlesticks_virtual_cons
 const virtualConsumerSource = [
   "import { Chart, exampleData } from 'react-candlesticks';",
   'const App = () => <Chart  />;',
+  'const NestedApp = () => <Chart data={exampleData} grid={{  }} scaleSmoothing={{  }} />;',
   'void App;',
+  'void NestedApp;',
   'void exampleData;',
   '',
 ].join('\n');
 const completionPosition = virtualConsumerSource.indexOf('<Chart  />') + '<Chart '.length;
+const gridCompletionPosition = virtualConsumerSource.indexOf('grid={{  }}') + 'grid={{ '.length;
+const scaleSmoothingCompletionPosition =
+  virtualConsumerSource.indexOf('scaleSmoothing={{  }}') + 'scaleSmoothing={{ '.length;
 const requiredChartPropCompletions = [
+  'crosshairs',
   'data',
   'granularity',
+  'grid',
   'height',
   'onViewportChange',
   'panels',
+  'scaleSmoothing',
   'theme',
   'width',
+  'xAxis',
 ];
+const requiredGridPropCompletions = ['time', 'value'];
+const requiredScaleSmoothingPropCompletions = ['durationMs', 'enabled', 'expandImmediate'];
 const virtualFiles = new Map([[virtualConsumerPath, virtualConsumerSource]]);
 const compilerOptions = {
   allowSyntheticDefaultImports: true,
@@ -85,21 +96,57 @@ const languageServiceHost = {
   realpath: ts.sys.realpath,
 };
 const languageService = ts.createLanguageService(languageServiceHost);
-const completions = languageService.getCompletionsAtPosition(
-  virtualConsumerPath,
-  completionPosition,
-  {
-    includeCompletionsForModuleExports: false,
-    includeCompletionsWithInsertText: true,
-  },
+const getCompletionNames = (position) => {
+  const completions = languageService.getCompletionsAtPosition(
+    virtualConsumerPath,
+    position,
+    {
+      includeCompletionsForModuleExports: false,
+      includeCompletionsWithInsertText: true,
+    },
+  );
+
+  return new Set((completions?.entries ?? []).map((entry) => entry.name));
+};
+const assertCompletions = (label, completionNames, requiredCompletions) => {
+  const missingCompletions = requiredCompletions.filter((prop) => {
+    return !completionNames.has(prop);
+  });
+
+  if (missingCompletions.length > 0) {
+    throw new Error(`${label} completion(s) missing: ${missingCompletions.join(', ')}`);
+  }
+
+  console.log(`${label} completions verified: ${requiredCompletions.join(', ')}`);
+};
+
+assertCompletions(
+  'Chart JSX prop',
+  getCompletionNames(completionPosition),
+  requiredChartPropCompletions,
 );
-const completionNames = new Set((completions?.entries ?? []).map((entry) => entry.name));
-const missingChartPropCompletions = requiredChartPropCompletions.filter((prop) => {
-  return !completionNames.has(prop);
+assertCompletions(
+  'Chart grid config prop',
+  getCompletionNames(gridCompletionPosition),
+  requiredGridPropCompletions,
+);
+assertCompletions(
+  'Chart scaleSmoothing config prop',
+  getCompletionNames(scaleSmoothingCompletionPosition),
+  requiredScaleSmoothingPropCompletions,
+);
+
+const unexpectedDiagnostics = languageService.getSemanticDiagnostics(virtualConsumerPath).filter((diagnostic) => {
+  const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, ' ');
+
+  return !message.includes("Property 'data' is missing") &&
+    !message.includes("Type '{}' is not assignable");
 });
 
-if (missingChartPropCompletions.length > 0) {
-  throw new Error(`Chart JSX prop completion(s) missing: ${missingChartPropCompletions.join(', ')}`);
+if (unexpectedDiagnostics.length > 0) {
+  throw new Error(
+    unexpectedDiagnostics
+      .map((diagnostic) => ts.flattenDiagnosticMessageText(diagnostic.messageText, ' '))
+      .join('\n'),
+  );
 }
-
-console.log(`Chart JSX prop completions verified: ${requiredChartPropCompletions.join(', ')}`);
