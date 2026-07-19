@@ -21,6 +21,22 @@ const getVariantKey = (open: number, close: number): 'up' | 'down' | 'flat' => {
   return 'flat';
 };
 
+const isOddPixelWidth = (width: number): boolean => Math.round(width) % 2 === 1;
+
+const snapStrokeCoordinate = (coordinate: number, strokeWidth: number): number => (
+  Math.round(coordinate) + (isOddPixelWidth(strokeWidth) ? 0.5 : 0)
+);
+
+const alignTickWidth = (width: number, strokeWidth: number): number => {
+  let tickWidth = Math.max(3, Math.round(width));
+
+  if (isOddPixelWidth(tickWidth) !== isOddPixelWidth(strokeWidth)) {
+    tickWidth += 1;
+  }
+
+  return tickWidth;
+};
+
 const drawOhlcBar = (
   context: CanvasRenderingContext2D,
   layerConfig: OhlcBarsLayerConfigComplete,
@@ -36,21 +52,26 @@ const drawOhlcBar = (
   if (!barsConfig) return;
 
   const variantConfig = barsConfig[getVariantKey(open, close)];
-  const tickWidth = Math.max(3, Math.round(intervalSize * variantConfig.width));
-  const halfTickWidth = tickWidth / 2;
   const strokeWidth = Math.max(1, variantConfig.borderWidth);
+  const tickWidth = alignTickWidth(intervalSize * variantConfig.width, strokeWidth);
+  const halfTickWidth = tickWidth / 2;
   const color = variantConfig.borderColor || variantConfig.backgroundColor;
+  const xPx = snapStrokeCoordinate(x, strokeWidth);
+  const openY = snapStrokeCoordinate(valueToY(open), strokeWidth);
+  const highY = snapStrokeCoordinate(valueToY(high), strokeWidth);
+  const lowY = snapStrokeCoordinate(valueToY(low), strokeWidth);
+  const closeY = snapStrokeCoordinate(valueToY(close), strokeWidth);
 
   context.save();
   context.strokeStyle = color;
   context.lineWidth = strokeWidth;
   context.beginPath();
-  context.moveTo(x, valueToY(high));
-  context.lineTo(x, valueToY(low));
-  context.moveTo(x - halfTickWidth, valueToY(open));
-  context.lineTo(x, valueToY(open));
-  context.moveTo(x, valueToY(close));
-  context.lineTo(x + halfTickWidth, valueToY(close));
+  context.moveTo(xPx, highY);
+  context.lineTo(xPx, lowY);
+  context.moveTo(xPx - halfTickWidth, openY);
+  context.lineTo(xPx, openY);
+  context.moveTo(xPx, closeY);
+  context.lineTo(xPx + halfTickWidth, closeY);
   context.stroke();
   context.restore();
 };
