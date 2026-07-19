@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { createBadgeSvg } from "./badge-svg.mjs";
 
 const COVERAGE_SUMMARY_PATH = path.resolve("coverage/coverage-summary.json");
 const BADGES_DIR = path.resolve("badges");
@@ -26,37 +27,9 @@ function pickColor(pct) {
   return COLOR_HIGH;
 }
 
-function escapeXml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&apos;");
-}
-
 function formatPct(value) {
   const rounded = Math.round(value * 100) / 100;
   return `${rounded.toFixed(2)}%`;
-}
-
-function measureWidth(text) {
-  return Math.max(48, Math.round(text.length * 6.8 + 12));
-}
-
-function createBadgeSvg(label, value, color) {
-  const escapedLabel = escapeXml(label);
-  const escapedValue = escapeXml(value);
-  const iconAreaWidth = 24;
-  const labelTrailingPadding = 8;
-  const labelTextAreaWidth = measureWidth(label);
-  const labelWidth = iconAreaWidth + labelTextAreaWidth + labelTrailingPadding;
-  const valueWidth = measureWidth(value);
-  const totalWidth = labelWidth + valueWidth;
-  const labelCenter = iconAreaWidth + labelTextAreaWidth / 2;
-  const valueCenter = labelWidth + valueWidth / 2;
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="20" role="img" aria-label="${escapedLabel}: ${escapedValue}"><title>${escapedLabel}: ${escapedValue}</title><linearGradient id="s" x2="0" y2="100%"><stop offset="0" stop-color="#bbb" stop-opacity=".1"/><stop offset="1" stop-opacity=".1"/></linearGradient><clipPath id="r"><rect width="${totalWidth}" height="20" rx="3" fill="#fff"/></clipPath><g clip-path="url(#r)"><rect width="${labelWidth}" height="20" fill="#555"/><rect x="${labelWidth}" width="${valueWidth}" height="20" fill="${color}"/><rect width="${totalWidth}" height="20" fill="url(#s)"/></g><g fill="#fff" text-anchor="middle" font-family="Verdana,Geneva,DejaVu Sans,sans-serif" text-rendering="geometricPrecision" font-size="110"><image x="5" y="3" width="14" height="14" href="data:image/svg+xml;base64,${ICON_SVG_BASE64}"/><text aria-hidden="true" x="${Math.round(labelCenter * 10)}" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="${Math.round(labelTextAreaWidth * 10)}">${escapedLabel}</text><text x="${Math.round(labelCenter * 10)}" y="140" transform="scale(.1)" fill="#fff" textLength="${Math.round(labelTextAreaWidth * 10)}">${escapedLabel}</text><text aria-hidden="true" x="${Math.round(valueCenter * 10)}" y="150" fill="#010101" fill-opacity=".3" transform="scale(.1)" textLength="${Math.round((valueWidth - 12) * 10)}">${escapedValue}</text><text x="${Math.round(valueCenter * 10)}" y="140" transform="scale(.1)" fill="#fff" textLength="${Math.round((valueWidth - 12) * 10)}">${escapedValue}</text></g></svg>`;
 }
 
 const summaryRaw = await readFile(COVERAGE_SUMMARY_PATH, "utf8");
@@ -81,12 +54,12 @@ for (const badge of badges) {
   totalPctCount += 1;
 
   const pctText = formatPct(pct);
-  const svg = createBadgeSvg(badge.label, pctText, pickColor(pct));
+  const svg = createBadgeSvg(badge.label, pctText, pickColor(pct), { iconSvgBase64: ICON_SVG_BASE64 });
   await writeFile(path.join(BADGES_DIR, badge.file), svg, "utf8");
 }
 
 const totalPct = totalPctAccumulator / totalPctCount;
-const totalSvg = createBadgeSvg("Coverage", formatPct(totalPct), pickColor(totalPct));
+const totalSvg = createBadgeSvg("Coverage", formatPct(totalPct), pickColor(totalPct), { iconSvgBase64: ICON_SVG_BASE64 });
 await writeFile(path.join(BADGES_DIR, "coverage-total.svg"), totalSvg, "utf8");
 
 console.log("Coverage badges generated in badges/");

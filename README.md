@@ -1,8 +1,8 @@
 # React Candlesticks
 
-[![npm version](https://img.shields.io/npm/v/react-candlesticks)](https://www.npmjs.com/package/react-candlesticks)
+[![npm version](https://raw.githubusercontent.com/trendingcandles/react-candlesticks/main/badges/npm-version.svg)](https://www.npmjs.com/package/react-candlesticks)
 [![license](https://img.shields.io/npm/l/react-candlesticks)](./LICENSE)
-![bundle size](https://img.shields.io/bundlephobia/minzip/react-candlesticks)
+![bundle size](https://raw.githubusercontent.com/trendingcandles/react-candlesticks/main/badges/bundle-minzip.svg)
 [![types included](https://img.shields.io/badge/types-included-3178C6?logo=typescript&logoColor=white)](https://www.npmjs.com/package/react-candlesticks)
 [![react 18%2B](https://img.shields.io/badge/react-18%2B-61DAFB?logo=react&logoColor=white)](https://react.dev/)
 [![docs](https://img.shields.io/badge/docs-reactcandlesticks.com-0A66C2)](https://docs.reactcandlesticks.com/)

@@ -8,9 +8,10 @@ This package is released manually from GitHub Actions.
 2. Review the README, [docs](https://docs.reactcandlesticks.com/docs/), and changelog notes for anything user-visible in the release.
 3. Run `npm run check`.
 4. Run `npm run build`.
-5. Run `npm run pack:check` and confirm the tarball contents look correct.
-6. Run `npm run smoke:consumer` to verify a packed install builds in a fresh Vite consumer app.
-7. Commit and push the release-ready changes to `main`.
+5. Run `npm run badges:package` if the version or bundle output changed.
+6. Run `npm run pack:check` and confirm the tarball contents look correct.
+7. Run `npm run smoke:consumer` to verify a packed install builds in a fresh Vite consumer app.
+8. Commit and push the release-ready changes to `main`.
 
 ## Publishing From GitHub Actions
 
