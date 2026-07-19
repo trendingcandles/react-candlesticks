@@ -24,10 +24,10 @@ export function measureBadgeTextWidth(text) {
     if (char === " ") width += 3.5;
     else if ("ijl.'".includes(char)) width += 3.2;
     else if ("frt".includes(char)) width += 4.5;
-    else if ("mwMW".includes(char)) width += 9;
+    else if ("mwMW".includes(char)) width += 9.5;
     else if ("%".includes(char)) width += 9.5;
     else if ("0123456789".includes(char)) width += 7;
-    else width += 6.3;
+    else width += 6.8;
   }
 
   return Math.max(1, Math.ceil(width));
