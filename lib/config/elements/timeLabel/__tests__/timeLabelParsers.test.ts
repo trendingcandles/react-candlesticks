@@ -22,7 +22,8 @@ describe('time label parsers and formatters', () => {
   it('formats default time labels and crosshair labels', () => {
     const ts = Date.UTC(2024, 0, 2, 9, 5);
     expect(defaultTimeLabelFormatter({ utcTs: ts, timeUnit: 'minute', kind: 'minor' })).toBe('09:05');
-    expect(defaultTimeCrosshairLabelFormatter({ utcTs: ts, timeUnit: 'day' })).toContain('Jan');
+    expect(defaultTimeCrosshairLabelFormatter({ utcTs: ts, timeUnit: 'day' })).toBe("Tue 2 Jan '24");
+    expect(defaultTimeCrosshairLabelFormatter({ utcTs: ts, timeUnit: 'minute' })).toBe("Tue 2 Jan '24 09:05");
   });
 
   it('parses crosshair label configs', () => {

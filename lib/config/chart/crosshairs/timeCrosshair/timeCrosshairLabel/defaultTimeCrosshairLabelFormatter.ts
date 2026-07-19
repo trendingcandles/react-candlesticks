@@ -23,6 +23,7 @@ const FORMAT_BY_UNIT: Record<TimeUnit, DateTimeFormatToken> = {
 };
 
 const pad2 = (n: number) => String(n).padStart(2, '0');
+const year2 = (year: number) => pad2(year % 100);
 
 function formatToken(
   token: DateTimeFormatToken,
@@ -34,10 +35,10 @@ function formatToken(
 
   switch (token) {
     case 'ddd DD MMM YY HH:mm':
-      return`${dayName} ${p.day} ${monthName} '${p.year} ${pad2(p.hour)}:${pad2(p.minute)}`;
+      return `${dayName} ${p.day} ${monthName} '${year2(p.year)} ${pad2(p.hour)}:${pad2(p.minute)}`;
 
     case 'ddd DD MMM YY':
-      return`${dayName} ${p.day} ${monthName} '${p.year}`;
+      return `${dayName} ${p.day} ${monthName} '${year2(p.year)}`;
   }
 }
 
