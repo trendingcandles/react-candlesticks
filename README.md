@@ -403,6 +403,24 @@ See the [Theme documentation](https://docs.reactcandlesticks.com/docs/api/theme/
 
 ## Latest Articles
 
+### [I Built react-candlesticks: A Zero-Dependency React Chart Library for Trading UIs](https://blog.reactcandlesticks.com/introducing-react-candlesticks/)
+
+**Jul 5, 2026 · 7 min read · Intro**
+
+An open-source React chart library for financial chart views with candlesticks, volume, technical indicators, custom layers, drawings, interactions, and theming.
+
+### [Use a React Candlestick Chart in Next.js](https://blog.reactcandlesticks.com/nextjs-candlestick-chart/)
+
+**Jul 2, 2026 · 6 min read · Guides**
+
+Build an interactive React candlestick chart in Next.js with volume bars, SMA overlays, a Stochastic indicator, and light and dark themes.
+
+### [Build a Crypto Price Chart in React](https://blog.reactcandlesticks.com/react-crypto-price-chart/)
+
+**Jun 29, 2026 · 9 min read · Guides**
+
+Fetch free crypto OHLCV data and build a React crypto chart with granularity controls, chart type switching, volume, and removable indicators.
+
 ### [Build a React Candlestick Chart with Volume and Indicators](https://blog.reactcandlesticks.com/react-candlestick-chart-with-volume-and-indicators/)
 
 **Jun 7, 2026 · 7 min read · Guides**
