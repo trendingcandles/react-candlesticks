@@ -9,7 +9,7 @@ import { memo, useCallback, useEffect, useRef } from 'react';
 import styles from './styles.module.scss';
 
 export interface InteractiveAreaProps {
-  onScroll: (deltaX: number, deltaY: number, wheel?: boolean) => void;
+  onScroll: (deltaX: number, deltaY: number, wheel?: boolean, clientX?: number, clientY?: number) => void;
   onMouseMove: (clientX: number, clientY: number, isOverButton?: boolean) => void;
   onClick?: (clientX: number, clientY: number) => void;
   onPointerDragStart?: (clientX: number, clientY: number) => boolean;
@@ -39,6 +39,7 @@ const InteractiveArea = ({
   const scrollAnimationFrame = useRef<number | null>(null);
   const zoomAnimationFrame = useRef<number | null>(null);
   const pendingDelta = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const pendingScrollClientPosition = useRef<{ x: number; y: number } | null>(null);
   const pendingZoom = useRef<number>(1);
   const activePointers = useRef(new Map<number, { x: number; y: number }>());
   const claimedPointerRef = useRef<{
@@ -87,8 +88,15 @@ const InteractiveArea = ({
   const scheduleScroll = useCallback(() => {
     if (scrollAnimationFrame.current === null) {
       scrollAnimationFrame.current = requestAnimationFrame(() => {
-        onScrollRef.current(pendingDelta.current.x, pendingDelta.current.y);
+        onScrollRef.current(
+          pendingDelta.current.x,
+          pendingDelta.current.y,
+          false,
+          pendingScrollClientPosition.current?.x,
+          pendingScrollClientPosition.current?.y,
+        );
         pendingDelta.current = { x: 0, y: 0 };
+        pendingScrollClientPosition.current = null;
         scrollAnimationFrame.current = null;
       });
     }
@@ -180,6 +188,7 @@ const InteractiveArea = ({
 
       pendingDelta.current.x += deltaX;
       pendingDelta.current.y += deltaY;
+      pendingScrollClientPosition.current = { x: e.clientX, y: e.clientY };
       lastPosition.current = { x: e.clientX, y: e.clientY };
 
       scheduleScroll();
@@ -249,10 +258,18 @@ const InteractiveArea = ({
     if (absX > absY) {
       if (!enableScrollRef.current) return;
       pendingDelta.current.x -= e.deltaX;
+      pendingScrollClientPosition.current = { x: e.clientX, y: e.clientY };
       if (scrollAnimationFrame.current === null) {
         scrollAnimationFrame.current = requestAnimationFrame(() => {
-          onScrollRef.current(pendingDelta.current.x, pendingDelta.current.y, true);
+          onScrollRef.current(
+            pendingDelta.current.x,
+            pendingDelta.current.y,
+            true,
+            pendingScrollClientPosition.current?.x,
+            pendingScrollClientPosition.current?.y,
+          );
           pendingDelta.current = { x: 0, y: 0 };
+          pendingScrollClientPosition.current = null;
           scrollAnimationFrame.current = null;
         });
       }

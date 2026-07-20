@@ -139,6 +139,7 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   const pendingViewportChangeRef = useRef<ChartViewport | null>(null);
   const crosshairModeRef = useRef<'pointer' | 'programmatic'>('pointer');
   const programmaticCrosshairLockedRef = useRef(false);
+  const lastPointerCrosshairPositionRef = useRef<{ clientX: number; clientY: number } | null>(null);
 
   const {
     containerRef,
@@ -696,6 +697,7 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   const clearCrosshairPosition = useCallback(() => {
     crosshairModeRef.current = 'pointer';
     programmaticCrosshairLockedRef.current = false;
+    lastPointerCrosshairPositionRef.current = null;
     crosshairsClearedRef.current = true;
     chartCanvasesRef.current?.hideCrosshairs(layout);
     updateLegendsForCrosshair(null);
@@ -752,15 +754,26 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
     maxLookForward,
   ]);
 
+  const drawCrosshairsAtClientPosition = useCallback((clientX: number, clientY: number) => {
+    lastPointerCrosshairPositionRef.current = { clientX, clientY };
+    crosshairsClearedRef.current = false;
+    handleDrawingHover(clientX, clientY);
+    if (viewportDataRef.current) {
+      throttledCrosshairsDraw(
+        layout,
+        viewportDataRef.current,
+        clientX,
+        clientY,
+        (_ts: number | null, dataPoint: DataPointInfo | null) => updateLegendsForCrosshair(dataPoint),
+      );
+    }
+  }, [handleDrawingHover, layout, throttledCrosshairsDraw, updateLegendsForCrosshair]);
+
   const handleScroll = useCallback(
-    (deltaX: number /*, deltaY: number, wheel?: boolean*/) => {
+    (deltaX: number, _deltaY: number, _wheel?: boolean, clientX?: number, clientY?: number) => {
       if (deltaX !== 0) {
         const currentIntervalSize = intervalSizeRef.current;
         hasUserInteractedRef.current = true;
-        if (crosshairsClearedRef.current === false) {
-          chartCanvasesRef.current?.hideCrosshairs(layout);
-          crosshairsClearedRef.current = true;
-        }
         const newScrollOffset = handleDataConfigOrScrollChange(
           dataMap,
           indexProvider,
@@ -775,6 +788,12 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
         if (onScroll) {
           onScroll(newScrollOffset, { source: 'user' });
         }
+        const crosshairClientPosition = clientX !== undefined && clientY !== undefined
+          ? { clientX, clientY }
+          : lastPointerCrosshairPositionRef.current;
+        if (crosshairClientPosition && !isOverButtonRef.current) {
+          drawCrosshairsAtClientPosition(crosshairClientPosition.clientX, crosshairClientPosition.clientY);
+        }
       }
     },
     [
@@ -786,6 +805,7 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
       maxLookback,
       maxLookForward,
       onScroll,
+      drawCrosshairsAtClientPosition,
     ],
   );
 
@@ -796,18 +816,8 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
       programmaticCrosshairLockedRef.current = false;
     }
 
-    crosshairsClearedRef.current = false;
-    handleDrawingHover(clientX, clientY);
-    if (viewportDataRef.current) {
-      throttledCrosshairsDraw(
-        layout,
-        viewportDataRef.current,
-        clientX, 
-        clientY,
-        (_ts: number | null, dataPoint: DataPointInfo | null) => updateLegendsForCrosshair(dataPoint),
-      );
-    }
-  }, [handleDrawingHover, throttledCrosshairsDraw, layout, updateLegendsForCrosshair]);
+    drawCrosshairsAtClientPosition(clientX, clientY);
+  }, [drawCrosshairsAtClientPosition]);
 
   const handleZoom = useCallback((zoomFactor: number) => {
     if (zoomFactor !== 1) {

@@ -92,7 +92,7 @@ describe('InteractiveArea', () => {
 
     expect(onMouseMove).toHaveBeenCalledOnce();
     expect(onMouseMove).toHaveBeenCalledWith(8, 9);
-    expect(onScroll).toHaveBeenCalledWith(5, 2);
+    expect(onScroll).toHaveBeenCalledWith(5, 2, false, 15, 12);
 
     raf.mockRestore();
   });
@@ -113,7 +113,7 @@ describe('InteractiveArea', () => {
     dispatchPointerEvent(area, 'pointerdown', { pointerId: 2, clientX: 38, clientY: 13, pointerType: 'touch' });
     dispatchPointerEvent(area, 'pointermove', { pointerId: 2, clientX: 48, clientY: 13, pointerType: 'touch' });
 
-    expect(onScroll).toHaveBeenCalledWith(8, 3);
+    expect(onScroll).toHaveBeenCalledWith(8, 3, false, 18, 13);
     expect(onZoom).toHaveBeenCalledWith(1.5);
 
     raf.mockRestore();
@@ -222,7 +222,7 @@ describe('InteractiveArea', () => {
     fireEvent.wheel(area, { deltaX: 20, deltaY: 1 });
     fireEvent.wheel(area, { deltaX: 1, deltaY: -30 });
 
-    expect(onScroll).toHaveBeenCalledWith(-20, 0, true);
+    expect(onScroll).toHaveBeenCalledWith(-20, 0, true, expect.any(Number), expect.any(Number));
     expect(onZoom).toHaveBeenCalled();
 
     raf.mockRestore();
@@ -286,7 +286,7 @@ describe('InteractiveArea', () => {
     dispatchWindowPointerEvent('pointerup', 1);
     dispatchPointerEvent(area, 'pointermove', { pointerId: 2, clientX: 36, clientY: 16, pointerType: 'touch' });
 
-    expect(onScroll).toHaveBeenCalledWith(6, 6);
+    expect(onScroll).toHaveBeenCalledWith(6, 6, false, 36, 16);
 
     raf.mockRestore();
   });
