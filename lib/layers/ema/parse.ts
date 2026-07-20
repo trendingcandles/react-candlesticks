@@ -58,7 +58,7 @@ const parse = (partialConfig: EmaLayerConfig, layersTheme: LayersTheme, panelId:
       value: parseLineConfig(partialConfig.series?.value, emaTheme.series.value ?? emaDefaults.series.value),
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, emaTheme.markers.value, valueLineColorExplicityDefined),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, emaTheme.markers.value, valueLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...emaTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, emaTheme.yAxis),

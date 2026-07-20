@@ -6,6 +6,7 @@
  */
 
 import { BoxedTimeLabelConfig, BoxedTimeLabelConfigComplete, boxedTimeLabelDefaults, BoxedTimeLabelTheme } from '../../../../elements/boxedTimeLabel/BoxedTimeLabelConfig';
+import { valueMarkerLabelDefaults } from '../../../../valueMarker/ValueMarkerConfig';
 import defaultTimeCrosshairLabelFormatter from './defaultTimeCrosshairLabelFormatter';
 import { TimeCrosshairLabelFormatter } from './TimeCrosshairLabelFormatter';
 
@@ -25,5 +26,6 @@ export const timeCrosshairLabelDefaults: TimeCrosshairLabelConfigComplete = {
   backgroundColor: 'white',
   borderWidth: 1,
   borderColor: '#1a1a1a',
+  borderRadius: valueMarkerLabelDefaults.borderRadius,
   formatter: defaultTimeCrosshairLabelFormatter,
 };

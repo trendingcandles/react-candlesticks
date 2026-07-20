@@ -80,8 +80,8 @@ const parse = (partialConfig: StochasticLayerConfig, layersTheme: LayersTheme, p
       d: parseLineConfig(partialConfig.series?.d, stochasticTheme.series.d),
     },
     markers: {
-      k: parseValueMarkerConfig(partialConfig.markers?.k, stochasticTheme.markers.k, kLineColorExplicityDefined),
-      d: parseValueMarkerConfig(partialConfig.markers?.d, stochasticTheme.markers.d, dLineColorExplicityDefined),
+      k: parseValueMarkerConfig(partialConfig.markers?.k ?? false, stochasticTheme.markers.k, kLineColorExplicityDefined),
+      d: parseValueMarkerConfig(partialConfig.markers?.d ?? false, stochasticTheme.markers.d, dLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...stochasticTheme.legend, label: defautLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, stochasticTheme.yAxis),

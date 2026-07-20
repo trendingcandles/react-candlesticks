@@ -46,7 +46,7 @@ const parse = (partialConfig: WilliamsRLayerConfig, layersTheme: LayersTheme, pa
     inputs,
     outputs: partialConfig.outputs ?? williamsRDefaults.outputs,
     series: { value: parseLineConfig(partialConfig.series?.value, theme.series.value) },
-    markers: { value: parseValueMarkerConfig(partialConfig.markers?.value, theme.markers.value, color) },
+    markers: { value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, theme.markers.value, color) },
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `Williams %R ${length}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),
     valueLabelFormatter: partialConfig.valueLabelFormatter ?? williamsRDefaults.valueLabelFormatter,

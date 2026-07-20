@@ -70,7 +70,7 @@ const parse = (partialConfig: AdxLayerConfig, layersTheme: LayersTheme, panelId:
     },
     markers: {
       value: parseValueMarkerConfig(
-        partialConfig.markers?.value,
+        partialConfig.markers?.value ?? false,
         adxTheme.markers.value,
         typeof partialConfig.series?.value === 'object' ? partialConfig.series.value.color : undefined,
       ),

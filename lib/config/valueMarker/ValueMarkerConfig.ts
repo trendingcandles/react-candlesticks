@@ -31,6 +31,11 @@ export const valueMarkerDefaults: Pick<ValueMarkerConfigComplete, 'mode' | 'line
   line: null,
 };
 
+export const valueMarkerLabelDefaults: BoxedValueLabelConfigComplete = {
+  ...boxedValueLabelDefaults,
+  borderRadius: 2,
+};
+
 export const themeDefaultValueMarker: ValueMarkerTheme = {
   line: {
     ...lineDefaults,
@@ -39,6 +44,6 @@ export const themeDefaultValueMarker: ValueMarkerTheme = {
     endDotSize: 0,
   },
   label: {
-    ...boxedValueLabelDefaults,
+    ...valueMarkerLabelDefaults,
   },
 };

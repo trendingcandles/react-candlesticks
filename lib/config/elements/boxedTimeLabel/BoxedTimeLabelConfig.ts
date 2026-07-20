@@ -13,6 +13,7 @@ export interface BoxedTimeLabelConfigComplete extends TimeLabelConfigComplete {
   borderColor: string;
   hPadding: number;
   vPadding: number;
+  borderRadius: number;
 }
 
 export interface BoxedTimeLabelConfig extends TimeLabelConfig {
@@ -21,6 +22,7 @@ export interface BoxedTimeLabelConfig extends TimeLabelConfig {
   borderColor?: string;
   hPadding?: number;
   vPadding?: number;
+  borderRadius?: number;
 }
 
 export interface BoxedTimeLabelTheme extends TimeLabelTheme {
@@ -29,6 +31,7 @@ export interface BoxedTimeLabelTheme extends TimeLabelTheme {
   borderColor: string;
   hPadding: number;
   vPadding: number;
+  borderRadius?: number;
 }
 
 export const boxedTimeLabelDefaults: BoxedTimeLabelConfigComplete = {
@@ -39,4 +42,5 @@ export const boxedTimeLabelDefaults: BoxedTimeLabelConfigComplete = {
   backgroundColor: 'white',
   borderWidth: 1,
   borderColor: '#1a1a1a',
+  borderRadius: 0,
 };

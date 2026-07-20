@@ -8,6 +8,8 @@ import parseValueCrosshairLabelConfig from '../../../chart/crosshairs/valueCross
 import { themeDefaultLabel } from '../../label/LabelConfig';
 import { boxedTimeLabelDefaults } from '../../boxedTimeLabel/BoxedTimeLabelConfig';
 import { valueCrosshairLabelDefaults } from '../../../chart/crosshairs/valueCrosshair/valueCrosshairLabel/ValueCrosshairLabelConfig';
+import { valueMarkerLabelDefaults } from '../../../valueMarker/ValueMarkerConfig';
+import defaultLightTheme from '../../../../themes/defaultLightTheme';
 
 describe('time label parsers and formatters', () => {
   it('parses time label and boxed time label', () => {
@@ -17,6 +19,7 @@ describe('time label parsers and formatters', () => {
 
     expect(parseBoxedTimeLabelConfig(false, boxedTimeLabelDefaults)).toBeNull();
     expect(parseBoxedTimeLabelConfig({}, boxedTimeLabelDefaults)?.borderWidth).toBe(boxedTimeLabelDefaults.borderWidth);
+    expect(parseBoxedTimeLabelConfig({ borderRadius: 4 }, boxedTimeLabelDefaults)?.borderRadius).toBe(4);
   });
 
   it('formats default time labels and crosshair labels', () => {
@@ -30,7 +33,9 @@ describe('time label parsers and formatters', () => {
     expect(parseTimeCrosshairLabelConfig(false, boxedTimeLabelDefaults)).toBeNull();
     expect(parseValueCrosshairLabelConfig(false, valueCrosshairLabelDefaults)).toBeNull();
 
-    const parsed = parseTimeCrosshairLabelConfig({}, boxedTimeLabelDefaults);
+    const parsed = parseTimeCrosshairLabelConfig({}, defaultLightTheme.chart.crosshairs.time.label);
     expect(typeof parsed?.formatter).toBe('function');
+    expect(parsed?.borderRadius).toBe(valueMarkerLabelDefaults.borderRadius);
+    expect(parseValueCrosshairLabelConfig({}, valueCrosshairLabelDefaults)?.borderRadius).toBe(valueMarkerLabelDefaults.borderRadius);
   });
 });

@@ -17,17 +17,23 @@ const parseValueCrosshairLabelConfig = (
     return null;
   }
 
-  const valueLabelConfigComplete = parseBoxedValueLabelConfig(partialConfig, valueCrosshairLabelTheme);
+  const labelTheme = {
+    ...valueCrosshairLabelTheme,
+    borderRadius: valueCrosshairLabelTheme.borderRadius ?? valueCrosshairLabelDefaults.borderRadius,
+  };
+
+  const valueLabelConfigComplete = parseBoxedValueLabelConfig(partialConfig, labelTheme);
 
   const boxedValueLabelConfigComplete: ValueCrosshairLabelConfigComplete = {
     ...valueCrosshairLabelDefaults,
-    ...valueCrosshairLabelTheme,
+    ...labelTheme,
     ...valueLabelConfigComplete,
     backgroundColor: partialConfig.backgroundColor ?? backgroundColor ?? valueCrosshairLabelTheme.backgroundColor ?? valueCrosshairLabelDefaults.backgroundColor,
     borderWidth: partialConfig.borderWidth ?? valueCrosshairLabelTheme.borderWidth ?? valueCrosshairLabelDefaults.borderWidth,
     borderColor: partialConfig.borderColor ?? valueCrosshairLabelTheme.borderColor ?? valueCrosshairLabelDefaults.borderColor,
     hPadding: partialConfig.hPadding ?? valueCrosshairLabelTheme.hPadding ?? valueCrosshairLabelDefaults.hPadding,
     vPadding: partialConfig.vPadding ?? valueCrosshairLabelTheme.vPadding ?? valueCrosshairLabelDefaults.vPadding,
+    borderRadius: partialConfig.borderRadius ?? labelTheme.borderRadius ?? valueCrosshairLabelDefaults.borderRadius,
   };
 
   return boxedValueLabelConfigComplete;

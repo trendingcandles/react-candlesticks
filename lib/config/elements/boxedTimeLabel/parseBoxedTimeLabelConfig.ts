@@ -27,6 +27,7 @@ const parseBoxedTimeLabelConfig = (
     borderColor: partialConfig.borderColor ?? boxedTimeLabelTheme.borderColor ?? boxedTimeLabelDefaults.borderColor,
     hPadding: partialConfig.hPadding ?? boxedTimeLabelTheme.hPadding ?? boxedTimeLabelDefaults.hPadding,
     vPadding: partialConfig.vPadding ?? boxedTimeLabelTheme.vPadding ?? boxedTimeLabelDefaults.vPadding,
+    borderRadius: partialConfig.borderRadius ?? boxedTimeLabelTheme.borderRadius ?? boxedTimeLabelDefaults.borderRadius,
   };
 
   return boxedValueLabelConfigComplete;

@@ -78,8 +78,8 @@ const parse = (partialConfig: MacdLayerConfig, layersTheme: LayersTheme, panelId
       histogramDown: parseBarConfig(partialConfig.series?.histogramDown, macdTheme.series.histogramDown),
     },
     markers: {
-      macd: parseValueMarkerConfig(partialConfig.markers?.macd, macdTheme.markers.macd, macdLineColorExplicityDefined),
-      signal: parseValueMarkerConfig(partialConfig.markers?.signal, macdTheme.markers.signal, signalLineColorExplicityDefined),
+      macd: parseValueMarkerConfig(partialConfig.markers?.macd ?? false, macdTheme.markers.macd, macdLineColorExplicityDefined),
+      signal: parseValueMarkerConfig(partialConfig.markers?.signal ?? false, macdTheme.markers.signal, signalLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...macdTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, macdTheme.yAxis),

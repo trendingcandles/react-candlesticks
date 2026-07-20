@@ -58,7 +58,7 @@ const parse = (partialConfig: RsiLayerConfig, layersTheme: LayersTheme, panelId:
       value: parseLineConfig(partialConfig.series?.value, rsiTheme.series.value ?? rsiDefaults.series.value),
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, rsiTheme.markers.value, valueLineColorExplicityDefined),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, rsiTheme.markers.value, valueLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...rsiTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, rsiTheme.yAxis),

@@ -57,7 +57,7 @@ const parse = (partialConfig: SmaLayerConfig, layersTheme: LayersTheme, panelId:
       value: parseLineConfig(partialConfig.series?.value, smaTheme.series.value ?? smaDefaults.series.value),
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, smaTheme.markers.value, valueLineColorExplicityDefined),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, smaTheme.markers.value, valueLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...smaTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, smaTheme.yAxis),

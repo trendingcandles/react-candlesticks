@@ -64,7 +64,7 @@ const parse = (partialConfig: AtrLayerConfig, layersTheme: LayersTheme, panelId:
       value: parseLineConfig(partialConfig.series?.value, atrTheme.series.value),
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, atrTheme.markers.value, valueLineColorExplicityDefined),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, atrTheme.markers.value, valueLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...atrTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, atrTheme.yAxis),

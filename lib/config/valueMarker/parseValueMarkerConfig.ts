@@ -7,7 +7,7 @@
 
 import parseBoxedValueLabelConfig from '../elements/boxedValueLabel/parseBoxedValueLabelConfig';
 import parseLineConfig from '../elements/line/parseLineConfig';
-import { ValueMarkerConfig, ValueMarkerConfigComplete, valueMarkerDefaults, themeDefaultValueMarker, ValueMarkerTheme } from './ValueMarkerConfig';
+import { ValueMarkerConfig, ValueMarkerConfigComplete, valueMarkerDefaults, valueMarkerLabelDefaults, themeDefaultValueMarker, ValueMarkerTheme } from './ValueMarkerConfig';
 
 const parseValueMarkerConfig = (partialConfig: false | ValueMarkerConfig = {}, valueMarkerTheme?: ValueMarkerTheme, color?: string): null | ValueMarkerConfigComplete => {
   if (partialConfig === false) {
@@ -17,11 +17,15 @@ const parseValueMarkerConfig = (partialConfig: false | ValueMarkerConfig = {}, v
   const effectiveValueMarkerTheme = valueMarkerTheme ?? themeDefaultValueMarker;
 
   const lineConfigComplete = partialConfig.line ? parseLineConfig(partialConfig.line, effectiveValueMarkerTheme.line, color) : null;
+  const labelTheme = {
+    ...effectiveValueMarkerTheme.label,
+    borderRadius: effectiveValueMarkerTheme.label.borderRadius ?? valueMarkerLabelDefaults.borderRadius,
+  };
 
   const valueMarkerConfigComplete: ValueMarkerConfigComplete = {
     mode: partialConfig.mode ?? valueMarkerDefaults.mode,
     line: lineConfigComplete,
-    label: parseBoxedValueLabelConfig(partialConfig.label, effectiveValueMarkerTheme.label, color),
+    label: parseBoxedValueLabelConfig(partialConfig.label, labelTheme, color),
   };
 
   return valueMarkerConfigComplete;
