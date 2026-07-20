@@ -25,13 +25,14 @@ describe('crosshair drawing', () => {
         fontStyle: 'normal',
         hPadding: 4,
         vPadding: 2,
+        borderRadius: 2,
       } as never,
       { side: 'right', offsetPx: 5, width: 40, labelFormatter: (v: number) => `${v.toFixed(1)}` } as never,
       50,
       12.345,
     );
 
-    expect(ctx.fillRect).toHaveBeenCalled();
+    expect(ctx.quadraticCurveTo).toHaveBeenCalled();
     expect(ctx.fillText).toHaveBeenCalledWith('12.3', 209, 50);
   });
 
@@ -68,6 +69,7 @@ describe('crosshair drawing', () => {
               fontFamily: 'sans',
               fontWeight: '400',
               fontStyle: 'normal',
+              borderRadius: 2,
               formatter: () => '12:00',
             },
           },
@@ -98,6 +100,7 @@ describe('crosshair drawing', () => {
 
     expect(onMove).toHaveBeenCalledWith(1000, { barIndex: 1 });
     expect(ctx.stroke).toHaveBeenCalled();
+    expect(ctx.quadraticCurveTo).toHaveBeenCalled();
     expect(ctx.fillText).toHaveBeenCalledWith('12:00', expect.any(Number), expect.any(Number));
   });
 

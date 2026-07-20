@@ -83,7 +83,7 @@ const parse = (partialConfig: BollingerBandsLayerConfig, layersTheme: LayersThem
           },
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, bollingerBandsTheme.markers.value, valueLineColorExplicityDefined),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, bollingerBandsTheme.markers.value, valueLineColorExplicityDefined),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...bollingerBandsTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, bollingerBandsTheme.yAxis),

@@ -48,15 +48,18 @@ const drawChartValueCrosshairLabel = (
   const valueTextWidth = Math.round(crosshairsContext.measureText(formattedValue).width);
   const bgWidth = valueTextWidth + hPadding * 2;
   const bgHeight = fontSize + vPadding * 2;
+  const bgX = Math.round(x);
+  const bgY = Math.round(y - bgHeight / 2);
+  const textY = bgY + bgHeight / 2;
 
   crosshairsContext.fillStyle = backgroundColor;
-  drawRoundedRect(crosshairsContext, x, y - bgHeight / 2, bgWidth, bgHeight, borderRadius);
+  drawRoundedRect(crosshairsContext, bgX, bgY, bgWidth, bgHeight, borderRadius);
 
   crosshairsContext.fillStyle = color;
   crosshairsContext.font = `${fontWeight} ${fontStyle} ${fontSize}px ${fontFamily}`;
   crosshairsContext.textAlign = 'left';
   crosshairsContext.textBaseline = 'middle';
-  crosshairsContext.fillText(formattedValue, x + hPadding, y);
+  crosshairsContext.fillText(formattedValue, bgX + hPadding, textY);
 
 };
 

@@ -6,7 +6,7 @@
  */
 
 import { LineConfig, LineConfigComplete } from '../../../elements/line/LineConfig';
-import { TimeCrosshairLabelConfig, TimeCrosshairLabelConfigComplete } from './timeCrosshairLabel/TimeCrosshairLabelConfig';
+import { TimeCrosshairLabelConfig, TimeCrosshairLabelConfigComplete, TimeCrosshairLabelTheme } from './timeCrosshairLabel/TimeCrosshairLabelConfig';
 
 export interface TimeCrosshairConfigComplete {
   line: null | LineConfigComplete;
@@ -20,5 +20,5 @@ export interface TimeCrosshairConfig {
 
 export interface TimeCrosshairTheme {
   line: LineConfigComplete;
-  label: Omit<TimeCrosshairLabelConfigComplete, 'formatter'>;
+  label: TimeCrosshairLabelTheme;
 };

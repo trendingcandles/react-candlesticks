@@ -45,7 +45,7 @@ const parse = (partialConfig: VolumeBarsLayerConfig, layersTheme: LayersTheme, p
     },
     valueToY: partialConfig.valueToY ?? volumeBarsDefaults.valueToY,
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, volumeBarsTheme.markers.value),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, volumeBarsTheme.markers.value),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...volumeBarsTheme.legend, label: defaultLegendLabel }, legendFieldsDefaultsForLayer),
     yAxis: parseYAxisConfig(partialConfig.yAxis, volumeBarsTheme.yAxis),

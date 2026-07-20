@@ -5,9 +5,9 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import parseBoxedValueLabelConfig from '../../../elements/boxedValueLabel/parseBoxedValueLabelConfig';
 import parseLineConfig from '../../../elements/line/parseLineConfig';
 import { ValueCrosshairConfig, ValueCrosshairConfigComplete, ValueCrosshairTheme } from './ValueCrosshairConfig';
+import parseValueCrosshairLabelConfig from './valueCrosshairLabel/parseValueCrosshairLabelConfig';
 
 const parseValueCrosshairConfig = (partialConfig: false | ValueCrosshairConfig = {}, valueCrosshairTheme: ValueCrosshairTheme): null | ValueCrosshairConfigComplete => {
   if (partialConfig === false) {
@@ -16,7 +16,7 @@ const parseValueCrosshairConfig = (partialConfig: false | ValueCrosshairConfig =
 
   const valueCrosshairComplete: ValueCrosshairConfigComplete = {
     line: parseLineConfig(partialConfig.line, valueCrosshairTheme.line),
-    label: parseBoxedValueLabelConfig(partialConfig.label, valueCrosshairTheme.label),
+    label: parseValueCrosshairLabelConfig(partialConfig.label, valueCrosshairTheme.label),
   };
 
   return valueCrosshairComplete;

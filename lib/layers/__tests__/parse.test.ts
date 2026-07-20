@@ -12,8 +12,10 @@ import parseStochastic from '../stochastic/parse';
 import parseVolumeBars from '../volumeBars/parse';
 import parseAdx from '../adx/parse';
 import parseCci from '../cci/parse';
+import parseEma from '../ema/parse';
 import parseObv from '../obv/parse';
 import parseParabolicSar from '../parabolicSar/parse';
+import parseRsi from '../rsi/parse';
 import parseWilliamsR from '../williamsR/parse';
 
 describe('layer config parsers', () => {
@@ -72,6 +74,39 @@ describe('layer config parsers', () => {
     expect(cfg.series.value.fill?.topColor).toBe('#1234');
     expect(cfg.series.value.fill?.bottomColor).toBe('transparent');
     expect(cfg.outputs).toEqual(['price']);
+  });
+
+  it('enables value markers by default only for price layers', () => {
+    const priceLayerConfigs = [
+      parseCandlesticks({ type: 'price:candlesticks' }, layersTheme as never, 'm1').markers.value,
+      parseOhlcBars({ type: 'price:ohlc-bars' }, layersTheme as never, 'm2').markers.value,
+      parsePriceLine({ type: 'price:line' }, layersTheme as never, 'm3').markers.value,
+      parseArea({ type: 'price:area' }, layersTheme as never, 'm4').markers.value,
+    ];
+
+    expect(priceLayerConfigs.every(Boolean)).toBe(true);
+
+    expect(parseVolumeBars({ type: 'volume:bars' }, layersTheme as never, 'm5').markers.value).toBeNull();
+    expect(parseSma({ type: 'sma' }, layersTheme as never, 'm6').markers.value).toBeNull();
+    expect(parseEma({ type: 'ema' }, layersTheme as never, 'm7').markers.value).toBeNull();
+    expect(parseRsi({ type: 'rsi' }, layersTheme as never, 'm8').markers.value).toBeNull();
+    expect(parseAtr({ type: 'atr' }, layersTheme as never, 'm9').markers.value).toBeNull();
+    expect(parseAdx({ type: 'adx' }, layersTheme as never, 'm10').markers.value).toBeNull();
+    expect(parseBollingerBands({ type: 'bollinger-bands' }, layersTheme as never, 'm11').markers.value).toBeNull();
+    expect(parseMacd({ type: 'macd' }, layersTheme as never, 'm12').markers).toEqual({ macd: null, signal: null });
+    expect(parseStochastic({ type: 'stochastic' }, layersTheme as never, 'm13').markers).toEqual({ k: null, d: null });
+    expect(parseCci({ type: 'cci' }, layersTheme as never, 'm14').markers).toEqual({ value: null, smoothing: null });
+    expect(parseObv({ type: 'obv' }, layersTheme as never, 'm15').markers).toEqual({ value: null, smoothing: null });
+    expect(parseWilliamsR({ type: 'williams-r' }, layersTheme as never, 'm16').markers.value).toBeNull();
+  });
+
+  it('enables volume and indicator value markers when explicitly configured', () => {
+    expect(parseVolumeBars({ type: 'volume:bars', markers: { value: {} } }, layersTheme as never, 'mv').markers.value).toBeTruthy();
+    expect(parseSma({ type: 'sma', markers: { value: {} } }, layersTheme as never, 'ms').markers.value).toBeTruthy();
+    expect(parseMacd({ type: 'macd', markers: { macd: {}, signal: {} } }, layersTheme as never, 'mm').markers).toMatchObject({
+      macd: expect.any(Object),
+      signal: expect.any(Object),
+    });
   });
 
   it('parses sma config with period-derived id and lookback', () => {

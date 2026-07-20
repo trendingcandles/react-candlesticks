@@ -5,10 +5,9 @@
  * Licensed under the MIT License (see LICENSE file in the project root).
  */
 
-import { boxedTimeLabelDefaults } from '../../../../elements/boxedTimeLabel/BoxedTimeLabelConfig';
 import parseBoxedTimeLabelConfig from '../../../../elements/boxedTimeLabel/parseBoxedTimeLabelConfig';
 import defaultTimeCrosshairLabelFormatter from './defaultTimeCrosshairLabelFormatter';
-import { TimeCrosshairLabelConfig, TimeCrosshairLabelConfigComplete, TimeCrosshairLabelTheme } from './TimeCrosshairLabelConfig';
+import { TimeCrosshairLabelConfig, TimeCrosshairLabelConfigComplete, timeCrosshairLabelDefaults, TimeCrosshairLabelTheme } from './TimeCrosshairLabelConfig';
 
 const parseTimeCrosshairLabelConfig = (
   partialConfig: false | TimeCrosshairLabelConfig = {},
@@ -19,12 +18,16 @@ const parseTimeCrosshairLabelConfig = (
   }
 
   const { formatter, ...restPartialConfig } = partialConfig;
+  const labelTheme = {
+    ...timeCrosshairLabelTheme,
+    borderRadius: timeCrosshairLabelTheme.borderRadius ?? timeCrosshairLabelDefaults.borderRadius,
+  };
 
-  const valueLabelConfigComplete = parseBoxedTimeLabelConfig(restPartialConfig, timeCrosshairLabelTheme);
+  const valueLabelConfigComplete = parseBoxedTimeLabelConfig(restPartialConfig, labelTheme);
 
   const boxedValueLabelConfigComplete: TimeCrosshairLabelConfigComplete = {
-    ...boxedTimeLabelDefaults,
-    ...timeCrosshairLabelTheme,
+    ...timeCrosshairLabelDefaults,
+    ...labelTheme,
     ...valueLabelConfigComplete,
     formatter: formatter ?? defaultTimeCrosshairLabelFormatter,
   };

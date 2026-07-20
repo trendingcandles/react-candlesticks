@@ -57,8 +57,8 @@ const parse = (partialConfig: CciLayerConfig, layersTheme: LayersTheme, panelId:
       smoothing: parseLineConfig(partialConfig.series?.smoothing, theme.series.smoothing),
     },
     markers: {
-      value: parseValueMarkerConfig(partialConfig.markers?.value, theme.markers.value, valueColor),
-      smoothing: parseValueMarkerConfig(partialConfig.markers?.smoothing, theme.markers.smoothing, smoothingColor),
+      value: parseValueMarkerConfig(partialConfig.markers?.value ?? false, theme.markers.value, valueColor),
+      smoothing: parseValueMarkerConfig(partialConfig.markers?.smoothing ?? false, theme.markers.smoothing, smoothingColor),
     },
     legend: parseLegendConfig(partialConfig.legend, { ...theme.legend, label: `CCI ${length} SMA ${smoothingLength}` }, fields),
     yAxis: parseYAxisConfig(partialConfig.yAxis, theme.yAxis),

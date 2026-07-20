@@ -6,6 +6,7 @@
  */
 
 import { BoxedValueLabelConfig, BoxedValueLabelConfigComplete, boxedValueLabelDefaults, BoxedValueLabelTheme } from '../../../../elements/boxedValueLabel/BoxedValueLabelConfig';
+import { valueMarkerLabelDefaults } from '../../../../valueMarker/ValueMarkerConfig';
 
 export type ValueCrosshairLabelConfigComplete = BoxedValueLabelConfigComplete;
 
@@ -20,4 +21,5 @@ export const valueCrosshairLabelDefaults: BoxedValueLabelConfigComplete = {
   borderColor: '#1a1a1a',
   hPadding: 8,
   vPadding: 6,
+  borderRadius: valueMarkerLabelDefaults.borderRadius,
 };

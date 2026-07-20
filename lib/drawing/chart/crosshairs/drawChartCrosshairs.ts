@@ -16,6 +16,7 @@ import drawChartValueCrosshairLabel from './drawChartValueCrosshairLabel';
 import { LayerScale } from '../../../config/layer/BaseLayerConfig';
 import DataPointInfo from '../../../domain/types/DataPointInfo';
 import ViewportData from '../../../domain/types/ViewportData';
+import drawRoundedRect from '../../elements/drawRoundedRect';
 
 const getYToValue = (min: number, max: number, top: number, height: number) => {
   const range = max - min;
@@ -213,6 +214,7 @@ const drawChartCrosshairs = (
       fontWeight: timeLabelFontWeight,
       fontStyle: timeLabelFontStyle,
       formatter: timeLabelFormatter,
+      borderRadius: timeLabelBorderRadius,
     } = timeCrosshair.label;
 
     const timeText = timeLabelFormatter({
@@ -223,15 +225,17 @@ const drawChartCrosshairs = (
     const timeTextWidth = Math.round(crosshairsContext.measureText(timeText).width);
     const bgWidth = timeTextWidth + timeLabelHPadding * 2;
     const bgHeight = timeLabelFontSize + timeLabelVPadding * 2;
+    const labelX = Math.round(xSharp - bgWidth / 2);
+    const labelY = Math.round(drawingAreaY1);
 
     crosshairsContext.fillStyle = timeLabelFillColor;
-    crosshairsContext.fillRect(xSharp - Math.round(bgWidth / 2), drawingAreaY1, bgWidth, bgHeight);
+    drawRoundedRect(crosshairsContext, labelX, labelY, bgWidth, bgHeight, timeLabelBorderRadius);
 
     crosshairsContext.fillStyle = timeLabelColor;
     crosshairsContext.font = `${timeLabelFontWeight} ${timeLabelFontStyle} ${timeLabelFontSize}px ${timeLabelFontFamily}`;
     crosshairsContext.textAlign = 'center';
     crosshairsContext.textBaseline = 'middle';
-    crosshairsContext.fillText(`${timeText}`, xSharp, drawingAreaY1 + bgHeight / 2);
+    crosshairsContext.fillText(`${timeText}`, labelX + bgWidth / 2, labelY + bgHeight / 2);
   }
 
 };

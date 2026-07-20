@@ -7,6 +7,7 @@ import parseTimeCrosshairConfig from '../crosshairs/timeCrosshair/parseTimeCross
 import parseCrosshairsConfig from '../crosshairs/parseCrosshairsConfig';
 import parseChartConfig from '../parseChartConfig';
 import defaultLightTheme from '../../../themes/defaultLightTheme';
+import { valueMarkerLabelDefaults } from '../../valueMarker/ValueMarkerConfig';
 
 describe('chart config parsers', () => {
   it('parses borders/grid and handles false', () => {
@@ -27,6 +28,8 @@ describe('chart config parsers', () => {
   it('parses crosshairs and chart config', () => {
     expect(parseValueCrosshairConfig(false, defaultLightTheme.chart.crosshairs.value)).toBeNull();
     expect(parseTimeCrosshairConfig(false, defaultLightTheme.chart.crosshairs.time)).toBeNull();
+    expect(parseValueCrosshairConfig({}, defaultLightTheme.chart.crosshairs.value)?.label?.borderRadius).toBe(valueMarkerLabelDefaults.borderRadius);
+    expect(parseTimeCrosshairConfig({}, defaultLightTheme.chart.crosshairs.time)?.label?.borderRadius).toBe(valueMarkerLabelDefaults.borderRadius);
     const crosshairs = parseCrosshairsConfig({ value: false }, defaultLightTheme.chart.crosshairs);
     expect(crosshairs?.value).toBeNull();
 
