@@ -10,7 +10,7 @@ const hideCrosshairsMock = vi.hoisted(() => vi.fn());
 const updateCrosshairsCanvasMock = vi.hoisted(() => vi.fn());
 const updateGoToLatestButtonMock = vi.hoisted(() => vi.fn());
 
-let interactiveProps: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean } | null = null;
+let interactiveProps: { onScroll: (dx: number, dy: number, wheel?: boolean, clientX?: number, clientY?: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean } | null = null;
 let uiProps: { onGoToLatest: () => void; onButtonMouseEnterLeave: (enter: boolean) => void } | null = null;
 let canvasesProps: { showCrosshairsCanvas?: boolean } | null = null;
 
@@ -52,7 +52,7 @@ vi.mock('../../ChartCanvases', () => ({
 }));
 
 vi.mock('../../InteractiveArea', () => ({
-  default: (props: { onScroll: (dx: number, dy: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean }) => {
+  default: (props: { onScroll: (dx: number, dy: number, wheel?: boolean, clientX?: number, clientY?: number) => void; onMouseMove: (x: number, y: number) => void; onZoom: (z: number) => void; enableScroll: boolean; enableZoom: boolean }) => {
     interactiveProps = props;
     return <div data-testid="interactive" />;
   },
@@ -158,6 +158,26 @@ describe('StatefulChart', () => {
     expect(hideCrosshairsMock).toHaveBeenCalled();
     expect(requestDrawCrosshairsMock).toHaveBeenCalled();
     expect(updateLayersDataMock).toHaveBeenCalled();
+  });
+
+  it('keeps crosshairs visible and moving while the user pans', () => {
+    const props = makeProps();
+    render(<StatefulChart {...props} />);
+
+    interactiveProps?.onMouseMove(100, 120);
+    requestDrawCrosshairsMock.mockClear();
+    hideCrosshairsMock.mockClear();
+
+    interactiveProps?.onScroll(20, 0, false, 130, 140);
+
+    expect(hideCrosshairsMock).not.toHaveBeenCalled();
+    expect(requestDrawCrosshairsMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      130,
+      140,
+      expect.any(Function),
+    );
   });
 
   it('renders interactive zoom immediately through the chart pipeline', () => {
