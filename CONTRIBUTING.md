@@ -63,9 +63,10 @@ If you would like to contribute by fixing an open issue or developing a new feat
 1. Fork this repository.
 2. Create a new feature branch based off the `main` branch.
 3. Install dependencies with `npm ci`.
-4. Make your changes and run `npm run check` before opening a pull request.
-5. Git stage your required changes and commit (review the commit guidelines below).
-6. Submit the PR for review.
+4. Install the project git hooks with `npm run hooks:install`.
+5. Make your changes and run `npm run check` before opening a pull request.
+6. Git stage your required changes and commit (review the commit guidelines below).
+7. Submit the PR for review.
 
 ### Pull Requests
 
