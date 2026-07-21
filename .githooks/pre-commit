@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! git diff --cached --name-only --diff-filter=ACMR | grep -Eq '^(package(-lock)?\.json|lib/|src/|vite\.config\.ts|tsconfig(\..*)?\.json|scripts/(badge-svg|generate-package-badges)\.mjs)$'; then
+  exit 0
+fi
+
+echo "pre-commit: updating package badges"
+npm run build
+npm run badges:package
+git add badges/npm-version.svg badges/bundle-minzip.svg
+

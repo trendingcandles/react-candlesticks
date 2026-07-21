@@ -1,6 +1,6 @@
 {
 	"name": "react-candlesticks",
-	"version": "0.7.7",
+	"version": "0.7.8",
 	"description": "High-performance, composable candlestick charts for React.",
 	"license": "MIT",
 	"author": "Jason Wilson <info@trendingcandles.com>",
@@ -58,6 +58,8 @@
 		"dev": "vite",
 		"build": "npm run clean && tsc && vite build && find dist -name '*.tsbuildinfo' -delete",
 		"badges:package": "node ./scripts/generate-package-badges.mjs",
+		"badges:check": "npm run badges:package && git diff --exit-code -- badges/npm-version.svg badges/bundle-minzip.svg",
+		"hooks:install": "git config core.hooksPath .githooks",
 		"typecheck": "tsc --build --noEmit",
 		"lint": "eslint .",
 		"preview": "vite preview",
