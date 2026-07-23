@@ -180,6 +180,37 @@ describe('StatefulChart', () => {
     );
   });
 
+  it('uses the latest mouse position for crosshairs during wheel scroll momentum', () => {
+    const props = makeProps();
+    render(<StatefulChart {...props} />);
+
+    interactiveProps?.onMouseMove(100, 120);
+    requestDrawCrosshairsMock.mockClear();
+
+    interactiveProps?.onScroll(20, 0, true, 50, 60);
+
+    expect(requestDrawCrosshairsMock).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.anything(),
+      100,
+      120,
+      expect.any(Function),
+    );
+
+    interactiveProps?.onMouseMove(180, 190);
+    requestDrawCrosshairsMock.mockClear();
+
+    interactiveProps?.onScroll(20, 0, true, 50, 60);
+
+    expect(requestDrawCrosshairsMock).toHaveBeenLastCalledWith(
+      expect.anything(),
+      expect.anything(),
+      180,
+      190,
+      expect.any(Function),
+    );
+  });
+
   it('keeps crosshairs visible and redraws them while the user zooms', () => {
     const props = makeProps();
     render(<StatefulChart {...props} />);
