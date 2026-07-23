@@ -822,10 +822,6 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   const handleZoom = useCallback((zoomFactor: number) => {
     if (zoomFactor !== 1) {
       hasUserInteractedRef.current = true;
-      if (crosshairsClearedRef.current === false) {
-        chartCanvasesRef.current?.hideCrosshairs(layout);
-        crosshairsClearedRef.current = true;
-      }
       const currentIntervalSize = intervalSizeRef.current;
       let newIntervalSize = currentIntervalSize * zoomFactor;
       if (newIntervalSize < 1) {
@@ -844,10 +840,16 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
           'user',
         );
         onZoom?.(newIntervalSize, { source: 'user' });
+
+        const crosshairClientPosition = lastPointerCrosshairPositionRef.current;
+        if (crosshairClientPosition && !isOverButtonRef.current) {
+          drawCrosshairsAtClientPosition(crosshairClientPosition.clientX, crosshairClientPosition.clientY);
+        }
       }
     }
   }, [
     dataMap,
+    drawCrosshairsAtClientPosition,
     granularity,
     handleDataConfigOrScrollChange,
     indexProvider,
