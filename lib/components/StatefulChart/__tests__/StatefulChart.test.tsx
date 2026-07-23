@@ -180,6 +180,26 @@ describe('StatefulChart', () => {
     );
   });
 
+  it('keeps crosshairs visible and redraws them while the user zooms', () => {
+    const props = makeProps();
+    render(<StatefulChart {...props} />);
+
+    interactiveProps?.onMouseMove(100, 120);
+    requestDrawCrosshairsMock.mockClear();
+    hideCrosshairsMock.mockClear();
+
+    interactiveProps?.onZoom(1.1);
+
+    expect(hideCrosshairsMock).not.toHaveBeenCalled();
+    expect(requestDrawCrosshairsMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      100,
+      120,
+      expect.any(Function),
+    );
+  });
+
   it('renders interactive zoom immediately through the chart pipeline', () => {
     const props = makeProps();
     render(<StatefulChart {...props} />);
