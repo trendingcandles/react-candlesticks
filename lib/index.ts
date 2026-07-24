@@ -15,6 +15,25 @@ export type { IndicatorThemeInput, Theme, ThemeBase, ThemeComplete } from './dom
 export type { ThemeName } from './themes/themes';
 export { default as resolveTheme } from './themes/resolveTheme';
 export type {
+  ChartConfig,
+  ChartConfigComplete,
+} from './config/chart/ChartConfig';
+export type {
+  BordersConfig,
+  BordersConfigComplete,
+  BordersTheme,
+} from './config/chart/borders/BordersConfig';
+export type {
+  CrosshairsConfig,
+  CrosshairsConfigComplete,
+  CrosshairsTheme,
+} from './config/chart/crosshairs/CrosshairsConfig';
+export type {
+  GridConfig,
+  GridConfigComplete,
+  GridTheme,
+} from './config/chart/grid/GridConfig';
+export type {
   ScaleSmoothingConfig,
   ScaleSmoothingConfigComplete,
   ScaleSmoothingInput,
@@ -24,3 +43,8 @@ export type {
   WatermarkConfigComplete,
   WatermarkTheme,
 } from './config/chart/watermark/WatermarkConfig';
+export type {
+  XAxisConfig,
+  XAxisConfigComplete,
+  XAxisTheme,
+} from './config/chart/xAxis/XAxisConfig';
