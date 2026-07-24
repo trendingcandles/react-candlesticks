@@ -19,3 +19,8 @@ export type {
   ScaleSmoothingConfigComplete,
   ScaleSmoothingInput,
 } from './config/chart/scaleSmoothing/ScaleSmoothingConfig';
+export type {
+  WatermarkConfig,
+  WatermarkConfigComplete,
+  WatermarkTheme,
+} from './config/chart/watermark/WatermarkConfig';

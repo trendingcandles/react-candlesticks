@@ -86,6 +86,14 @@ const defaultLightTheme: ThemeComplete = {
         },
       },
     },
+    watermark: {
+      color: 'black',
+      opacity: 0.1,
+      width: 60,
+      height: 46,
+      paddingLeft: 16,
+      paddingBottom: 16,
+    },
   },
   panels: {
     paddingTop: 16,

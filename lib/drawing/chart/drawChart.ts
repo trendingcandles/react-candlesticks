@@ -16,6 +16,7 @@ import drawBorders from './borders/drawBorders';
 import ViewportData from '../../domain/types/ViewportData';
 import { DrawingRegistry } from '../../config/drawing/DrawingRegistry';
 import { ScaleSmoothingRuntime } from '../panel/drawLayersForScale';
+import drawChartWatermark from './watermark/drawChartWatermark';
 
 const drawChart = (
   drawingsContext: CanvasRenderingContext2D,
@@ -75,6 +76,12 @@ const drawChart = (
     chartMetrics,
     drawingRegistry,
     scaleSmoothingRuntime,
+  );
+
+  drawChartWatermark(
+    drawingsContext,
+    layout,
+    chartConfig,
   );
 
   return metricsByPanel;

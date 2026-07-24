@@ -7,18 +7,21 @@ const {
   drawTimeGridLinesMock,
   drawTimeGridLabelsMock,
   drawPanelsMock,
+  drawChartWatermarkMock,
 } = vi.hoisted(() => ({
   calculateChartMetricsMock: vi.fn(),
   drawBordersMock: vi.fn(),
   drawTimeGridLinesMock: vi.fn(),
   drawTimeGridLabelsMock: vi.fn(),
   drawPanelsMock: vi.fn(),
+  drawChartWatermarkMock: vi.fn(),
 }));
 vi.mock('../../../metrics/chart/calculateChartMetrics', () => ({ default: calculateChartMetricsMock }));
 vi.mock('../borders/drawBorders', () => ({ default: drawBordersMock }));
 vi.mock('../grid/time/drawTimeGridLines', () => ({ default: drawTimeGridLinesMock }));
 vi.mock('../grid/time/drawTimeGridLabels', () => ({ default: drawTimeGridLabelsMock }));
 vi.mock('../../panel/drawPanels', () => ({ default: drawPanelsMock }));
+vi.mock('../watermark/drawChartWatermark', () => ({ default: drawChartWatermarkMock }));
 
 import drawChart from '../drawChart';
 
@@ -32,6 +35,7 @@ describe('drawChart', () => {
 
     expect(result).toBeUndefined();
     expect(drawBordersMock).not.toHaveBeenCalled();
+    expect(drawChartWatermarkMock).not.toHaveBeenCalled();
     expect(drawings.clearRect).toHaveBeenCalled();
     expect(axes.clearRect).toHaveBeenCalled();
   });
@@ -52,6 +56,7 @@ describe('drawChart', () => {
     expect(drawBordersMock).toHaveBeenCalled();
     expect(drawTimeGridLinesMock).toHaveBeenCalled();
     expect(drawTimeGridLabelsMock).toHaveBeenCalled();
+    expect(drawChartWatermarkMock).toHaveBeenCalled();
     expect(result).toEqual({ p1: { panelMetrics: {} } });
   });
 });

@@ -93,6 +93,14 @@ const defaultDarkTheme: ThemeComplete = {
         label: { ...themeDefaultLabel, padding: 8, backgroundColor: '#ddd', borderColor: '#ddd', color: '#1a1a1a', borderWidth: 0, hPadding: 8, vPadding: 6 },
       },
     },
+    watermark: {
+      color: 'white',
+      opacity: 0.1,
+      width: 60,
+      height: 46,
+      paddingLeft: 16,
+      paddingBottom: 16,
+    },
   },
   panels: {
     paddingTop: 16,

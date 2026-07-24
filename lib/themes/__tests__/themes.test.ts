@@ -17,6 +17,7 @@ describe('defaultLightTheme', () => {
     expect(defaultLightTheme.chart.xAxis?.height).toBe(60);
     expect(defaultLightTheme.chart.grid?.time?.color).toBe('#ccc');
     expect(defaultLightTheme.chart.crosshairs?.time?.line?.style).toBe('dashed');
+    expect(defaultLightTheme.chart.watermark.color).toBe('black');
 
     expect(defaultLightTheme.layers.candlesticks.series.body.up.backgroundColor).toBe('#10b981');
     expect(defaultLightTheme.layers.candlesticks.series.body.down.backgroundColor).toBe('#ef4444');
@@ -40,6 +41,7 @@ describe('defaultDarkTheme', () => {
     expect(defaultDarkTheme.chart.borders?.left?.color).toBe('#333');
     expect(defaultDarkTheme.chart.grid?.value?.color).toBe('#2e2e2e');
     expect(defaultDarkTheme.chart.crosshairs?.value?.line?.style).toBe('dashed');
+    expect(defaultDarkTheme.chart.watermark.color).toBe('white');
 
     expect(defaultDarkTheme.layers.candlesticks.series.wick.flat.color).toBe('#aaa');
     expect(defaultDarkTheme.layers.volumeBars.series.bars.flat.backgroundColor).toBe('#555');

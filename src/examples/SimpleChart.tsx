@@ -7,6 +7,7 @@ function SimpleChart() {
       data={exampleData}
       theme='dark'
       initialScrollToLatest
+      watermark
     >
       <Panel>
         <Candlesticks/>
