@@ -11,6 +11,7 @@ import parseCrosshairsConfig from './crosshairs/parseCrosshairsConfig';
 import parseGridConfig from './grid/parseGridConfig';
 import parseBordersConfig from './borders/parseBordersConfig';
 import parseXAxisConfig from './xAxis/parseXAxisConfig';
+import parseWatermarkConfig from './watermark/parseWatermarkConfig';
 
 const parseChartConfig = (partialConfig: ChartConfig, theme: ThemeComplete, defaultTimeZoneId: string): ChartConfigComplete => {
   return {
@@ -19,6 +20,7 @@ const parseChartConfig = (partialConfig: ChartConfig, theme: ThemeComplete, defa
     xAxis: parseXAxisConfig(partialConfig.xAxis, theme.chart.xAxis, defaultTimeZoneId),
     grid: parseGridConfig(partialConfig.grid, theme.chart.grid),
     crosshairs: parseCrosshairsConfig(partialConfig.crosshairs, theme.chart.crosshairs),
+    watermark: parseWatermarkConfig(partialConfig.watermark, theme.chart.watermark),
   }; 
 };
 

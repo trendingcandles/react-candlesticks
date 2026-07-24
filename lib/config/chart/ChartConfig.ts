@@ -8,6 +8,7 @@
 import { BordersConfig, BordersConfigComplete } from './borders/BordersConfig';
 import { CrosshairsConfig, CrosshairsConfigComplete } from './crosshairs/CrosshairsConfig';
 import { GridConfig, GridConfigComplete } from './grid/GridConfig';
+import { WatermarkConfig, WatermarkConfigComplete } from './watermark/WatermarkConfig';
 import { XAxisConfig, XAxisConfigComplete } from './xAxis/XAxisConfig';
 
 export interface ChartConfigComplete {
@@ -16,6 +17,7 @@ export interface ChartConfigComplete {
   xAxis: null | XAxisConfigComplete;
   grid: null | GridConfigComplete;
   crosshairs: null | CrosshairsConfigComplete;
+  watermark: null | WatermarkConfigComplete;
 }
 
 export interface ChartConfig {
@@ -24,6 +26,7 @@ export interface ChartConfig {
   xAxis?: false | XAxisConfig;
   grid?: false | GridConfig;
   crosshairs?: false | CrosshairsConfig;
+  watermark?: false | true | WatermarkConfig;
 }
 
 export const chartDefaults: Pick<ChartConfigComplete, 'backgroundColor'> = {

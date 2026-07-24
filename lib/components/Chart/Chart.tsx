@@ -30,6 +30,7 @@ import deduceGranularity from '../../data/utils/deduceGranulairty';
 import createLayerTopology from '../../config/layer/createLayerTopology';
 import styles from './styles.module.scss';
 import { BordersConfig } from '../../config/chart/borders/BordersConfig';
+import { themeDefaultWatermark, WatermarkConfig } from '../../config/chart/watermark/WatermarkConfig';
 import { ScaleSmoothingInput } from '../../config/chart/scaleSmoothing/ScaleSmoothingConfig';
 import parseScaleSmoothingConfig from '../../config/chart/scaleSmoothing/parseScaleSmoothingConfig';
 import { CustomLayerDefinition } from '../../layers/defineLayer';
@@ -55,6 +56,7 @@ interface ChartPropsBase extends Omit<HTMLAttributes<HTMLDivElement>, 'onScroll'
   grid?: false | GridConfig; // undefined → default config, false → disabled, {} → default config
   crosshairs?: false | CrosshairsConfig; // undefined → default config, false → disabled, {} → default config
   borders?: false | BordersConfig; // undefined → default config, false → disabled, {} → default config
+  watermark?: false | true | WatermarkConfig; // undefined/false → disabled, true/{} → default config
   theme?: Theme | ThemeName;
   data: DataPoint[];
   scrollToLatestMargin?: number;
@@ -101,6 +103,7 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
   grid,
   crosshairs,
   borders,
+  watermark,
   theme = 'light',
   panels,
   data,
@@ -205,15 +208,27 @@ const Chart = forwardRef<ChartHandle, ChartProps>(function Chart({
 
   // Parse chart config (everything that's not panels/layers)
   const chartConfigComplete = useMemo(() => {
+    const themeHasExplicitWatermark = typeof theme !== 'string' &&
+      (theme.base !== undefined || theme.chart?.watermark !== undefined);
+    const chartTheme = typeof theme === 'string' || themeHasExplicitWatermark
+      ? effectiveTheme
+      : {
+          ...effectiveTheme,
+          chart: {
+            ...effectiveTheme.chart,
+            watermark: themeDefaultWatermark,
+          },
+        };
     const chartConfig = {
       backgroundColor,
       xAxis: isMinimal ? (xAxis ?? false) : xAxis,
       grid: isMinimal ? (grid ?? false) : grid,
       crosshairs: isMinimal ? (crosshairs ?? false) : crosshairs,
       borders: isMinimal ? (borders ?? false) : borders,
+      watermark: isMinimal ? (watermark ?? false) : watermark,
     };
-    return parseChartConfig(chartConfig, effectiveTheme, defaultTimeZoneId);
-  }, [backgroundColor, xAxis, grid, crosshairs, borders, effectiveTheme, defaultTimeZoneId, isMinimal]);
+    return parseChartConfig(chartConfig, chartTheme, defaultTimeZoneId);
+  }, [backgroundColor, xAxis, grid, crosshairs, borders, watermark, effectiveTheme, theme, defaultTimeZoneId, isMinimal]);
 
   // Parse panel configs and create layer topology
   const { panelConfigs: panelConfigsComplete, layersTopology } = useMemo(() => {

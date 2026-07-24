@@ -15,6 +15,7 @@ import { LineTheme } from '../../config/elements/line/LineConfig';
 import { ValueMarkerTheme } from '../../config/valueMarker/ValueMarkerConfig';
 import { LegendTheme } from '../../config/legend/LegendConfig';
 import { YAxisTheme } from '../../config/layer/yAxis/YAxisConfig';
+import { WatermarkTheme } from '../../config/chart/watermark/WatermarkConfig';
 
 export type DeepPartial<T> = T extends (...args: never[]) => unknown
   ? T
@@ -42,6 +43,7 @@ export interface ThemeComplete {
     borders: BordersTheme;
     grid: GridTheme;
     crosshairs: CrosshairsTheme;
+    watermark: WatermarkTheme;
   };
   panels: PanelTheme;
   layers: LayersTheme;

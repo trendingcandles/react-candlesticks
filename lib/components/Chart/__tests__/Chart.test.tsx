@@ -117,6 +117,45 @@ describe('Chart', () => {
     );
   });
 
+  it('forwards watermark config into chart config parsing', () => {
+    const watermark = { opacity: 0.16 };
+
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        watermark={watermark}
+      />,
+    );
+
+    expect(parseChartConfigMock).toHaveBeenCalledWith(
+      expect.objectContaining({ watermark }),
+      expect.anything(),
+      expect.anything(),
+    );
+  });
+
+  it('uses a white fallback watermark theme for custom themes without an explicit base', () => {
+    render(
+      <Chart
+        data={[{ timestamp: 1 } as never]}
+        panels={[{ id: 'p1', layers: [{}] }] as never}
+        theme={{ chart: { backgroundColor: '#202020' } }}
+        watermark
+      />,
+    );
+
+    expect(parseChartConfigMock).toHaveBeenCalledWith(
+      expect.objectContaining({ watermark: true }),
+      expect.objectContaining({
+        chart: expect.objectContaining({
+          watermark: expect.objectContaining({ color: 'white' }),
+        }),
+      }),
+      expect.anything(),
+    );
+  });
+
   it('forwards initialScrollToLatest to StatefulChart', () => {
     render(
       <Chart
@@ -191,6 +230,7 @@ describe('Chart', () => {
         grid: false,
         crosshairs: false,
         borders: false,
+        watermark: false,
       }),
       expect.anything(),
       expect.anything(),
@@ -202,6 +242,7 @@ describe('Chart', () => {
     const grid = {};
     const crosshairs = {};
     const borders = { left: { color: '#fff', width: 1, style: 'solid' } };
+    const watermark = true;
 
     render(
       <Chart
@@ -214,6 +255,7 @@ describe('Chart', () => {
         grid={grid as never}
         crosshairs={crosshairs as never}
         borders={borders as never}
+        watermark={watermark}
       />,
     );
 
@@ -225,6 +267,7 @@ describe('Chart', () => {
         grid,
         crosshairs,
         borders,
+        watermark,
       }),
       expect.anything(),
       expect.anything(),

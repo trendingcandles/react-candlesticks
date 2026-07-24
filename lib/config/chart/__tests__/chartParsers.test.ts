@@ -6,7 +6,9 @@ import parseValueCrosshairConfig from '../crosshairs/valueCrosshair/parseValueCr
 import parseTimeCrosshairConfig from '../crosshairs/timeCrosshair/parseTimeCrosshairConfig';
 import parseCrosshairsConfig from '../crosshairs/parseCrosshairsConfig';
 import parseChartConfig from '../parseChartConfig';
+import parseWatermarkConfig from '../watermark/parseWatermarkConfig';
 import defaultLightTheme from '../../../themes/defaultLightTheme';
+import defaultDarkTheme from '../../../themes/defaultDarkTheme';
 import { valueMarkerLabelDefaults } from '../../valueMarker/ValueMarkerConfig';
 
 describe('chart config parsers', () => {
@@ -36,5 +38,19 @@ describe('chart config parsers', () => {
     const chart = parseChartConfig({ backgroundColor: 'black', grid: false }, defaultLightTheme, 'UTC');
     expect(chart.backgroundColor).toBe('black');
     expect(chart.grid).toBeNull();
+    expect(chart.watermark).toBeNull();
+  });
+
+  it('parses watermark only when enabled', () => {
+    expect(parseWatermarkConfig(false, defaultLightTheme.chart.watermark)).toBeNull();
+    expect(parseWatermarkConfig(undefined, defaultLightTheme.chart.watermark)).toBeNull();
+
+    expect(parseWatermarkConfig(true, defaultLightTheme.chart.watermark)).toEqual(defaultLightTheme.chart.watermark);
+    expect(parseWatermarkConfig(true, defaultDarkTheme.chart.watermark)?.color).toBe('white');
+    expect(parseWatermarkConfig({ opacity: 0.2, width: 80 }, defaultLightTheme.chart.watermark)).toEqual({
+      ...defaultLightTheme.chart.watermark,
+      opacity: 0.2,
+      width: 80,
+    });
   });
 });

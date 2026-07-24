@@ -77,6 +77,7 @@ const chartPropTypes = {
   xAxis: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   grid: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   crosshairs: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
+  watermark: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
   theme: PropTypes.oneOfType([
     PropTypes.oneOf(themeNames),
     PropTypes.object,
