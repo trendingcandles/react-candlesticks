@@ -2,6 +2,76 @@
 
 All notable changes to `react-candlesticks` are documented here.
 
+## 0.7.10 - 2026-07-24
+
+### Added
+
+- Added an opt-in `watermark` chart prop for rendering the website logo as a low-opacity watermark above the bottom axis area.
+- Added theme-aware watermark defaults: low-opacity black for the built-in light theme, low-opacity white for the built-in dark theme and custom themes without an explicit watermark color.
+- Added public root exports for chart configuration types, including `ChartConfig`, `BordersConfig`, `CrosshairsConfig`, `GridConfig`, `XAxisConfig`, `WatermarkConfig`, and their complete/theme variants.
+
+## 0.7.9 - 2026-07-24
+
+### Fixed
+
+- Fixed crosshairs disappearing during zoom; crosshairs now remain visible and redraw against the updated viewport.
+- Fixed crosshairs jumping between stale wheel-event coordinates and the latest pointer position during inertial mouse-wheel or Magic Mouse horizontal scrolling.
+
+## 0.7.8 - 2026-07-21
+
+### Fixed
+
+- Fixed generated npm version and bundle size badges.
+
+## 0.7.7 - 2026-07-21
+
+### Changed
+
+- Refreshed bundled example data and removed the short example data export.
+
+## 0.7.6 - 2026-07-20
+
+### Changed
+
+- Changed value markers to be disabled by default.
+- Changed value marker and crosshair labels to use rounded corners by default.
+
+### Fixed
+
+- Kept crosshairs visible while the user scrolls or pans the chart.
+
+## 0.7.5 - 2026-07-19
+
+### Fixed
+
+- Fixed npm version and bundle size badge generation.
+
+## 0.7.4 - 2026-07-19
+
+### Fixed
+
+- Sharpened OHLC bar rendering for crisper canvas output.
+- Fixed time crosshair label formatting around daily and weekly intervals.
+
+## 0.7.3 - 2026-07-18
+
+### Changed
+
+- Updated the README demo link.
+
+## 0.7.2 - 2026-07-13
+
+### Fixed
+
+- Exposed the `ChartProps` type in generated package declarations.
+- Added package type declaration checks for release validation.
+
+## 0.7.1 - 2026-06-29
+
+### Fixed
+
+- Fixed the package `types` path.
+
 ## 0.7.0 - 2026-06-26
 
 ### Added
