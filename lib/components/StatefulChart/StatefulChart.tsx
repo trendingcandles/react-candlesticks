@@ -770,7 +770,7 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
   }, [handleDrawingHover, layout, throttledCrosshairsDraw, updateLegendsForCrosshair]);
 
   const handleScroll = useCallback(
-    (deltaX: number, _deltaY: number, _wheel?: boolean, clientX?: number, clientY?: number) => {
+    (deltaX: number, _deltaY: number, wheel?: boolean, clientX?: number, clientY?: number) => {
       if (deltaX !== 0) {
         const currentIntervalSize = intervalSizeRef.current;
         hasUserInteractedRef.current = true;
@@ -788,9 +788,12 @@ const StatefulChart = forwardRef<ChartHandle, StatefulChartProps>(function State
         if (onScroll) {
           onScroll(newScrollOffset, { source: 'user' });
         }
-        const crosshairClientPosition = clientX !== undefined && clientY !== undefined
+        const scrollClientPosition = clientX !== undefined && clientY !== undefined
           ? { clientX, clientY }
           : lastPointerCrosshairPositionRef.current;
+        const crosshairClientPosition = wheel
+          ? lastPointerCrosshairPositionRef.current ?? scrollClientPosition
+          : scrollClientPosition;
         if (crosshairClientPosition && !isOverButtonRef.current) {
           drawCrosshairsAtClientPosition(crosshairClientPosition.clientX, crosshairClientPosition.clientY);
         }
